@@ -1,0 +1,124 @@
+{
+  "players": [
+    {
+      "name": "Novak Djokovic",
+      "avatarUrl": "./src/assets/djokovic_head.png",
+      "abilities": {
+        "serve": 95,
+        "forehand": 98,
+        "backhand": 99,
+        "volley": 92,
+        "stamina": 97,
+        "agility": 96
+      }
+    },
+    {
+      "name": "Carlos Alcaraz",
+      "avatarUrl": "./src/assets/alcaraz_head.png",
+      "abilities": {
+        "serve": 88,
+        "forehand": 95,
+        "backhand": 90,
+        "volley": 89,
+        "stamina": 94,
+        "agility": 98
+      }
+    },
+    {
+      "name": "Jannik Sinner",
+      "avatarUrl": "./src/assets/sinner_head.png",
+      "abilities": {
+        "serve": 87,
+        "forehand": 94,
+        "backhand": 93,
+        "volley": 85,
+        "stamina": 92,
+        "agility": 93
+      }
+    },
+    {
+      "name": "Daniil Medvedev",
+      "avatarUrl": "./src/assets/medvedev_head.png",
+      "abilities": {
+        "serve": 89,
+        "forehand": 88,
+        "backhand": 92,
+        "volley": 84,
+        "stamina": 95,
+        "agility": 90
+      }
+    },
+    {
+      "name": "Andrey Rublev",
+      "avatarUrl": "./src/assets/rublev_head.png",
+      "abilities": {
+        "serve": 86,
+        "forehand": 92,
+        "backhand": 85,
+        "volley": 82,
+        "stamina": 88,
+        "agility": 87
+      }
+    },
+    {
+      "name": "Alexander Zverev",
+      "avatarUrl": "./src/assets/zverev_head.png",
+      "abilities": {
+        "serve": 92,
+        "forehand": 89,
+        "backhand": 88,
+        "volley": 83,
+        "stamina": 90,
+        "agility": 88
+      }
+    },
+    {
+      "name": "Holger Rune",
+      "avatarUrl": "./src/assets/rune_head.png",
+      "abilities": {
+        "serve": 85,
+        "forehand": 88,
+        "backhand": 86,
+        "volley": 82,
+        "stamina": 87,
+        "agility": 91
+      }
+    },
+    {
+      "name": "Hubert Hurkacz",
+      "avatarUrl": "./src/assets/hurkacz_head.png",
+      "abilities": {
+        "serve": 93,
+        "forehand": 87,
+        "backhand": 84,
+        "volley": 86,
+        "stamina": 85,
+        "agility": 84
+      }
+    },
+    {
+      "name": "Alex de Minaur",
+      "avatarUrl": "./src/assets/de-minaur_head.png",
+      "abilities": {
+        "serve": 83,
+        "forehand": 85,
+        "backhand": 86,
+        "volley": 84,
+        "stamina": 93,
+        "agility": 96
+      }
+    },
+    {
+      "name": "Stefanos Tsitsipas",
+      "avatarUrl": "./src/assets/tsitsipas_head.png",
+      "abilities": {
+        "serve": 90,
+        "forehand": 93,
+        "backhand": 85,
+        "volley": 87,
+        "stamina": 89,
+        "agility": 88
+      }
+    }
+  ]
+}
