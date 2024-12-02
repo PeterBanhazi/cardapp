@@ -31,7 +31,10 @@ function App() {
                         <Route path="/" element={<Home isVisible={false} />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
-                        <Route path="/logout" element={<Logout />} />
+                        <Route
+                            path="/logout"
+                            element={<Logout isVisible={false} />}
+                        />
                         <Route path="*" element={<Navigate to="/" />} />
                         {/* <Route
                             path="*"
