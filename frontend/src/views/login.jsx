@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { login } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
+import LoginModal from '../components/LoginModal';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -33,6 +34,7 @@ const Login = () => {
     return (
         <section>
             <h1>Login</h1>
+            <LoginModal></LoginModal>
             <form onSubmit={handleLogin}>
                 <div>
                     <label htmlFor="username">Username</label>

@@ -13,6 +13,8 @@ import playerTopList from './assets/tennis-players-data.json';
 import TennisPlayerCards from './components/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
 
+import LoginExp from './components/LoginExp';
+
 function App() {
     return (
         <>
@@ -27,7 +29,8 @@ function App() {
                                 </PrivateRoute>
                             }
                         />
-                        <Route path="/" element={<Home />} />
+                        {/* <Route path="/" element={<Home />} /> */}
+                        <Route path="/" element={<AppTopMenu />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/logout" element={<Logout />} />
@@ -35,7 +38,6 @@ function App() {
                 </MainWrapper>
             </BrowserRouter>
             <>
-                <AppTopMenu />
                 <div
                     className="bg-no-repeat bg-cover min-h-screen"
                     style={{
