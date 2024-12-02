@@ -1,5 +1,5 @@
 // import './App.css';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import Home from './views/home';
 import MainWrapper from './layouts/MainWrapper';
 import Login from './views/login';
@@ -13,13 +13,12 @@ import playerTopList from './assets/tennis-players-data.json';
 import TennisPlayerCards from './components/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
 
-import LoginExp from './components/LoginExp';
-
 function App() {
     return (
         <>
             <BrowserRouter>
                 <MainWrapper>
+                    <AppTopMenu />
                     <Routes>
                         <Route
                             path="/private"
@@ -29,11 +28,16 @@ function App() {
                                 </PrivateRoute>
                             }
                         />
-                        {/* <Route path="/" element={<Home />} /> */}
-                        <Route path="/" element={<AppTopMenu />} />
+                        <Route path="/" element={<Home isVisible={false} />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/logout" element={<Logout />} />
+                        <Route path="*" element={<Navigate to="/" />} />
+                        {/* <Route
+                            path="*"
+                            element={<p>There's nothing here: 404!</p>}
+                        /> */}
+                        {/* <Route path="*" element={<NoMatch />} /> */}
                     </Routes>
                 </MainWrapper>
             </BrowserRouter>
