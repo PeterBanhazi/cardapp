@@ -12,7 +12,9 @@ from rest_framework.decorators import api_view, permission_classes
 import json
 
 # Create your views here.
-
+@api_view(['GET'])
+def getPlayerList(request):
+    return 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -31,6 +33,7 @@ def getRoutes(request):
         '/api/register/',
         '/api/token/refresh/',
         '/api/test/'
+        'api/playerlist'
     ]
     return Response(routes)
 
