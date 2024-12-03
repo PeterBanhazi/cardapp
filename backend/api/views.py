@@ -25,9 +25,10 @@ class PlayerListView(APIView):
         })
 
 # Create your views here.
-@api_view(['GET'])
-def getPlayerList(request):
-    return 
+
+# @api_view(['GET'])
+# def getPlayerList(request):
+#     return 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
