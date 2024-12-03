@@ -5,6 +5,40 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .models import TennisPlayer
+
+#playerlist serialisers
+
+class TennisPlayerAbilitiesSerializer(serializers.Serializer):
+    serve = serializers.IntegerField()
+    forehand = serializers.IntegerField()
+    backhand = serializers.IntegerField()
+    volley = serializers.IntegerField()
+    stamina = serializers.IntegerField()
+    agility = serializers.IntegerField()
+
+class TennisPlayerSerializer(serializers.ModelSerializer):
+    abilities = serializers.SerializerMethodField()
+    avatarUrl = serializers.CharField(source='avatar_url')
+
+    class Meta:
+        model = TennisPlayer
+        fields = ['name', 'avatarUrl', 'abilities']
+
+    def get_abilities(self, obj):
+        return {
+            'serve': obj.serve,
+            'forehand': obj.forehand,
+            'backhand': obj.backhand,
+            'volley': obj.volley,
+            'stamina': obj.stamina,
+            'agility': obj.agility
+        }
+
+
+
+#user auth classes
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

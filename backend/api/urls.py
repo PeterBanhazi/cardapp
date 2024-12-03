@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import PlayerListView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -11,5 +12,5 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='auth_register'),
     path('test/', views.testEndPoint, name='test'),
     path('', views.getRoutes),
-    path('get/playerlist/', views.getPlayerList)
+    path('get/playerlist/', PlayerListView.as_view(), name='player-list'),
 ]

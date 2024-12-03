@@ -11,6 +11,19 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 import json
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import TennisPlayer
+from .serializer import TennisPlayerSerializer
+
+class PlayerListView(APIView):
+    def get(self, request):
+        players = TennisPlayer.objects.all()
+        serializer = TennisPlayerSerializer(players, many=True)
+        return Response({
+            'players': serializer.data
+        })
+
 # Create your views here.
 @api_view(['GET'])
 def getPlayerList(request):
@@ -32,8 +45,9 @@ def getRoutes(request):
         '/api/token/',
         '/api/register/',
         '/api/token/refresh/',
-        '/api/test/'
-        'api/playerlist'
+        '/api/test/',
+        '/api/get/playerlist',
+
     ]
     return Response(routes)
 
