@@ -12,6 +12,7 @@ import AppTopMenu from './components/AppTopMenu';
 import playerTopList from './assets/tennis-players-data.json';
 import TennisPlayerCards from './components/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
+import TennisPlayersList from './components/TennisPlayersList';
 
 function App() {
     return (
@@ -51,6 +52,9 @@ function App() {
                         backgroundImage: `url(./src/stacked-peaks-haikei.svg`,
                     }}
                 >
+                    <div>
+                        <TennisPlayersList />
+                    </div>
                     <div className="flex justify-center">
                         <TennisPlayerCards players={playerTopList.players} />
                     </div>
