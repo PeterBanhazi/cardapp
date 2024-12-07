@@ -10,31 +10,36 @@ from .models import CustomTennisPlayer
 
 #Default player serialisers
 
-class TennisPlayerAbilitiesSerializer(serializers.Serializer):
-    serve = serializers.IntegerField()
-    forehand = serializers.IntegerField()
-    backhand = serializers.IntegerField()
-    volley = serializers.IntegerField()
-    stamina = serializers.IntegerField()
-    agility = serializers.IntegerField()
-
 class TennisPlayerSerializer(serializers.ModelSerializer):
-    abilities = serializers.SerializerMethodField()
-    avatarUrl = serializers.CharField(source='avatar_url')
-
     class Meta:
         model = TennisPlayer
-        fields = ['name', 'avatarUrl', 'abilities']
+        fields = ['id', 'user', 'name', 'avatar_url', 'serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility']
 
-    def get_abilities(self, obj):
-        return {
-            'serve': obj.serve,
-            'forehand': obj.forehand,
-            'backhand': obj.backhand,
-            'volley': obj.volley,
-            'stamina': obj.stamina,
-            'agility': obj.agility
-        }
+# class TennisPlayerAbilitiesSerializer(serializers.Serializer):
+#     serve = serializers.IntegerField()
+#     forehand = serializers.IntegerField()
+#     backhand = serializers.IntegerField()
+#     volley = serializers.IntegerField()
+#     stamina = serializers.IntegerField()
+#     agility = serializers.IntegerField()
+
+# class TennisPlayerSerializer(serializers.ModelSerializer):
+#     abilities = serializers.SerializerMethodField()
+#     avatarUrl = serializers.CharField(source='avatar_url')
+
+#     class Meta:
+#         model = TennisPlayer
+#         fields = ['id','name', 'avatarUrl', 'abilities']
+
+#     def get_abilities(self, obj):
+#         return {
+#             'serve': obj.serve,
+#             'forehand': obj.forehand,
+#             'backhand': obj.backhand,
+#             'volley': obj.volley,
+#             'stamina': obj.stamina,
+#             'agility': obj.agility
+#         }
 
 # Usermade custom player serializer
 

@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 import os
 
-from api.models import TennisPlayer
+from api.models import *
 
 class Command(BaseCommand):
     help = 'Import tennis players from JSON file'
@@ -23,6 +23,8 @@ class Command(BaseCommand):
             # Import new players
             for player_data in data['players']:
                 TennisPlayer.objects.create(
+                    id=player_data['id'],
+                    user=player_data['user'],
                     name=player_data['name'],
                     avatar_url=player_data['avatarUrl'],
                     serve=player_data['abilities']['serve'],

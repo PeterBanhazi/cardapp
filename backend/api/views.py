@@ -21,6 +21,15 @@ from rest_framework import viewsets
 from .models import CustomTennisPlayer
 from .serializer import CustomTennisPlayerSerializer
 
+class AddTennisPlayerView(APIView):
+    def post(self, request):
+        serializer = TennisPlayerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()  # The custom `save` handles the ID auto-increment
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PlayerListView(APIView):
     def get(self, request):
         players = TennisPlayer.objects.all()

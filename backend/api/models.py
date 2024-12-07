@@ -9,7 +9,9 @@ class TennisPlayer(models.Model):
     """
     Model representing a professional tennis player with their abilities
     """
-    name = models.CharField(max_length=100, unique=True)
+    id = models.IntegerField(primary_key=True, unique=True, editable=False)
+    user = models.CharField(User, max_length=255,null=True, blank=True)
+    name = models.CharField(max_length=20, unique=True)
     avatar_url = models.URLField(blank=True, null=True)
     
     # Abilities with integer rating (0-100)
@@ -22,10 +24,36 @@ class TennisPlayer(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        # Custom auto-increment logic
+        if not self.id:
+            max_id = TennisPlayer.objects.aggregate(models.Max('id'))['id__max']
+            self.id = (max_id + 1) if max_id and max_id >= 10 else 11
+        super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ['-serve']  # Optional: default ordering
+        ordering = ['id']  # Optional: default ordering
         verbose_name_plural = "Tennis Players"
+
+
+#Users options and details
+class UserProperties(models.Model):
+
+    user_name = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    isonline = models.BooleanField(blank=True, null=True)
+    friends = models.CharField(max_length=250)
+    customplayers = models.CharField(max_length=250)
+    favoriteplayers = models.CharField(max_length=250)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['-user_name']  # Optional: default ordering
+        verbose_name_plural = "Registered user"
+
+
 
 #User created players
 

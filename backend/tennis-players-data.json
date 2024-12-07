@@ -1,6 +1,8 @@
 {
   "players": [
     {
+      "id": 1,
+      "user": "admin",
       "name": "Novak Djokovic",
       "avatarUrl": "./src/assets/djokovic_head.png",
       "abilities": {
@@ -13,6 +15,8 @@
       }
     },
     {
+      "id": 2,
+      "user": "admin",
       "name": "Carlos Alcaraz",
       "avatarUrl": "./src/assets/alcaraz_head.png",
       "abilities": {
@@ -25,6 +29,8 @@
       }
     },
     {
+      "id": 3,
+      "user": "admin",
       "name": "Jannik Sinner",
       "avatarUrl": "./src/assets/sinner_head.png",
       "abilities": {
@@ -37,6 +43,8 @@
       }
     },
     {
+      "id": 4,
+      "user": "admin",
       "name": "Daniil Medvedev",
       "avatarUrl": "./src/assets/medvedev_head.png",
       "abilities": {
@@ -49,6 +57,8 @@
       }
     },
     {
+      "id": 5,
+      "user": "admin",
       "name": "Andrey Rublev",
       "avatarUrl": "./src/assets/rublev_head.png",
       "abilities": {
@@ -61,6 +71,8 @@
       }
     },
     {
+      "id": 6,
+      "user": "admin",
       "name": "Alexander Zverev",
       "avatarUrl": "./src/assets/zverev_head.png",
       "abilities": {
@@ -73,6 +85,8 @@
       }
     },
     {
+      "id": 7,
+      "user": "admin",
       "name": "Holger Rune",
       "avatarUrl": "./src/assets/rune_head.png",
       "abilities": {
@@ -85,6 +99,8 @@
       }
     },
     {
+      "id": 8,
+      "user": "admin",
       "name": "Hubert Hurkacz",
       "avatarUrl": "./src/assets/hurkacz_head.png",
       "abilities": {
@@ -97,6 +113,8 @@
       }
     },
     {
+      "id": 9,
+      "user": "admin",
       "name": "Alex de Minaur",
       "avatarUrl": "./src/assets/de-minaur_head.png",
       "abilities": {
@@ -109,6 +127,8 @@
       }
     },
     {
+      "id": 10,
+      "user": "admin",
       "name": "Stefanos Tsitsipas",
       "avatarUrl": "./src/assets/tsitsipas_head.png",
       "abilities": {

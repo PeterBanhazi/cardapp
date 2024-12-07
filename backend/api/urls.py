@@ -3,6 +3,7 @@ from . import views
 from .views import PlayerListView
 from rest_framework.routers import DefaultRouter
 from .views import CustomTennisPlayerViewSet
+from .views import AddTennisPlayerView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -18,6 +19,7 @@ urlpatterns = [
     path('test/', views.testEndPoint, name='test'),
     path('', views.getRoutes),
     path('get/playerlist/', PlayerListView.as_view(), name='player-list'),
-    path('', include(router.urls)),    
+    path('', include(router.urls)),
+    path('add-player/', AddTennisPlayerView.as_view(), name='add-player'),
 ]
 

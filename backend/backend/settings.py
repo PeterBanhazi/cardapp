@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,6 +46,14 @@ INSTALLED_APPS = [
     'corsheaders',
     'api',
 ]
+
+#assync channels
+ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS = { 
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }   
+}
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
