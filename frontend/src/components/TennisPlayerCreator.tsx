@@ -111,7 +111,7 @@ const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
             const creator = user()?.username;
 
             const playerData = {
-                username: creator,
+                user: creator,
                 name: playerName,
                 avatarUrl: selectedAvatar.src,
                 serve: abilities.serve,
@@ -121,10 +121,9 @@ const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
                 stamina: abilities.stamina,
                 agility: abilities.agility,
             };
+
             console.log(playerData);
-            const response = await useAxios().post('post/createplayer/', {
-                playerData,
-            });
+            const response = await useAxios().post('add-player/', playerData);
 
             if (action === 'play') {
                 // Implement navigation or game start logic

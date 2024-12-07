@@ -54,15 +54,15 @@ function App() {
                     }}
                 >
                     <div>
-                        <TennisPlayersList />
+                        <TennisPlayersList />{' '}
                     </div>
                     <div className="flex justify-center">
                         <TennisPlayerCards players={playerTopList.players} />
                     </div>
                     <PlayerOneCard players={playerTopList.players} />
-                    {/* <TennisPlayerCreator
+                    <TennisPlayerCreator
                         onClose={() => console.log('created welll')}
-                    /> */}
+                    />
                 </div>
             </>
         </>

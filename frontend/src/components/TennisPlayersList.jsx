@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
+import { Button } from 'flowbite-react';
+
+import { useAuthStore } from '../store/auth';
 
 const PlayerCard = ({ player }) => {
-    const { name, avatarUrl, abilities } = player;
+    const { name, avatar_url } = player;
 
+    const abilities = {
+        serve: player.serve,
+        forehand: player.forehand,
+        backhand: player.backhand,
+        volley: player.volley,
+        stamina: player.stamina,
+        agility: player.agility,
+    };
+    const handleFavoritClick = () => {
+        return;
+    };
+
+    const handlePlayClick = () => {
+        return;
+    };
     return (
         <div className="bg-white shadow-md rounded-lg p-4 m-2 w-64">
             <div className="flex items-center mb-4">
                 <img
-                    src={avatarUrl}
+                    src={avatar_url}
                     alt={`${name} avatar`}
                     className="w-16 h-16 rounded-full mr-4"
                 />
@@ -27,6 +45,14 @@ const PlayerCard = ({ player }) => {
                         <p className="text-xs text-right">{value}</p>
                     </div>
                 ))}
+            </div>
+            <div className="grid grid-cols-2">
+                <Button id="Favorite" onClick={handleFavoritClick}>
+                    Favorite
+                </Button>
+                <Button id="Play" onClick={handlePlayClick}>
+                    Play
+                </Button>
             </div>
         </div>
     );
