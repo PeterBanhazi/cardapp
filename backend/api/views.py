@@ -12,9 +12,14 @@ from rest_framework.decorators import api_view, permission_classes
 import json
 
 from rest_framework.views import APIView
-from rest_framework.response import Response
+
 from .models import TennisPlayer
 from .serializer import TennisPlayerSerializer
+
+from rest_framework import viewsets
+
+from .models import CustomTennisPlayer
+from .serializer import CustomTennisPlayerSerializer
 
 class PlayerListView(APIView):
     def get(self, request):
@@ -24,6 +29,41 @@ class PlayerListView(APIView):
             'players': serializer.data
         })
 
+#User made Custom players: 
+        
+
+
+class CustomTennisPlayerViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for creating and managing tennis players
+    
+    """
+    queryset = CustomTennisPlayer.objects.all()
+    serializer_class = CustomTennisPlayerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request):
+        """
+        Custom create method to handle tennis player creation
+        """
+        serializer = self.get_serializer(data=request.data)
+        
+        if serializer.is_valid():
+            # Save the tennis player
+            tennis_player = serializer.save()
+            return Response(
+                {
+                    'message': 'Tennis player created successfully', 
+                    'player_id': tennis_player.id
+                }, 
+                status=status.HTTP_201_CREATED
+            )
+        
+        # Return validation errors if any
+        return Response(
+            serializer.errors, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
 # Create your views here.
 
 # @api_view(['GET'])
@@ -48,6 +88,7 @@ def getRoutes(request):
         '/api/token/refresh/',
         '/api/test/',
         '/api/get/playerlist',
+        '/api/post/createplayer',
 
     ]
     return Response(routes)

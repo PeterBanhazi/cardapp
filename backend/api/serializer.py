@@ -6,8 +6,9 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import TennisPlayer
+from .models import CustomTennisPlayer
 
-#playerlist serialisers
+#Default player serialisers
 
 class TennisPlayerAbilitiesSerializer(serializers.Serializer):
     serve = serializers.IntegerField()
@@ -35,6 +36,64 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
             'agility': obj.agility
         }
 
+# Usermade custom player serializer
+
+class CustomTennisPlayerSerializer(serializers.ModelSerializer):
+    print("here")
+    username = serializers.CharField(write_only=True)
+    print("here")
+
+    class Meta:
+        model = CustomTennisPlayer
+        fields = [
+            'username', 'name', 'avatar_url', 
+            'serve', 'forehand', 'backhand', 
+            'volley', 'stamina', 'agility'
+        ]
+
+    def validate_name(self, value):
+        """
+        Validate that player name is not more than 20 characters
+        """
+        if len(value) > 20:
+            raise serializers.ValidationError("Player name must be 20 characters or less")
+        return value
+
+    def validate(self, data):
+        """
+        Custom validation to check total ability points and username
+        """
+        # Remove username from data as it's not a model field
+        username = data.pop('username')
+        
+        # Get user
+        try:
+            user = User.objects.get(username=username)
+            
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid username")
+
+        # Validate total points
+        total_points = sum([
+            data['serve'], data['forehand'], data['backhand'], 
+            data['volley'], data['stamina'], data['agility']
+        ])
+
+        if total_points > 550:
+            raise serializers.ValidationError("Total ability points cannot exceed 550")
+
+        # Attach user to the validated data
+        data['user'] = user
+        return data
+
+    def create(self, validated_data):
+        """
+        Create and return a new TennisPlayer instance
+        """
+        # Remove user from validated_data before creating the player
+        user = validated_data.pop('user')
+        tennis_player = CustomTennisPlayer.objects.create(user=user, **validated_data)
+        return tennis_player
 
 
 #user auth classes
