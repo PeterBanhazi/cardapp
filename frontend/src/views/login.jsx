@@ -40,12 +40,13 @@ const Login = () => {
                 show={openModal}
                 size="md"
                 popup
+                position="center"
                 dismissible
                 onClose={() => {
                     setOpenModal(false);
                     navigate('/');
                 }}
-                className="bg-opacity-75 py-14"
+
                 // initialFocus={usernameInputRef}
             >
                 <Modal.Header />

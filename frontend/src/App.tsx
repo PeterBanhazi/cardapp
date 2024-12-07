@@ -13,6 +13,7 @@ import playerTopList from './assets/tennis-players-data.json';
 import TennisPlayerCards from './components/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
 import TennisPlayersList from './components/TennisPlayersList';
+import TennisPlayerCreator from './components/TennisPlayerCreator';
 
 function App() {
     return (
@@ -59,6 +60,9 @@ function App() {
                         <TennisPlayerCards players={playerTopList.players} />
                     </div>
                     <PlayerOneCard players={playerTopList.players} />
+                    {/* <TennisPlayerCreator
+                        onClose={() => console.log('created welll')}
+                    /> */}
                 </div>
             </>
         </>

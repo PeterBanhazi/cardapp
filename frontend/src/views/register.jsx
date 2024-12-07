@@ -48,7 +48,7 @@ function Register() {
                     setOpenModal(false);
                     navigate('/');
                 }}
-                className="bg-opacity-75 py-14"
+                className="bg-opacity-75"
                 // initialFocus={emailInputRef}
             >
                 <Modal.Header />
