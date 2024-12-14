@@ -14,8 +14,17 @@ import TennisPlayerCards from './components/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
 import TennisPlayersList from './components/TennisPlayersList';
 import TennisPlayerCreator from './components/TennisPlayerCreator';
+import WebSocketChat from './components/wstest';
+import ChatComponent from './components/ChatComponent';
+import { Button } from 'flowbite-react';
+import { useState } from 'react';
 
 function App() {
+    const [isComponentVisible, setIsComponentVisible] = useState(false);
+    const handleClick = () => {
+        setIsComponentVisible(true);
+    };
+
     return (
         <>
             <BrowserRouter>
@@ -60,9 +69,17 @@ function App() {
                         <TennisPlayerCards players={playerTopList.players} />
                     </div>
                     <PlayerOneCard players={playerTopList.players} />
-                    <TennisPlayerCreator
-                        onClose={() => console.log('created welll')}
-                    />
+                    <Button onClick={handleClick}>Create</Button>
+                    {isComponentVisible && (
+                        <TennisPlayerCreator
+                            onClose={() => {
+                                console.log('created well');
+                                setIsComponentVisible(false);
+                            }}
+                        />
+                    )}
+                    {/* <WebSocketChat /> */}
+                    {/* <ChatComponent username="User123" channelId="channel1" /> */}
                 </div>
             </>
         </>
