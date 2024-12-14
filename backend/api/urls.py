@@ -1,7 +1,7 @@
+from rest_framework.routers import DefaultRouter
 from django.urls import path, include
 from . import views
 from .views import PlayerListView
-from rest_framework.routers import DefaultRouter
 from .views import CustomTennisPlayerViewSet
 from .views import AddTennisPlayerView
 

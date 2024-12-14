@@ -26,21 +26,21 @@ admin.site.register(TennisPlayer)
 #         })
 #     )
 
-@admin.register(CustomTennisPlayer)
-class CustomTennisPlayerAdmin(admin.ModelAdmin):
-    """
-    Admin configuration for TennisPlayer model
-    """
-    list_display = ('user', 'created_at','name', 'serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility')
-    search_fields = ('name','user', 'created_at')
-    list_filter = ('serve', 'forehand', 'backhand')
+# @admin.register(CustomTennisPlayer)
+# class CustomTennisPlayerAdmin(admin.ModelAdmin):
+#     """
+#     Admin configuration for TennisPlayer model
+#     """
+#     list_display = ('user', 'created_at','name', 'serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility')
+#     search_fields = ('name','user', 'created_at')
+#     list_filter = ('serve', 'forehand', 'backhand')
 
-    # Optional: customize how the model is displayed in admin
-    fieldsets = (
-        ('CustomPlayer Information', {
-            'fields': ('user', 'created_at','name', 'avatar_url')
-        }),
-        ('Custom Player Abilities', {
-            'fields': ('serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility')
-        })
-    )
+#     # Optional: customize how the model is displayed in admin
+#     fieldsets = (
+#         ('CustomPlayer Information', {
+#             'fields': ('user', 'created_at','name', 'avatar_url')
+#         }),
+#         ('Custom Player Abilities', {
+#             'fields': ('serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility')
+#         })
+#     )
