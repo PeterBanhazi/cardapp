@@ -18,16 +18,13 @@ from .serializer import TennisPlayerSerializer
 
 from rest_framework import viewsets
 
-from .models import CustomTennisPlayer
-from .serializer import CustomTennisPlayerSerializer
-
-class AddTennisPlayerView(APIView):
-    def post(self, request):
-        serializer = TennisPlayerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()  # The custom `save` handles the ID auto-increment
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class AddTennisPlayerView(APIView):
+#     def post(self, request):
+#         serializer = TennisPlayerSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()  # The custom `save` handles the ID auto-increment
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlayerListView(APIView):
@@ -42,20 +39,20 @@ class PlayerListView(APIView):
         
 
 
-class CustomTennisPlayerViewSet(viewsets.ModelViewSet):
+class AddTennisPlayerView(APIView):
     """
     ViewSet for creating and managing tennis players
     
     """
-    queryset = CustomTennisPlayer.objects.all()
-    serializer_class = CustomTennisPlayerSerializer
+    # queryset = TennisPlayer.objects.all()
+    serializer_class = TennisPlayerSerializer
     permission_classes = [IsAuthenticated]
 
-    def create(self, request):
+    def post(self, request):
         """
         Custom create method to handle tennis player creation
         """
-        serializer = self.get_serializer(data=request.data)
+        serializer = TennisPlayerSerializer(data=request.data)
         
         if serializer.is_valid():
             # Save the tennis player

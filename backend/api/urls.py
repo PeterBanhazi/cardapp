@@ -2,7 +2,6 @@ from rest_framework.routers import DefaultRouter
 from django.urls import path, include
 from . import views
 from .views import PlayerListView
-from .views import CustomTennisPlayerViewSet
 from .views import AddTennisPlayerView
 
 from rest_framework_simplejwt.views import (
@@ -10,7 +9,7 @@ from rest_framework_simplejwt.views import (
 )
 
 router = DefaultRouter()
-router.register(r'post/createplayer', CustomTennisPlayerViewSet, basename='tennis-player')
+# router.register(r'post/createplayer', CustomTennisPlayerViewSet, basename='tennis-player')
 
 urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

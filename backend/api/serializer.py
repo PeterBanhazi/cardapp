@@ -6,52 +6,20 @@ from rest_framework.validators import UniqueValidator
 
 
 from .models import TennisPlayer
-from .models import CustomTennisPlayer
+
 
 #Default player serialisers
 
-class TennisPlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TennisPlayer
-        fields = ['id', 'user', 'name', 'avatar_url', 'serve', 'forehand', 'backhand', 'volley', 'stamina', 'agility']
-
-# class TennisPlayerAbilitiesSerializer(serializers.Serializer):
-#     serve = serializers.IntegerField()
-#     forehand = serializers.IntegerField()
-#     backhand = serializers.IntegerField()
-#     volley = serializers.IntegerField()
-#     stamina = serializers.IntegerField()
-#     agility = serializers.IntegerField()
-
-# class TennisPlayerSerializer(serializers.ModelSerializer):
-#     abilities = serializers.SerializerMethodField()
-#     avatarUrl = serializers.CharField(source='avatar_url')
-
-#     class Meta:
-#         model = TennisPlayer
-#         fields = ['id','name', 'avatarUrl', 'abilities']
-
-#     def get_abilities(self, obj):
-#         return {
-#             'serve': obj.serve,
-#             'forehand': obj.forehand,
-#             'backhand': obj.backhand,
-#             'volley': obj.volley,
-#             'stamina': obj.stamina,
-#             'agility': obj.agility
-#         }
-
 # Usermade custom player serializer
 
-class CustomTennisPlayerSerializer(serializers.ModelSerializer):
-    print("here")
-    username = serializers.CharField(write_only=True)
-    print("here")
-
+class TennisPlayerSerializer(serializers.ModelSerializer):
+ 
+    # username = serializers.CharField(write_only=True)
+ 
     class Meta:
-        model = CustomTennisPlayer
+        model = TennisPlayer
         fields = [
-            'username', 'name', 'avatar_url', 
+            'id','username', 'name', 'avatar_url', 
             'serve', 'forehand', 'backhand', 
             'volley', 'stamina', 'agility'
         ]
@@ -69,14 +37,21 @@ class CustomTennisPlayerSerializer(serializers.ModelSerializer):
         Custom validation to check total ability points and username
         """
         # Remove username from data as it's not a model field
-        username = data.pop('username')
+        # username = data.pop('username')
         
         # Get user
-        try:
-            user = User.objects.get(username=username)
+
+        
+        # try:
+        #     usernametest= data['username']
+        #     user = User.objects.get(username=username)
             
-        except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid username")
+        #     self.get_token(username)
+        #     token['username'] = user.username
+            
+            
+        # except User.DoesNotExist:
+        #     raise serializers.ValidationError("Invalid username")
 
         # Validate total points
         total_points = sum([
@@ -88,7 +63,7 @@ class CustomTennisPlayerSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Total ability points cannot exceed 550")
 
         # Attach user to the validated data
-        data['user'] = user
+        # data['username'] = user
         return data
 
     def create(self, validated_data):
@@ -96,8 +71,8 @@ class CustomTennisPlayerSerializer(serializers.ModelSerializer):
         Create and return a new TennisPlayer instance
         """
         # Remove user from validated_data before creating the player
-        user = validated_data.pop('user')
-        tennis_player = CustomTennisPlayer.objects.create(user=user, **validated_data)
+        # user = validated_data.pop('user')
+        tennis_player = TennisPlayer.objects.create( **validated_data)
         return tennis_player
 
 
