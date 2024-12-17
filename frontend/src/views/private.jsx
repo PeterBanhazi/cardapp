@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
+import UserPropertiesComponent from '../components/UserPropertiesComponent';
 
 const Private = () => {
     const [res, setRes] = useState('');
@@ -28,15 +29,17 @@ const Private = () => {
         }
     };
     return (
-        <section>
-            <h1>Private</h1>
-            <p>{res}</p>
-            <form method="POST" onSubmit={handleSubmit}>
-                <input type="text" placeholder="Enter Text" />
-                <button type="submit">Submit</button>
-            </form>
-            {posRes && <p>{posRes}</p>}
-        </section>
+        <>
+            <section>
+                <h1>Private</h1>
+                <p>{res}</p>
+                <form method="POST" onSubmit={handleSubmit}>
+                    <input type="text" placeholder="Enter Text" />
+                    <button type="submit">Submit</button>
+                </form>
+                {posRes && <p>{posRes}</p>}
+            </section>
+        </>
     );
 };
 
