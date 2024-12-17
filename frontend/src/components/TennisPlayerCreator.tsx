@@ -111,9 +111,9 @@ const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
             const creator = user()?.username;
 
             const playerData = {
-                user: creator,
+                username: creator,
                 name: playerName,
-                avatarUrl: selectedAvatar.src,
+                avatar_url: selectedAvatar.src,
                 serve: abilities.serve,
                 forehand: abilities.forehand,
                 backhand: abilities.backhand,
