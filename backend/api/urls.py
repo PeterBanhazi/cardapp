@@ -3,6 +3,7 @@ from django.urls import path, include
 from . import views
 from .views import PlayerListView
 from .views import AddTennisPlayerView
+from .views import UserPropertiesView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -20,5 +21,6 @@ urlpatterns = [
     path('get/playerlist/', PlayerListView.as_view(), name='player-list'),
     path('', include(router.urls)),
     path('add-player/', AddTennisPlayerView.as_view(), name='add-player'),
+    path('userproperties/', UserPropertiesView.as_view(), name='user_properties_api'),
 ]
 

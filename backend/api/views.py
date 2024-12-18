@@ -6,17 +6,24 @@ from django.http import JsonResponse
 from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
+from rest_framework.generics import RetrieveUpdateAPIView
 from django.contrib.auth.models import User
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-import json
+from django.contrib.auth.decorators import login_required
 
+import json
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 from .models import TennisPlayer
-from .serializer import TennisPlayerSerializer
+from .models import UserProperties
 
-from rest_framework import viewsets
+from .serializer import TennisPlayerSerializer
+from .serializer import UserPropertiesSerializer
+
+
 
 # class AddTennisPlayerView(APIView):
 #     def post(self, request):
@@ -35,6 +42,16 @@ class PlayerListView(APIView):
             'players': serializer.data
         })
 
+class UserPropertiesView(RetrieveUpdateAPIView):
+    serializer_class = UserPropertiesSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """Fetch the UserProperties for the current logged-in user."""
+        user_properties, created = UserProperties.objects.get_or_create(username=self.request.user)
+        return user_properties
+
+        
 #User made Custom players: 
         
 
@@ -44,9 +61,10 @@ class AddTennisPlayerView(APIView):
     ViewSet for creating and managing tennis players
     
     """
+    permission_classes = [IsAuthenticated]
     # queryset = TennisPlayer.objects.all()
     serializer_class = TennisPlayerSerializer
-    permission_classes = [IsAuthenticated]
+
 
     def post(self, request):
         """

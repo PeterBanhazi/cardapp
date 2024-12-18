@@ -70,15 +70,16 @@ class UserProperties(models.Model):
     username = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     isonline = models.BooleanField(blank=True, null=True)
     friends = models.CharField(max_length=250)
+    rankpoints = models.IntegerField(null=True, blank=True)
     customplayers = models.CharField(max_length=250)
     favoriteplayers = models.CharField(max_length=250)
 
     def __str__(self):
-        return self.name
+        return f"{self.rankpoints} (Created by {self.username})"
     
     class Meta:
         ordering = ['-username']  # Optional: default ordering
-        verbose_name_plural = "Registered user"
+        verbose_name_plural = "UserProperties"
 
 
 

@@ -6,9 +6,15 @@ from rest_framework.validators import UniqueValidator
 
 
 from .models import TennisPlayer
+from .models import UserProperties
 
 
 #Default player serialisers
+
+class UserPropertiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProperties
+        fields = ['username','isonline','rankpoints','friends', 'customplayers', 'favoriteplayers']
 
 # Usermade custom player serializer
 
