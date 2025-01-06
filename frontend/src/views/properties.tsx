@@ -1,77 +1,166 @@
-import React, { useEffect, useState, FormEvent } from 'react';
-import { AxiosInstance, AxiosError } from '../utils/axios';
-import UserPropertiesComponent from '../components/UserPropertiesComponent';
+import { useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
 
-const Private: React.FC = () => {
-    // Explicitly type the state variables
-    const [res, setRes] = useState<string>('');
-    const [posRes, setPostRes] = useState<string>('');
+interface UserProperties {
+    isonline: boolean;
+    friends: string;
+    customplayers: string;
+    favoriteplayers: string;
+}
 
-    // Typed axios instance from custom hook
-    const api: AxiosInstance = useAxios();
+const Properties = () => {
+    const [userProperties, setUserProperties] = useState<UserProperties>({
+        isonline: false,
+        friends: '',
+        customplayers: '',
+        favoriteplayers: '',
+    });
 
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const api = useAxios();
+    const fetchUserProperties = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response: any = await api.get('userproperties/');
+            console.log(response.data);
+            setUserProperties(response.data);
+        } catch (err) {
+            setError('Failed to fetch user properties.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Update User Properties
+    const updateUserProperties = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            setSuccessMessage(null);
+
+            const response = await api.post('userproperties/', userProperties);
+
+            setSuccessMessage('User properties updated successfully.');
+        } catch (err) {
+            setError('Failed to update user properties.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch user properties on component mount
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await api.get<{ response: string }>('/test/');
-                setRes(response.data.response);
-            } catch (error) {
-                // Type-safe error handling
-                if (error instanceof AxiosError) {
-                    setPostRes(error.response?.data || 'An error occurred');
-                } else {
-                    setPostRes('An unexpected error occurred');
-                }
-            }
-        };
-        fetchData();
-    }, [api]);
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        // Type assertion for the form target
-        const target = e.target as HTMLFormElement;
-        const inputElement = target[0] as HTMLInputElement;
+        // if (!jwtToken) {
+        //     setError('No JWT token found. Please log in.');
+        //     return;
+        // }
 
         try {
-            const response = await api.post<{ response: string }>('/test/', {
-                text: inputElement.value,
-            });
-            setPostRes(response.data.response);
-        } catch (error) {
-            // Type-safe error handling
-            if (error instanceof AxiosError) {
-                setPostRes(error.response?.data || 'An error occurred');
-            } else {
-                setPostRes('An unexpected error occurred');
-            }
+            //     jwtDecode(jwtToken); // Verify token validity
+            fetchUserProperties();
+        } catch {
+            setError('Invalid token. Please log in again.');
         }
+    }, []);
+
+    // Handle input changes
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value, type, checked } = e.target;
+
+        setUserProperties((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
     };
 
     return (
         <>
-            <section>
-                <h1>Private</h1>
-                <p>{res}</p>
-                <form method="POST" onSubmit={handleSubmit}>
-                    <input type="text" placeholder="Enter Text" />
-                    <button type="submit">Submit</button>
-                </form>
-                {posRes && <p>{posRes}</p>}
-            </section>
-            <div>
-                <UserPropertiesComponent />
+            <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+                <h1 className="text-2xl font-bold mb-4">User Properties</h1>
+
+                {loading && <p className="text-gray-500">Loading...</p>}
+                {error && <p className="text-red-500">{error}</p>}
+                {successMessage && (
+                    <p className="text-green-500">{successMessage}</p>
+                )}
+
+                {/* Form */}
+                <div className="space-y-4">
+                    {/* Online Status */}
+                    <div className="flex items-center">
+                        <label className="mr-2 font-semibold">Is Online:</label>
+                        <input
+                            type="checkbox"
+                            name="isonline"
+                            checked={userProperties.isonline}
+                            onChange={handleChange}
+                            className="h-5 w-5"
+                        />
+                    </div>
+
+                    {/* Friends */}
+                    <div>
+                        <label className="block font-semibold mb-1">
+                            Friends:
+                        </label>
+                        <input
+                            type="text"
+                            name="friends"
+                            value={userProperties.friends}
+                            onChange={handleChange}
+                            placeholder="Enter friends (comma-separated)"
+                            className="w-full border rounded p-2"
+                        />
+                    </div>
+
+                    {/* Custom Players */}
+                    <div>
+                        <label className="block font-semibold mb-1">
+                            Custom Players:
+                        </label>
+                        <input
+                            type="text"
+                            name="customplayers"
+                            value={userProperties.customplayers}
+                            onChange={handleChange}
+                            placeholder="Enter custom players"
+                            className="w-full border rounded p-2"
+                        />
+                    </div>
+
+                    {/* Favorite Players */}
+                    <div>
+                        <label className="block font-semibold mb-1">
+                            Favorite Players:
+                        </label>
+                        <input
+                            type="text"
+                            name="favoriteplayers"
+                            value={userProperties.favoriteplayers}
+                            onChange={handleChange}
+                            placeholder="Enter favorite players"
+                            className="w-full border rounded p-2"
+                        />
+                    </div>
+
+                    {/* Submit Button */}
+                    <button
+                        onClick={updateUserProperties}
+                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+                        disabled={loading}
+                    >
+                        {loading ? 'Updating...' : 'Save Changes'}
+                    </button>
+                </div>
             </div>
         </>
     );
 };
 
-export default Private;
-
-// Key TypeScript Improvements:
-// 1. Added type-safe error handling with AxiosError
-// 2. Typed API response structures
-// 3. Improved type safety for axios interactions
-// 4. Explicit error message handling
+export default Properties;

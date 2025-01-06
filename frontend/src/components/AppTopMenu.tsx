@@ -18,7 +18,7 @@ const user = {
 };
 const navigation = [
     { name: 'Lobby', href: '#', current: true },
-    { name: 'Friends', href: '#', current: false },
+    { name: 'Settings', href: '/userproperties', current: false },
     { name: 'Players', href: '#', current: false },
     { name: 'Reports', href: '#', current: false },
 ];
@@ -44,7 +44,7 @@ export default function AppTopMenu() {
         ```
       */}
 
-            <div className="min-h-full">
+            <div className="sticky top-0 z-50">
                 <Disclosure as="nav" className="bg-orange-700">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
@@ -70,7 +70,7 @@ export default function AppTopMenu() {
                                                 className={classNames(
                                                     item.current
                                                         ? 'bg-orange-800 text-white'
-                                                        : 'text-orange-100 hover:bg-orange-500 hover:text-amber-100',
+                                                        : 'text-orange-100 hover:bg-orange-500 hover:text-amber-100 focus:bg-orange-500',
                                                     'rounded-md px-3 py-2 text-sm font-medium'
                                                 )}
                                             >

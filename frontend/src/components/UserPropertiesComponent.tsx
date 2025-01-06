@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import useAxios from '../utils/useAxios';
 import jwtDecode from 'jwt-decode';
 
 interface UserProperties {
@@ -22,7 +22,7 @@ const UserPropertiesComponent: React.FC = () => {
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const jwtToken = localStorage.getItem('token');
-
+    const api = useAxios();
     // Fetch User Properties
     const fetchUserProperties = async () => {
         try {

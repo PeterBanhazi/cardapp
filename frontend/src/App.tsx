@@ -18,6 +18,8 @@ import WebSocketChat from './components/wstest';
 import ChatComponent from './components/ChatComponent';
 import { Button } from 'flowbite-react';
 import { useState } from 'react';
+import Properties from './views/properties';
+import TopList from './components/Toplist';
 
 function App() {
     const [isComponentVisible, setIsComponentVisible] = useState(false);
@@ -36,6 +38,14 @@ function App() {
                             element={
                                 <PrivateRoute>
                                     <Private />
+                                </PrivateRoute>
+                            }
+                        />
+                        <Route
+                            path="/userproperties"
+                            element={
+                                <PrivateRoute>
+                                    <Properties />
                                 </PrivateRoute>
                             }
                         />
@@ -62,6 +72,7 @@ function App() {
                         backgroundImage: `url(./src/stacked-peaks-haikei.svg`,
                     }}
                 >
+                    <TopList />
                     <div>
                         <TennisPlayersList />{' '}
                     </div>
