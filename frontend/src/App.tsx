@@ -20,6 +20,7 @@ import { Button } from 'flowbite-react';
 import { useState } from 'react';
 import Properties from './views/properties';
 import TopList from './components/Toplist';
+import Navbar from './components/Navbar';
 
 function App() {
     const [isComponentVisible, setIsComponentVisible] = useState(false);
@@ -29,69 +30,74 @@ function App() {
 
     return (
         <>
-            <BrowserRouter>
-                <MainWrapper>
-                    <AppTopMenu />
-                    <Routes>
-                        <Route
-                            path="/private"
-                            element={
-                                <PrivateRoute>
-                                    <Private />
-                                </PrivateRoute>
-                            }
-                        />
-                        <Route
-                            path="/userproperties"
-                            element={
-                                <PrivateRoute>
-                                    <Properties />
-                                </PrivateRoute>
-                            }
-                        />
-                        <Route path="/" element={<Home isVisible={false} />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route
-                            path="/logout"
-                            element={<Logout isVisible={false} />}
-                        />
-                        <Route path="*" element={<Navigate to="/" />} />
-                        {/* <Route
+            <div className="bg-slate-100">
+                {/* <div
+                className="bg-no-repeat bg-cover min-h-screen"
+                style={{
+                    backgroundImage: `url(./src/stacked-peaks-haikei.svg`,
+                }}
+            > */}
+                <BrowserRouter>
+                    <MainWrapper>
+                        <Navbar />
+                        <AppTopMenu />
+                        <Routes>
+                            <Route
+                                path="/private"
+                                element={
+                                    <PrivateRoute>
+                                        <Private />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/userproperties"
+                                element={
+                                    <PrivateRoute>
+                                        <Properties />
+                                    </PrivateRoute>
+                                }
+                            />
+                            <Route
+                                path="/"
+                                element={<Home isVisible={false} />}
+                            />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route
+                                path="/logout"
+                                element={<Logout isVisible={false} />}
+                            />
+                            <Route path="*" element={<Navigate to="/" />} />
+                            {/* <Route
                             path="*"
                             element={<p>There's nothing here: 404!</p>}
                         /> */}
-                        {/* <Route path="*" element={<NoMatch />} /> */}
-                    </Routes>
-                </MainWrapper>
-            </BrowserRouter>
+                            {/* <Route path="*" element={<NoMatch />} /> */}
+                        </Routes>
+                    </MainWrapper>
+                </BrowserRouter>
+            </div>
             <>
-                <div
-                    className="bg-no-repeat bg-cover min-h-screen"
-                    style={{
-                        backgroundImage: `url(./src/stacked-peaks-haikei.svg`,
-                    }}
-                >
-                    <TopList />
-                    <div>
-                        <TennisPlayersList />{' '}
-                    </div>
-                    <div className="flex justify-center">
-                        <TennisPlayerCards players={playerTopList.players} />
-                    </div>
-                    <PlayerOneCard players={playerTopList.players} />
-                    <Button onClick={handleClick}>Create</Button>
-                    {isComponentVisible && (
-                        <TennisPlayerCreator
-                            onClose={() => {
-                                console.log('created well');
-                                setIsComponentVisible(false);
-                            }}
-                        />
-                    )}
-                    {/* <WebSocketChat /> */}
-                    {/* <ChatComponent username="User123" channelId="channel1" /> */}
+                <TopList />
+                <div>
+                    <TennisPlayersList />{' '}
                 </div>
+                <div className="flex justify-center">
+                    <TennisPlayerCards players={playerTopList.players} />
+                </div>
+                <PlayerOneCard players={playerTopList.players} />
+                <Button onClick={handleClick}>Create</Button>
+                {isComponentVisible && (
+                    <TennisPlayerCreator
+                        onClose={() => {
+                            console.log('created well');
+                            setIsComponentVisible(false);
+                        }}
+                    />
+                )}
+                {/* <WebSocketChat /> */}
+                {/* <ChatComponent username="User123" channelId="channel1" /> */}
             </>
         </>
     );

@@ -29,27 +29,35 @@ const Home: React.FC<VisibilityProps> = ({ isVisible = true }) => {
 
 const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
-        <div className="flex gap-3">
-            <h1 className="font-semibold text-2xl">Welcome {user?.username}</h1>
+        <div className="flex gap-3 items-center h-16 text-right">
+            <h1 className="hidden md:block">Welcome {user?.username}</h1>
             <Link to="/private">
-                <Button>Private</Button>
+                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Private
+                </button>
             </Link>
             <Link to="/logout">
-                <Button>Logout</Button>
+                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Logout
+                </button>
             </Link>
         </div>
     );
 };
 
-export const LoggedOutView = ({ title = 'Home' }) => {
+export const LoggedOutView = ({ title = 'Welcome' }) => {
     return (
-        <div className="flex gap-3">
-            <h1>{title}</h1>
+        <div className="flex gap-3 items-center h-16 text-right">
+            <h1 className="hidden md:block">{title}</h1>
             <Link to="/login">
-                <Button>Login</Button>
+                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Login
+                </button>
             </Link>
             <Link to="/register">
-                <Button>Register</Button>
+                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+                    Register
+                </button>
             </Link>
         </div>
     );
