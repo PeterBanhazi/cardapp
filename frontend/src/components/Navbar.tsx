@@ -4,6 +4,12 @@ import { Menu, X } from 'lucide-react';
 import Home from '../views/home';
 import { useDashboardStore } from '../store/store';
 
+export interface DashboardNavItem {
+    id: string;
+    path: string;
+    title: string;
+}
+
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
@@ -15,14 +21,6 @@ const Navbar: React.FC = () => {
     const navRef = useRef<HTMLDivElement>(null);
 
     const { addDashboard } = useDashboardStore();
-
-    const handleLobbyClick = () => {
-        addDashboard({
-            id: 'lobby', // or use uuid() if you want multiple instances
-            path: '/lobby',
-            title: 'Lobby',
-        });
-    };
 
     const handleTestClick = () => {
         addDashboard({
@@ -40,34 +38,38 @@ const Navbar: React.FC = () => {
         });
     };
 
-    const handleTPClick = () => {
-        addDashboard({
-            id: 'TestTP', // or use uuid() if you want multiple instances
-            path: '/TennisPlayersList',
-            title: 'TestTP',
-        });
-    };
+    // const handleXXX = () => {
+    //     addDashboard({
+    //         id: 'XXX', // or use uuid() if you want multiple instances
+    //         path: '/userproperties',
+    //         title: 'XXX',
+    //     });
+    // };
 
-    const handlePrivate = () => {
+    const handleDashboardClick = (link: DashboardNavItem) => {
         addDashboard({
-            id: 'Private', // or use uuid() if you want multiple instances
-            path: '/private',
-            title: 'P_T',
-        });
-    };
-
-    const handleXXX = () => {
-        addDashboard({
-            id: 'XXX', // or use uuid() if you want multiple instances
-            path: '/userproperties',
-            title: 'XXX',
+            id: link.id, // or use uuid() if you want multiple instances
+            path: link.path,
+            title: link.title,
         });
     };
     const navLinks = [
-        { path: '/', label: 'Home' },
-        { path: '/lobby', label: 'Lobby' },
-        { path: '/players', label: 'Players' },
-        { path: '/userproperties', label: 'Reports' },
+        { path: '/', label: 'Home', id: 'home', title: 'Welcome' },
+        { path: '/lobby', label: 'Lobby', id: 'lobby', title: 'Lobby' },
+        { path: '/ranks', label: 'Ranks', id: 'rank', title: 'Ranks' },
+        { path: '/players', label: 'Players', id: 'players', title: 'Players' },
+        {
+            path: '/userproperties',
+            label: 'Options',
+            id: 'options',
+            title: 'Options',
+        },
+        {
+            path: '/add-player',
+            label: 'Create',
+            id: 'create',
+            title: 'Make a new player',
+        },
     ];
 
     useEffect(() => {
@@ -109,26 +111,11 @@ const Navbar: React.FC = () => {
                                 Logo
                             </NavLink>{' '}
                             {/* Your other nav items */}
-                            <NavLink to="/lobby" onClick={handleLobbyClick}>
-                                Lobby
-                            </NavLink>
                             <NavLink to="/testone" onClick={handleTestClick}>
                                 TestOne
                             </NavLink>
                             <NavLink to="/testtwo" onClick={handleTestTwoClick}>
                                 TestTwo
-                            </NavLink>
-                            <NavLink
-                                to="/tennisplayerslist"
-                                onClick={handleTPClick}
-                            >
-                                TestTP
-                            </NavLink>
-                            <NavLink to="/private" onClick={handlePrivate}>
-                                T_P
-                            </NavLink>
-                            <NavLink to="/userproperties" onClick={handleXXX}>
-                                XXX
                             </NavLink>
                         </div>
 
@@ -166,6 +153,9 @@ const Navbar: React.FC = () => {
                       }`
                                         }
                                         onMouseEnter={handleMouseEnter}
+                                        onClick={() => {
+                                            handleDashboardClick(link);
+                                        }}
                                     >
                                         {link.label}
                                     </NavLink>

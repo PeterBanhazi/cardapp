@@ -1,11 +1,12 @@
 import React from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X, RefreshCw } from 'lucide-react';
 
 interface DashboardContainerProps {
     id: string;
     title: string;
     isCollapsed: boolean;
     onToggleCollapse: (id: string) => void;
+    onRefresh: (id: string) => void;
     onClose: (id: string) => void;
     children: React.ReactNode;
 }
@@ -15,6 +16,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     title,
     isCollapsed,
     onToggleCollapse,
+    onRefresh,
     onClose,
     children,
 }) => {
@@ -29,10 +31,17 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                         aria-label={isCollapsed ? 'Expand' : 'Collapse'}
                     >
                         {isCollapsed ? (
-                            <ChevronDown className="w-5 h-5" />
-                        ) : (
                             <ChevronUp className="w-5 h-5" />
+                        ) : (
+                            <ChevronDown className="w-5 h-5" />
                         )}
+                    </button>
+                    <button
+                        onClick={() => onRefresh(id)}
+                        className="p-1 text-gray-500 hover:text-blue-500 transition-colors"
+                        aria-label="Refresh"
+                    >
+                        <RefreshCw className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => onClose(id)}
@@ -46,10 +55,10 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
 
             <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isCollapsed ? 'max-h-0' : 'max-h-fit'
+                    isCollapsed ? 'max-h-0' : 'max-h-screen'
                 }`}
             >
-                <div className="p-1">{children}</div>
+                <div className="p-4">{children}</div>
             </div>
         </div>
     );
