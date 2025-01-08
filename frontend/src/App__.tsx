@@ -1,3 +1,4 @@
+// import './App.css';
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import Home from './views/home';
 import MainWrapper from './layouts/MainWrapper';
@@ -20,60 +21,47 @@ import { useState } from 'react';
 import Properties from './views/properties';
 import TopList from './components/Toplist';
 import Navbar from './components/Navbar';
-import TestOne from './components/TestOne';
-import TestTwo from './components/TestTwo';
-import DashboardManager from './layouts/DashboardManager';
-import Lobby from './components/Lobby';
-import { ListPlayerCards } from './components/ListPlayerCards';
 
-const App: React.FC = () => {
+function App() {
+    const [isComponentVisible, setIsComponentVisible] = useState(false);
+    const handleClick = () => {
+        setIsComponentVisible(true);
+    };
+
     return (
         <>
-            <div>
+            <div className="bg-slate-100">
+                {/* <div
+                className="bg-no-repeat bg-cover min-h-screen"
+                style={{
+                    backgroundImage: `url(./src/stacked-peaks-haikei.svg`,
+                }}
+            > */}
                 <BrowserRouter>
                     <MainWrapper>
                         <Navbar />
-                        {/* <TestOne /> */}
-
-                        <DashboardManager>
-                            <Routes>
-                                <Route
-                                    path="/userproperties"
-                                    element={<Properties />}
-                                />
-                                <Route path="/private" element={<Private />} />
-                                <Route path="/lobby" element={<Lobby />} />
-                                <Route path="/testone" element={<TestOne />} />
-                                <Route path="/testtwo" element={<TestTwo />} />
-                                <Route
-                                    path="/TennisPlayersList"
-                                    element={<TennisPlayersList />}
-                                />
-                            </Routes>
-                        </DashboardManager>
+                        <AppTopMenu />
                         <Routes>
-                            {/* <Route
-                                path="/userproperties"
-                                element={
-                                    <PrivateRoute>
-                                        <Properties />
-                                    </PrivateRoute>
-                                }
-                            /> */}
-                            {/* <Route
+                            <Route
                                 path="/private"
                                 element={
                                     <PrivateRoute>
                                         <Private />
                                     </PrivateRoute>
                                 }
-                            /> */}
-
+                            />
+                            <Route
+                                path="/userproperties"
+                                element={
+                                    <PrivateRoute>
+                                        <Properties />
+                                    </PrivateRoute>
+                                }
+                            />
                             <Route
                                 path="/"
-                                element={<Home isVisible={true} />}
+                                element={<Home isVisible={false} />}
                             />
-                            <Route path="/lobby" />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route
@@ -81,12 +69,38 @@ const App: React.FC = () => {
                                 element={<Logout isVisible={false} />}
                             />
                             <Route path="*" element={<Navigate to="/" />} />
+                            {/* <Route
+                            path="*"
+                            element={<p>There's nothing here: 404!</p>}
+                        /> */}
+                            {/* <Route path="*" element={<NoMatch />} /> */}
                         </Routes>
                     </MainWrapper>
                 </BrowserRouter>
             </div>
+            <>
+                <TopList />
+                <div>
+                    <TennisPlayersList />{' '}
+                </div>
+                <div className="flex justify-center">
+                    <TennisPlayerCards players={playerTopList.players} />
+                </div>
+                <PlayerOneCard players={playerTopList.players} />
+                <Button onClick={handleClick}>Create</Button>
+                {isComponentVisible && (
+                    <TennisPlayerCreator
+                        onClose={() => {
+                            console.log('created well');
+                            setIsComponentVisible(false);
+                        }}
+                    />
+                )}
+                {/* <WebSocketChat /> */}
+                {/* <ChatComponent username="User123" channelId="channel1" /> */}
+            </>
         </>
     );
-};
+}
 
 export default App;

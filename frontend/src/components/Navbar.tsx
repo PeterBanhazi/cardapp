@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Home from '../views/home';
+import { useDashboardStore } from '../store/store';
 
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,55 @@ const Navbar: React.FC = () => {
     } | null>(null);
     const navRef = useRef<HTMLDivElement>(null);
 
+    const { addDashboard } = useDashboardStore();
+
+    const handleLobbyClick = () => {
+        addDashboard({
+            id: 'lobby', // or use uuid() if you want multiple instances
+            path: '/lobby',
+            title: 'Lobby',
+        });
+    };
+
+    const handleTestClick = () => {
+        addDashboard({
+            id: 'TestOne', // or use uuid() if you want multiple instances
+            path: '/testone',
+            title: 'TestEgyes',
+        });
+    };
+
+    const handleTestTwoClick = () => {
+        addDashboard({
+            id: 'TestTwo', // or use uuid() if you want multiple instances
+            path: '/testtwo',
+            title: 'TestKettes',
+        });
+    };
+
+    const handleTPClick = () => {
+        addDashboard({
+            id: 'TestTP', // or use uuid() if you want multiple instances
+            path: '/TennisPlayersList',
+            title: 'TestTP',
+        });
+    };
+
+    const handlePrivate = () => {
+        addDashboard({
+            id: 'Private', // or use uuid() if you want multiple instances
+            path: '/private',
+            title: 'P_T',
+        });
+    };
+
+    const handleXXX = () => {
+        addDashboard({
+            id: 'XXX', // or use uuid() if you want multiple instances
+            path: '/userproperties',
+            title: 'XXX',
+        });
+    };
     const navLinks = [
         { path: '/', label: 'Home' },
         { path: '/lobby', label: 'Lobby' },
@@ -57,6 +107,28 @@ const Navbar: React.FC = () => {
                                 className="text-xl font-bold text-gray-800"
                             >
                                 Logo
+                            </NavLink>{' '}
+                            {/* Your other nav items */}
+                            <NavLink to="/lobby" onClick={handleLobbyClick}>
+                                Lobby
+                            </NavLink>
+                            <NavLink to="/testone" onClick={handleTestClick}>
+                                TestOne
+                            </NavLink>
+                            <NavLink to="/testtwo" onClick={handleTestTwoClick}>
+                                TestTwo
+                            </NavLink>
+                            <NavLink
+                                to="/tennisplayerslist"
+                                onClick={handleTPClick}
+                            >
+                                TestTP
+                            </NavLink>
+                            <NavLink to="/private" onClick={handlePrivate}>
+                                T_P
+                            </NavLink>
+                            <NavLink to="/userproperties" onClick={handleXXX}>
+                                XXX
                             </NavLink>
                         </div>
 
