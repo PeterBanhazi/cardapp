@@ -29,7 +29,12 @@ import { ListPlayerCards } from './components/ListPlayerCards';
 const App: React.FC = () => {
     return (
         <>
-            <div>
+            <div
+                className="bg-no-repeat bg-cover min-h-screen"
+                style={{
+                    backgroundImage: `url(./src/assets/bg/todor-dimov-XCTigZX4v9U-unsplash.jpg`,
+                }}
+            >
                 <BrowserRouter>
                     <MainWrapper>
                         <Navbar />

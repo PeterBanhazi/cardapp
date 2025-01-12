@@ -1,69 +1,76 @@
+// store.ts
 import { create } from 'zustand';
 
+
 export interface DashboardItem {
-    id: string;
-    path: string;
-    title: string;
-    isCollapsed: boolean;
-    key?: number; // Used for forcing refresh
-  }
+  id: string;
+  path: string;
+  title: string;
+  isCollapsed: boolean;
+  key?: number;
+}
 
-  interface DashboardState {
-    dashboards: DashboardItem[];
-    addDashboard: (dashboard: Omit<DashboardItem, 'isCollapsed' | 'key'>) => void;
-    removeDashboard: (id: string) => void;
-    toggleCollapse: (id: string) => void;
-    refreshDashboard: (id: string) => void;
-    initializeDashboard: () => void;
-  }
+interface DashboardState {
+  dashboards: DashboardItem[];
+  addDashboard: (dashboard: Omit<DashboardItem, 'isCollapsed' | 'key'>) => void;
+  removeDashboard: (id: string) => void;
+  toggleCollapse: (id: string) => void;
+  refreshDashboard: (id: string) => void;
+  initializeDashboard: () => void;
+}
 
-  export const useDashboardStore = create<DashboardState>((set) => ({
-    dashboards: [],
-    
-    initializeDashboard: () => set((state) => ({
-      dashboards: [{
-        id: 'landing',
-        path: '/',
-        title: 'Welcome',
-        isCollapsed: false,
-        key: Date.now()
-      }]
-    })),
+export const useDashboardStore = create<DashboardState>((set) => ({
+  dashboards: [],
   
-    addDashboard: (dashboard) => set((state) => {
-      const existingDashboard = state.dashboards.find(d => d.path === dashboard.path);
-      
-      if (existingDashboard) {
-        return {
-          dashboards: state.dashboards.map(d => 
-            d.id === existingDashboard.id 
-              ? { ...d, isCollapsed: false }
-              : d
-          )
-        };
-      }
-      
+  initializeDashboard: () => set((state) => ({
+    dashboards: [{
+      id: 'landing',
+      path: '/',
+      title: 'Welcome',
+      isCollapsed: false,
+      key: Date.now()
+    }]
+  })),
+
+  addDashboard: (dashboard) => set((state) => {
+    const existingDashboard = state.dashboards.find(d => d.path === dashboard.path);
+    
+    if (existingDashboard) {
+      // Remove the existing dashboard and add it back at the top
+      const otherDashboards = state.dashboards.filter(d => d.path !== dashboard.path);
       return {
         dashboards: [
-          { ...dashboard, isCollapsed: false, key: Date.now() },
-          ...state.dashboards
+          { 
+            ...existingDashboard, 
+            isCollapsed: false, // Ensure it's expanded
+            key: Date.now() // Refresh the component
+          },
+          ...otherDashboards
         ]
       };
-    }),
+    }
     
-    removeDashboard: (id) => set((state) => ({
-      dashboards: state.dashboards.filter(d => d.id !== id)
-    })),
-    
-    toggleCollapse: (id) => set((state) => ({
-      dashboards: state.dashboards.map(d => 
-        d.id === id ? { ...d, isCollapsed: !d.isCollapsed } : d
-      )
-    })),
+    return {
+      dashboards: [
+        { ...dashboard, isCollapsed: false, key: Date.now() },
+        ...state.dashboards
+      ]
+    };
+  }),
   
-    refreshDashboard: (id) => set((state) => ({
-      dashboards: state.dashboards.map(d =>
-        d.id === id ? { ...d, key: Date.now() } : d
-      )
-    }))
-  }));
+  removeDashboard: (id) => set((state) => ({
+    dashboards: state.dashboards.filter(d => d.id !== id)
+  })),
+  
+  toggleCollapse: (id) => set((state) => ({
+    dashboards: state.dashboards.map(d => 
+      d.id === id ? { ...d, isCollapsed: !d.isCollapsed } : d
+    )
+  })),
+
+  refreshDashboard: (id) => set((state) => ({
+    dashboards: state.dashboards.map(d =>
+      d.id === id ? { ...d, key: Date.now() } : d
+    )
+  }))
+}));

@@ -46,13 +46,14 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     onClose={removeDashboard}
                 >
                     {dashboard.path === '/' && <Landing />}
+                    {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/lobby' && <Lobby />}
                     {dashboard.path === '/testone' && <TestOne />}
                     {dashboard.path === '/testtwo' && <TestTwo />}
                     {dashboard.path === '/players' && <TennisPlayersList />}
                     {dashboard.path === '/userproperties' && <Properties />}
                     {dashboard.path === '/private' && <Private />}
-                    {dashboard.path === '/ranks' && <TopList />}
+
                     {/* {children} */}
                     {dashboard.path === '/add-player' && (
                         <TennisPlayerCreator

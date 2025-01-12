@@ -2,13 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Home from '../views/home';
-import { useDashboardStore } from '../store/store';
-
-export interface DashboardNavItem {
-    id: string;
-    path: string;
-    title: string;
-}
+import { useDashboardStore, DashboardItem } from '../store/store';
 
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +40,9 @@ const Navbar: React.FC = () => {
     //     });
     // };
 
-    const handleDashboardClick = (link: DashboardNavItem) => {
+    const handleDashboardClick = (
+        link: Omit<DashboardItem, 'isCollapsed' | 'key'>
+    ) => {
         addDashboard({
             id: link.id, // or use uuid() if you want multiple instances
             path: link.path,
