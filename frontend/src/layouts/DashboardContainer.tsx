@@ -1,10 +1,21 @@
 import React from 'react';
-import { ChevronDown, ChevronUp, X, RefreshCw } from 'lucide-react';
+import {
+    ChevronDown,
+    ChevronUp,
+    X,
+    RefreshCw,
+    MessageSquare,
+    AlertTriangle,
+    Signal,
+    ChevronsUpDownIcon,
+} from 'lucide-react';
 
+import { DashboardStatus } from '../store/store';
 interface DashboardContainerProps {
     id: string;
     title: string;
     isCollapsed: boolean;
+    status?: DashboardStatus;
     onToggleCollapse: (id: string) => void;
     onRefresh: (id: string) => void;
     onClose: (id: string) => void;
@@ -15,41 +26,90 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     id,
     title,
     isCollapsed,
+    status,
     onToggleCollapse,
     onRefresh,
     onClose,
     children,
 }) => {
+    const handleHeaderClick = (e: React.MouseEvent) => {
+        // Prevent toggling when clicking buttons
+        if (!(e.target as HTMLElement).closest('button')) {
+            onToggleCollapse(id);
+        }
+    };
     return (
         <div className="w-full mb-4 bg-white rounded-b-lg shadow-lg">
-            <div className="flex items-center justify-between px-4 py-2 bg-gray-100 border-b">
-                <h2 className="text-lg font-semibold text-gray-700">{title}</h2>
+            <div
+                className={`flex items-center justify-between px-4 py-2 bg-gray-100 border-b cursor-pointer 
+            hover:bg-gray-200 transition-colors ${
+                isCollapsed ? 'rounded-b-lg' : ''
+            }`}
+                onClick={handleHeaderClick}
+            >
                 <div className="flex items-center space-x-2">
-                    <button
-                        onClick={() => onToggleCollapse(id)}
-                        className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                        aria-label={isCollapsed ? 'Expand' : 'Collapse'}
-                    >
-                        {isCollapsed ? (
-                            <ChevronUp className="w-5 h-5" />
-                        ) : (
-                            <ChevronDown className="w-5 h-5" />
+                    <h2 className="text-lg font-semibold text-gray-700">
+                        {title}
+                    </h2>
+                </div>
+                <div className=" flex ">
+                    {/* Status Indicators */}
+                    <div className="flex items-center justify-end space-x-3 ml-4">
+                        {status?.hasNewMessage && (
+                            <MessageSquare
+                                className="w-4 h-4 text-blue-500"
+                                aria-label="New Message"
+                            />
                         )}
-                    </button>
-                    <button
-                        onClick={() => onRefresh(id)}
-                        className="p-1 text-gray-500 hover:text-blue-500 transition-colors"
-                        aria-label="Refresh"
+                        {status?.hasWarning && (
+                            <AlertTriangle
+                                className="w-4 h-4 text-yellow-500"
+                                aria-label="Warning"
+                            />
+                        )}
+                        <Signal
+                            className={`w-4 h-4 ${
+                                status?.connectionStatus === 'connected'
+                                    ? 'text-green-500'
+                                    : status?.connectionStatus === 'pending'
+                                    ? 'text-yellow-500'
+                                    : 'text-red-500'
+                            }`}
+                            aria-label="Connection Status"
+                        />
+                    </div>
+                    <div className="w-6"></div>
+                    {/* Control buttons - now in their own div to prevent click propagation */}
+                    <div
+                        className="flex items-center space-x-2"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        <RefreshCw className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={() => onClose(id)}
-                        className="p-1 text-gray-500 hover:text-red-500 transition-colors"
-                        aria-label="Close"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+                        <button
+                            onClick={() => onToggleCollapse(id)}
+                            className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                            aria-label={isCollapsed ? 'Expand' : 'Collapse'}
+                        >
+                            {isCollapsed ? (
+                                <ChevronDown className="w-5 h-5" />
+                            ) : (
+                                <ChevronUp className="w-5 h-5" />
+                            )}
+                        </button>
+                        <button
+                            onClick={() => onRefresh(id)}
+                            className="p-1 text-gray-500 hover:text-blue-500 transition-colors"
+                            aria-label="Refresh"
+                        >
+                            <RefreshCw className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => onClose(id)}
+                            className="p-1 text-gray-500 hover:text-red-500 transition-colors"
+                            aria-label="Close"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
             </div>
 

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DashboardContainer } from './DashboardContainer';
 import { useDashboardStore } from '../store/store';
+import { useBackendStatus } from '../store/useBackendStatus';
 import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
 import Lobby from '../components/Lobby';
 import TestOne from '../components/TestOne';
@@ -40,6 +41,7 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     key={`${dashboard.id}-${dashboard.key}`}
                     id={dashboard.id}
                     title={dashboard.title}
+                    status={dashboard.status}
                     isCollapsed={dashboard.isCollapsed}
                     onToggleCollapse={toggleCollapse}
                     onRefresh={refreshDashboard}

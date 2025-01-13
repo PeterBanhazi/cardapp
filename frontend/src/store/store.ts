@@ -2,12 +2,18 @@
 import { create } from 'zustand';
 
 
+export interface DashboardStatus {
+  hasNewMessage: boolean;
+  hasWarning: boolean;
+  connectionStatus: 'connected' | 'disconnected' | 'pending';
+}
 export interface DashboardItem {
   id: string;
   path: string;
   title: string;
   isCollapsed: boolean;
   key?: number;
+  status?: DashboardStatus;
 }
 
 interface DashboardState {
@@ -17,6 +23,7 @@ interface DashboardState {
   toggleCollapse: (id: string) => void;
   refreshDashboard: (id: string) => void;
   initializeDashboard: () => void;
+  updateDashboardStatus: (id: string, status: DashboardStatus) => void;
 }
 
 export const useDashboardStore = create<DashboardState>((set) => ({
@@ -28,7 +35,13 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       path: '/',
       title: 'Welcome',
       isCollapsed: false,
-      key: Date.now()
+      key: Date.now(),
+      status: {
+        hasNewMessage: true,
+        hasWarning: true,
+        connectionStatus: 'connected',
+      },
+      
     }]
   })),
 
@@ -72,5 +85,11 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     dashboards: state.dashboards.map(d =>
       d.id === id ? { ...d, key: Date.now() } : d
     )
-  }))
+  })),
+
+  updateDashboardStatus: (id, status) => set((state) => ({
+    dashboards: state.dashboards.map(d =>
+      d.id === id ? { ...d, status } : d
+    )
+  })),
 }));

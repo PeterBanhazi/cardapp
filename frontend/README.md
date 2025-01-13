@@ -16,3 +16,4 @@ UX TODO:
 
 Further upgrades:
     - dashboard elements are capable to handle multiple entries by using UUID 
+    - dashboard status-update from backend integration
