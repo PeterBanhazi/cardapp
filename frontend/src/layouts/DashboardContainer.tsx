@@ -7,7 +7,6 @@ import {
     MessageSquare,
     AlertTriangle,
     Signal,
-    ChevronsUpDownIcon,
 } from 'lucide-react';
 
 import { DashboardStatus } from '../store/store';

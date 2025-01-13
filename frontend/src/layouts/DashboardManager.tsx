@@ -11,8 +11,9 @@ import TennisPlayersList from '../components/TennisPlayersList';
 import Properties from '../views/properties';
 import Private from '../views/private';
 import Landing from '../components/Landing';
-import TopList from '../components/Toplist';
+import TopList from '../components/TopList';
 import TennisPlayerCreator from '../components/TennisPlayerCreator';
+import GameWrapper from '../components/game/GameWrapper';
 
 interface DashboardManagerProps {
     children: React.ReactNode;
@@ -47,7 +48,9 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     onRefresh={refreshDashboard}
                     onClose={removeDashboard}
                 >
-                    {dashboard.path === '/' && <Landing />}
+                    {/* {dashboard.path === '/' && <Landing />} */}
+                    {dashboard.path === '/' && <GameWrapper />}
+
                     {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/lobby' && <Lobby />}
                     {dashboard.path === '/testone' && <TestOne />}

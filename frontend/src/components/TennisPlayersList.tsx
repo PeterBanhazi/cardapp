@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
 import { Button } from 'flowbite-react';
-
 import { useAuthStore } from '../store/auth';
 
-const PlayerCard = ({ player }) => {
+interface PlayerAbilities {
+    serve: number;
+    forehand: number;
+    backhand: number;
+    volley: number;
+    stamina: number;
+    agility: number;
+}
+
+interface Player extends PlayerAbilities {
+    name: string;
+    avatar_url: string;
+}
+
+interface PlayerCardProps {
+    player: Player;
+}
+
+interface ApiResponse {
+    players: Player[];
+}
+
+const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
     const { name, avatar_url } = player;
 
-    const abilities = {
+    const abilities: PlayerAbilities = {
         serve: player.serve,
         forehand: player.forehand,
         backhand: player.backhand,
@@ -15,13 +36,15 @@ const PlayerCard = ({ player }) => {
         stamina: player.stamina,
         agility: player.agility,
     };
-    const handleFavoritClick = () => {
+
+    const handleFavoriteClick = (): void => {
         return;
     };
 
-    const handlePlayClick = () => {
+    const handlePlayClick = (): void => {
         return;
     };
+
     return (
         <div className="bg-white shadow-md rounded-lg p-4 m-2 w-64">
             <div className="flex items-center mb-4">
@@ -46,32 +69,44 @@ const PlayerCard = ({ player }) => {
                     </div>
                 ))}
             </div>
-            <div className="grid grid-cols-2">
-                <Button id="Favorite" onClick={handleFavoritClick}>
+            <div className="grid grid-cols-2 pt-2 gap-2">
+                <button
+                    id="Favorite"
+                    className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+                    onClick={handleFavoriteClick}
+                >
                     Favorite
-                </Button>
-                <Button id="Play" onClick={handlePlayClick}>
+                </button>
+                <button
+                    className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+                    id="Play"
+                    onClick={handlePlayClick}
+                >
                     Play
-                </Button>
+                </button>
             </div>
         </div>
     );
 };
 
-const TennisPlayersList = () => {
-    const [players, setPlayers] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+const TennisPlayersList: React.FC = () => {
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchPlayers = async () => {
+        const fetchPlayers = async (): Promise<void> => {
             try {
                 setIsLoading(true);
-                const response = await axios.get('/get/playerlist/');
+                const response = await axios.get<ApiResponse>(
+                    '/get/playerlist/'
+                );
                 setPlayers(response.data.players);
                 setIsLoading(false);
             } catch (err) {
-                setError(err.message);
+                setError(
+                    err instanceof Error ? err.message : 'An error occurred'
+                );
                 setIsLoading(false);
             }
         };
@@ -97,7 +132,7 @@ const TennisPlayersList = () => {
 
     return (
         <div className="container mx-auto px-4">
-            <h1 className="text-3xl font-bold text-center ">Tennis Players</h1>
+            <h1 className="text-3xl font-bold text-center">Tennis Players</h1>
             <div className="flex flex-wrap justify-center">
                 {players.map((player, index) => (
                     <PlayerCard key={index} player={player} />

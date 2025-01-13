@@ -29,11 +29,27 @@ interface DashboardState {
 export const useDashboardStore = create<DashboardState>((set) => ({
   dashboards: [],
   
+  // initializeDashboard: () => set((state) => ({
+  //   dashboards: [{
+  //     id: 'landing',
+  //     path: '/',
+  //     title: 'Welcome',
+  //     isCollapsed: false,
+  //     key: Date.now(),
+  //     status: {
+  //       hasNewMessage: true,
+  //       hasWarning: true,
+  //       connectionStatus: 'connected',
+  //     },
+      
+  //   }]
+  // })),
+
   initializeDashboard: () => set((state) => ({
     dashboards: [{
       id: 'landing',
       path: '/',
-      title: 'Welcome',
+      title: 'Test Game',
       isCollapsed: false,
       key: Date.now(),
       status: {

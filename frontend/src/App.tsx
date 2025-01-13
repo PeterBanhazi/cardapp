@@ -18,7 +18,7 @@ import ChatComponent from './components/ChatComponent';
 import { Button } from 'flowbite-react';
 import { useState } from 'react';
 import Properties from './views/properties';
-import TopList from './components/Toplist';
+// import TopList from './components/Toplist';
 import Navbar from './components/Navbar';
 import TestOne from './components/TestOne';
 import TestTwo from './components/TestTwo';
