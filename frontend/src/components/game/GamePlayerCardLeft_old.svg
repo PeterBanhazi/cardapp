@@ -1,0 +1,17 @@
+        <svg
+            width="96"
+            height="204"
+            viewBox="-1 -1 98 206"
+            fill="none"
+            vector-effect="non-scaling-stroke"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M10 0C4.47714 0 0 4.47716 0 10V194C0 199.523 4.47714 204 10 204H56C56 179.81 73.1776 159.633 96 155V10C96 4.47716 91.5228 0 86 0H10Z"
+                fill="#D9D9D9"
+                stroke-width="1px"
+                stroke="grey"
+            />
+        </svg>

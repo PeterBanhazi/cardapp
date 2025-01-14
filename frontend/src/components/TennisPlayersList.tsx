@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
-import { Button } from 'flowbite-react';
 import { useAuthStore } from '../store/auth';
 
 interface PlayerAbilities {

@@ -1,14 +1,77 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const Landing: React.FC = () => {
+import axios from '../../utils/axios';
+import GamePlayerCardRight from './GamePlayerCardRight';
+import GamePlayerCardLeft from './GamePlayerCardLeft';
+
+interface ApiResponse {
+    players: Player[];
+}
+
+interface PlayerAbilities {
+    serve: number;
+    forehand: number;
+    backhand: number;
+    volley: number;
+    stamina: number;
+    agility: number;
+}
+
+interface Player extends PlayerAbilities {
+    name: string;
+    avatar_url: string;
+}
+
+const GameWrapper: React.FC = () => {
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPlayers = async (): Promise<void> => {
+            try {
+                setIsLoading(true);
+                const response = await axios.get<ApiResponse>(
+                    '/get/playerlist/'
+                );
+                setPlayers(response.data.players);
+                setIsLoading(false);
+            } catch (err) {
+                setError(
+                    err instanceof Error ? err.message : 'An error occurred'
+                );
+                setIsLoading(false);
+            }
+        };
+
+        fetchPlayers();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p>Loading players...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-screen text-red-500">
+                <p>Error fetching players: {error}</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Start game!!</h1>
-            <p className="text-gray-600">
-                Start exploring by clicking on the navigation links above.
-            </p>
+        <div className="container mx-auto px-2">
+            <h1 className="text-3xl font-bold text-center">Game Players</h1>
+            <div className="flex flex-wrap justify-center gap-6">
+                <GamePlayerCardLeft player={players[1]} />
+                <GamePlayerCardRight player={players[2]} />
+            </div>
         </div>
     );
 };
 
-export default Landing;
+export default GameWrapper;
