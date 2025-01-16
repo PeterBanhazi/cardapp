@@ -94,8 +94,8 @@ const Navbar: React.FC = () => {
     };
 
     return (
-        <div className="pt-4 pb-4 mx-4">
-            <nav className="sticky top-8 bg-white bg-opacity-70 backdrop-blur-md border border-white border-opacity-40 rounded-t-lg shadow-lg w-full">
+        <div className="container p-4 mx-auto">
+            <nav className="top-8 bg-white bg-opacity-70 backdrop-blur-md border border-white border-opacity-40 rounded-t-lg shadow-lg w-full">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex justify-between items-center h-16">
                         {/* Logo/Brand */}
@@ -106,13 +106,6 @@ const Navbar: React.FC = () => {
                             >
                                 Logo
                             </NavLink>{' '}
-                            {/* Your other nav items */}
-                            <NavLink to="/testone" onClick={handleTestClick}>
-                                TestOne
-                            </NavLink>
-                            <NavLink to="/testtwo" onClick={handleTestTwoClick}>
-                                TestTwo
-                            </NavLink>
                         </div>
 
                         {/* Desktop Navigation - Centered */}
@@ -141,7 +134,7 @@ const Navbar: React.FC = () => {
                                         key={link.path}
                                         to={link.path}
                                         className={({ isActive }) =>
-                                            `px-4 py-2 mx-2 text-sm font-medium relative z-10 transition-colors duration-200 
+                                            `px-1 py-2 mx-1 lg:px-1.5 lg:mx-2 text-sm font-medium relative z-10 transition-colors duration-200 
                       ${
                           isActive
                               ? 'text-blue-700 active'
@@ -201,7 +194,10 @@ const Navbar: React.FC = () => {
                               : 'text-gray-600 hover:bg-blue-50'
                       }`
                                         }
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            handleDashboardClick(link);
+                                        }}
                                     >
                                         {link.label}
                                     </NavLink>
