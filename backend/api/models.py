@@ -10,7 +10,7 @@ class TennisPlayer(models.Model):
     Model representing a professional tennis player with their abilities
     """
     id = models.IntegerField(primary_key=True, unique=True, editable=False)
-    username = models.CharField(User, max_length=255,null=True, blank=True)
+    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_players')
     name = models.CharField(max_length=20, unique=True)
     avatar_url = models.CharField(max_length=255,null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,91 +63,44 @@ class TennisPlayer(models.Model):
         return f"{self.name} (Created by {self.username})"
 
 
-
 #Users options and details
 class UserProperties(models.Model):
-
-    username = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    username = models.OneToOneField(User, on_delete=models.CASCADE)
     isonline = models.BooleanField(blank=True, null=True)
-    friends = models.CharField(max_length=250)
-    rankpoints = models.IntegerField(null=True, blank=True)
-    customplayers = models.CharField(max_length=250)
-    favoriteplayers = models.CharField(max_length=250)
+    # friends = models.CharField(max_length=250)
+    rankpoints = models.IntegerField(null=True, blank=True, default=0)
+    # customplayers = models.CharField(max_length=250)
+    favorite_players = models.CharField(max_length=250, null=True, blank=True, default=0)
+    current_player = models.ForeignKey(
+        TennisPlayer, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='active_player_for_profile'
+    )
+    
 
     def __str__(self):
-        return f"{self.rankpoints} (Created by {self.username})"
+        return f"{self.rankpoints} (Created by {self.username.username})"
     
     class Meta:
         ordering = ['-username']  # Optional: default ordering
         verbose_name_plural = "UserProperties"
 
 
+#List for friend connection persistence 
+class Friendship(models.Model):
+    username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships')
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend_of')
+    status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('PENDING', 'Request sent'), 
+            ('ACCEPTED', 'Friendship accepted'), 
+            ('BLOCKED', 'Blocked')
+        ],
+        default='PENDING'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#User created players
-
-# class CustomTennisPlayer(models.Model):
-#     """
-#     Model to represent a custom tennis player created by a user
-#     """
-
-#     print("here")
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tennis_player')
-#     name = models.CharField(max_length=20)
-#     avatar_url = models.CharField(max_length=255)
-    
-#     # Ability fields with validators
-#     serve = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-#     forehand = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-#     backhand = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-#     volley = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-#     stamina = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-#     agility = models.IntegerField(
-#         validators=[MinValueValidator(1), MaxValueValidator(100)]
-#     )
-    
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     def validate_total_points(self):
-#         """
-#         Validate that total ability points do not exceed 550
-#         """
-#         total_points = (
-#             self.serve + self.forehand + self.backhand + 
-#             self.volley + self.stamina + self.agility
-#         )
-#         if total_points > 550:
-#             raise ValidationError("Total ability points cannot exceed 550")
-
-#     def save(self, *args, **kwargs):
-#         self.validate_total_points()
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"{self.name} (Created by {self.user.username})"
+    def __str__(self):
+        return f"{self.user.username} - {self.friend.username}"

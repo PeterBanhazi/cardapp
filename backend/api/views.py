@@ -17,11 +17,10 @@ import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from .models import TennisPlayer
-from .models import UserProperties
+from .models import TennisPlayer,Friendship,UserProperties
 
-from .serializer import TennisPlayerSerializer
-from .serializer import UserPropertiesSerializer
+from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer
+
 
 
 
@@ -33,6 +32,11 @@ from .serializer import UserPropertiesSerializer
 #             return Response(serializer.data, status=status.HTTP_201_CREATED)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class TopListView(APIView):
+    def get(self, request, *args, **kwargs):
+        users = UserProperties.objects.all().order_by('-rankpoints')
+        serializer = TopListSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class PlayerListView(APIView):
     def get(self, request):
@@ -41,6 +45,13 @@ class PlayerListView(APIView):
         return Response({
             'players': serializer.data
         })
+
+class FriendshipViewSet(RetrieveUpdateAPIView):
+    serializer_class = FriendshipSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Friendship.objects.filter(username=self.request.user)
 
 class UserPropertiesView(RetrieveUpdateAPIView):
     serializer_class = UserPropertiesSerializer
@@ -53,8 +64,6 @@ class UserPropertiesView(RetrieveUpdateAPIView):
 
         
 #User made Custom players: 
-        
-
 
 class AddTennisPlayerView(APIView):
     """
@@ -74,7 +83,7 @@ class AddTennisPlayerView(APIView):
         
         if serializer.is_valid():
             # Save the tennis player
-            tennis_player = serializer.save()
+            tennis_player = serializer.save(username=self.request.user)
             return Response(
                 {
                     'message': 'Tennis player created successfully', 
@@ -112,7 +121,11 @@ def getRoutes(request):
         '/api/token/refresh/',
         '/api/test/',
         '/api/get/playerlist',
-        '/api/post/createplayer',
+        '/api/post/add-player/',
+        '/api/get/toplist/',
+        '/api/get/userproperties/',
+        '/api/get/friends',
+        
 
     ]
     return Response(routes)

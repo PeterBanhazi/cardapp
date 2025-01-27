@@ -5,22 +5,31 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 
-from .models import TennisPlayer
-from .models import UserProperties
+from .models import TennisPlayer, UserProperties, Friendship
 
 
-#Default player serialisers
+#Default list serializers for friend connections 
+class FriendshipSerializer(serializers.ModelSerializer):
+    friend_username = serializers.CharField(source='friend.username', read_only=True)
 
-class UserPropertiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friendship
+        fields = ['friend', 'friend_username', 'status', 'created_at']
+
+
+#Default list serializers
+class TopListSerializer(serializers.ModelSerializer):
+    
+    username = serializers.CharField(source='username.username')
     class Meta:
         model = UserProperties
-        fields = ['username','isonline','rankpoints','friends', 'customplayers', 'favoriteplayers']
-
+        fields = ['username', 'rankpoints']
+        
 # Usermade custom player serializer
 
 class TennisPlayerSerializer(serializers.ModelSerializer):
  
-    # username = serializers.CharField(write_only=True)
+   
  
     class Meta:
         model = TennisPlayer
@@ -80,6 +89,17 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
         # user = validated_data.pop('user')
         tennis_player = TennisPlayer.objects.create( **validated_data)
         return tennis_player
+
+
+class UserPropertiesSerializer(serializers.ModelSerializer):
+    
+    username = serializers.CharField(source='username.username')
+    custom_players = TennisPlayerSerializer(source='username.custom_players', many=True, read_only=True)
+    friendships = FriendshipSerializer(source='username.friendships', many=True, read_only=True)
+    class Meta:
+        model = UserProperties
+        fields = ['username','isonline','rankpoints','friendships','favorite_players','current_player','custom_players']
+
 
 
 #user auth classes

@@ -24,7 +24,7 @@ class Command(BaseCommand):
             for player_data in data['players']:
                 TennisPlayer.objects.create(
                     id=player_data['id'],
-                    user=player_data['user'],
+                    # user=player_data['username'],
                     name=player_data['name'],
                     avatar_url=player_data['avatarUrl'],
                     serve=player_data['abilities']['serve'],
