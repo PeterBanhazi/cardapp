@@ -25,6 +25,7 @@ import TestTwo from './components/TestTwo';
 import DashboardManager from './layouts/DashboardManager';
 import Lobby from './components/Lobby';
 import { ListPlayerCards } from './components/ListPlayerCards';
+import JustAContainer from './layouts/JustAContainer';
 
 const App: React.FC = () => {
     return (
@@ -39,6 +40,7 @@ const App: React.FC = () => {
                     <MainWrapper>
                         <Navbar />
                         {/* <TestOne /> */}
+                        {/* <JustAContainer /> */}
 
                         <DashboardManager>
                             <Routes>
@@ -78,7 +80,6 @@ const App: React.FC = () => {
                                 path="/"
                                 element={<Home isVisible={true} />}
                             />
-                            <Route path="/lobby" />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route

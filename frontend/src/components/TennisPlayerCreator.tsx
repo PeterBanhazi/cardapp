@@ -33,8 +33,8 @@ const AVATARS = [
 const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
     onClose,
 }) => {
-    // Get username from auth store
-    const user = useAuthStore((state) => state.user);
+    // Get username from auth store | no need for it due to the backend auth
+    // const user = useAuthStore((state) => state.user);
     const [isVisible, setIsVisible] = useState(true);
 
     // Initial state setup
@@ -108,10 +108,10 @@ const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
         }
 
         try {
-            const creator = user()?.username;
+            // const creator = user()?.username;
 
             const playerData = {
-                username: creator,
+                // username: creator,
                 name: playerName,
                 avatar_url: selectedAvatar.src,
                 serve: abilities.serve,

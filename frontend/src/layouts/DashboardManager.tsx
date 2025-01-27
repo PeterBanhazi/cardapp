@@ -14,6 +14,7 @@ import Landing from '../components/Landing';
 import TopList from '../components/TopList';
 import TennisPlayerCreator from '../components/TennisPlayerCreator';
 import GameWrapper from '../components/game/GameWrapper';
+import ChatLobby from './ChatLobby';
 
 interface DashboardManagerProps {
     children: React.ReactNode;
@@ -52,7 +53,7 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     {dashboard.path === '/' && <GameWrapper />}
 
                     {dashboard.path === '/ranks' && <TopList />}
-                    {dashboard.path === '/lobby' && <Lobby />}
+                    {dashboard.path === '/lobby' && <ChatLobby />}
                     {dashboard.path === '/testone' && <TestOne />}
                     {dashboard.path === '/testtwo' && <TestTwo />}
                     {dashboard.path === '/players' && <TennisPlayersList />}

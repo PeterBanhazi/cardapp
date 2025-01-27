@@ -105,7 +105,11 @@ const Navbar: React.FC = () => {
                                 className="text-xl font-bold text-gray-800"
                             >
                                 Logo
-                            </NavLink>{' '}
+                            </NavLink>
+                            {/* Your other nav items
+                                                        <NavLink to="/testone" onClick={handleTestClick}>
+                                TestOne
+                            </NavLink> */}
                         </div>
 
                         {/* Desktop Navigation - Centered */}
