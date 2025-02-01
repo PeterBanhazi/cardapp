@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { DashboardContainer } from './DashboardContainer';
 import { useDashboardStore } from '../store/store';

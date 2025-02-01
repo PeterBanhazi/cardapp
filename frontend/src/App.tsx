@@ -26,6 +26,7 @@ import DashboardManager from './layouts/DashboardManager';
 import Lobby from './components/Lobby';
 import { ListPlayerCards } from './components/ListPlayerCards';
 import JustAContainer from './layouts/JustAContainer';
+import TopList from './components/TopList';
 
 const App: React.FC = () => {
     return (
@@ -80,6 +81,11 @@ const App: React.FC = () => {
                                 path="/"
                                 element={<Home isVisible={true} />}
                             />
+                            <Route path="/userproperties" />
+                            <Route path="/private" element={<Private />} />
+                            <Route path="/lobby" />
+                            <Route path="/ranks" />
+                            <Route path="/players" />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route

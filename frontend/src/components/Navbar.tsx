@@ -32,14 +32,6 @@ const Navbar: React.FC = () => {
         });
     };
 
-    // const handleXXX = () => {
-    //     addDashboard({
-    //         id: 'XXX', // or use uuid() if you want multiple instances
-    //         path: '/userproperties',
-    //         title: 'XXX',
-    //     });
-    // };
-
     const handleDashboardClick = (
         link: Omit<DashboardItem, 'isCollapsed' | 'key'>
     ) => {
@@ -53,7 +45,7 @@ const Navbar: React.FC = () => {
         { path: '/', label: 'Home', id: 'home', title: 'Welcome' },
         { path: '/lobby', label: 'Lobby', id: 'lobby', title: 'Lobby' },
         { path: '/ranks', label: 'Ranks', id: 'rank', title: 'Ranks' },
-        { path: '/players', label: 'Players', id: 'players', title: 'Players' },
+        // { path: '/players', label: 'Players', id: 'players', title: 'Players' },
         {
             path: '/userproperties',
             label: 'Options',
@@ -62,13 +54,13 @@ const Navbar: React.FC = () => {
         },
         {
             path: '/add-player',
-            label: 'Create',
-            id: 'create',
-            title: 'Make a new player',
+            label: 'Rules',
+            id: 'rules',
+            title: 'Game Rules',
         },
     ];
 
-    useEffect(() => {
+    const updateNavbarHover = () => {
         const activeLink = navRef.current?.querySelector('.active');
         if (activeLink) {
             const navRect = navRef.current?.getBoundingClientRect();
@@ -78,7 +70,28 @@ const Navbar: React.FC = () => {
                 width: linkRect.width,
             });
         }
+    };
+    useEffect(() => {
+        updateNavbarHover();
     }, [location.pathname]);
+
+    // fix for hovered background if needed:
+
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         updateNavbarHover();
+    //     };
+
+    //     window.addEventListener('resize', handleResize);
+
+    //     // Initial calculation
+    //     updateNavbarHover();
+
+    //     // Cleanup
+    //     return () => {
+    //         window.removeEventListener('resize', handleResize);
+    //     };
+    // }, []);
 
     const handleMouseEnter = (event: React.MouseEvent<HTMLAnchorElement>) => {
         const linkRect = event.currentTarget.getBoundingClientRect();
@@ -138,7 +151,7 @@ const Navbar: React.FC = () => {
                                         key={link.path}
                                         to={link.path}
                                         className={({ isActive }) =>
-                                            `px-1 py-2 mx-1 lg:px-1.5 lg:mx-2 text-sm font-medium relative z-10 transition-colors duration-200 
+                                            `px-1 py-2 mx-1 lg:px-1 lg:mx-1 text-sm+1 font-medium relative z-10 transition-colors duration-200 
                       ${
                           isActive
                               ? 'text-blue-700 active'
