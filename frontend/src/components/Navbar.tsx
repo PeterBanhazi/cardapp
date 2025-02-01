@@ -53,7 +53,7 @@ const Navbar: React.FC = () => {
             title: 'Options',
         },
         {
-            path: '/add-player',
+            path: '/rules',
             label: 'Rules',
             id: 'rules',
             title: 'Game Rules',

@@ -5,17 +5,15 @@ import { DashboardContainer } from './DashboardContainer';
 import { useDashboardStore } from '../store/store';
 import { useBackendStatus } from '../store/useBackendStatus';
 import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
-import Lobby from '../components/Lobby';
-import TestOne from '../components/TestOne';
-import TestTwo from '../components/TestTwo';
-import TennisPlayersList from '../components/TennisPlayersList';
+
 import Properties from '../views/properties';
 import Private from '../views/private';
 import Landing from '../components/Landing';
 import TopList from '../components/TopList';
-import TennisPlayerCreator from '../components/TennisPlayerCreator';
+
 import GameWrapper from '../components/game/GameWrapper';
 import ChatLobby from './ChatLobby';
+import Rules from '../components/Rules';
 
 interface DashboardManagerProps {
     children: React.ReactNode;
@@ -55,20 +53,18 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
 
                     {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/lobby' && <ChatLobby />}
-                    {dashboard.path === '/testone' && <TestOne />}
-                    {dashboard.path === '/testtwo' && <TestTwo />}
-                    {dashboard.path === '/players' && <TennisPlayersList />}
+
                     {dashboard.path === '/userproperties' && <Properties />}
                     {dashboard.path === '/private' && <Private />}
+                    {dashboard.path === '/rules' && <Rules />}
 
-                    {/* {children} */}
-                    {dashboard.path === '/add-player' && (
+                    {/* {dashboard.path === '/add-player' && (
                         <TennisPlayerCreator
                             onClose={() => {
                                 console.log('created well');
                             }}
                         />
-                    )}
+                    )} */}
                     {/* {children} */}
                 </DashboardContainer>
             ))}

@@ -15,7 +15,7 @@ import TennisPlayersList from './components/TennisPlayersList';
 import TennisPlayerCreator from './components/TennisPlayerCreator';
 import WebSocketChat from './components/wstest';
 import ChatComponent from './components/ChatComponent';
-import { Button } from 'flowbite-react';
+import { Button, Footer } from 'flowbite-react';
 import { useState } from 'react';
 import Properties from './views/properties';
 // import TopList from './components/Toplist';
@@ -23,10 +23,12 @@ import Navbar from './components/Navbar';
 import TestOne from './components/TestOne';
 import TestTwo from './components/TestTwo';
 import DashboardManager from './layouts/DashboardManager';
-import Lobby from './components/Lobby';
+
 import { ListPlayerCards } from './components/ListPlayerCards';
 import JustAContainer from './layouts/JustAContainer';
 import TopList from './components/TopList';
+import Rules from './components/Rules';
+import BottomFooter from './components/BottomFooter';
 
 const App: React.FC = () => {
     return (
@@ -50,15 +52,14 @@ const App: React.FC = () => {
                                     element={<Properties />}
                                 />
                                 <Route path="/private" element={<Private />} />
-                                <Route path="/lobby" element={<Lobby />} />
-                                <Route path="/testone" element={<TestOne />} />
-                                <Route path="/testtwo" element={<TestTwo />} />
+                                <Route path="/rules" element={<Rules />} />
                                 <Route
                                     path="/TennisPlayersList"
                                     element={<TennisPlayersList />}
                                 />
                             </Routes>
                         </DashboardManager>
+                        <BottomFooter />
                         <Routes>
                             {/* <Route
                                 path="/userproperties"
@@ -85,7 +86,7 @@ const App: React.FC = () => {
                             <Route path="/private" element={<Private />} />
                             <Route path="/lobby" />
                             <Route path="/ranks" />
-                            <Route path="/players" />
+                            <Route path="/rules" />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
                             <Route
