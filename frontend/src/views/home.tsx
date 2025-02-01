@@ -30,7 +30,9 @@ const Home: React.FC<VisibilityProps> = ({ isVisible = true }) => {
 const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
-            <h1 className="hidden md:block">{user?.username}</h1>
+            <h1 className="hidden text-xl font-bold text-orange-900 lg:block">
+                {user?.username}
+            </h1>
             <Link to="/private">
                 <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                     Private
@@ -48,7 +50,7 @@ const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
 export const LoggedOutView = ({ title = 'Welcome' }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
-            <h1 className="hidden md:block">{title}</h1>
+            <h1 className="hidden lg:block">{title}</h1>
             <Link to="/login">
                 <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
                     Login
