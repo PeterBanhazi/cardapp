@@ -73,7 +73,7 @@ const Navbar: React.FC = () => {
     };
     useEffect(() => {
         updateNavbarHover();
-    }, [location.pathname]);
+    }, [location]);
 
     // fix for hovered background if needed:
 
@@ -151,7 +151,7 @@ const Navbar: React.FC = () => {
                                         key={link.path}
                                         to={link.path}
                                         className={({ isActive }) =>
-                                            `px-1 py-2 mx-1 lg:px-1 lg:mx-1 text-md font-semibold relative z-10 transition-colors duration-200 
+                                            `px-1 py-2 mx-1 lg:px-1 lg:mx-1 text-sm font-semibold relative z-10 transition-colors duration-200 
                       ${
                           isActive
                               ? 'text-blue-700 active'

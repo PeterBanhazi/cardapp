@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 
 
+
 export interface DashboardStatus {
   hasNewMessage: boolean;
   hasWarning: boolean;
@@ -44,7 +45,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
       
   //   }]
   // })),
-
+  
   initializeDashboard: () => set((state) => ({
     dashboards: [{
       id: 'landing',
@@ -87,9 +88,10 @@ export const useDashboardStore = create<DashboardState>((set) => ({
     };
   }),
   
-  removeDashboard: (id) => set((state) => ({
-    dashboards: state.dashboards.filter(d => d.id !== id)
-  })),
+  removeDashboard: (id) => 
+    set((state) => ({
+      dashboards: state.dashboards.filter(d => d.id !== id)
+    })),
   
   toggleCollapse: (id) => set((state) => ({
     dashboards: state.dashboards.map(d => 

@@ -6,13 +6,15 @@ const Rules: React.FC = () => {
         <div className="flex flex-col items-center">
             <img
                 src="src\assets\bg\mario-gogh-MpmAzASjUaM-unsplash.jpg"
-                alt="Lobby"
-                className="w-full max-w-2xl rounded-lg shadow-lg"
+                alt="Rules"
+                className="w-full max-w-md rounded-lg shadow-xl shadow-black"
             />
-            <div className="mt-4 text-center">
-                <h2 className="text-2xl font-bold">Welcome to the Lobby</h2>
-                <p className="mt-2">Your lobby text here</p>
-                <p className="mt-2">
+            <div className="mt-4 mx-14 text-center">
+                <h2 className="text-2xl font-bold text-start mt-2">
+                    Welcome to the Lobby
+                </h2>
+                <p className="mt-2 text-start">Your lobby text here</p>
+                <p className="mt-2 text-justify">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit.
                     Voluptas dicta assumenda veniam nisi modi rem minima maxime
                     culpa, voluptates quae obcaecati consectetur, in aut. Ipsam

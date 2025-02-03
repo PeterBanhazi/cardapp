@@ -8,8 +8,10 @@ import {
     AlertTriangle,
     Signal,
 } from 'lucide-react';
+import { useDashboardStore } from '../store/store';
 
 import { DashboardStatus } from '../store/store';
+import { useNavigate } from 'react-router-dom';
 interface DashboardContainerProps {
     id: string;
     title: string;
@@ -37,6 +39,9 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
             onToggleCollapse(id);
         }
     };
+
+    const { dashboards } = useDashboardStore();
+    const navigate = useNavigate();
     return (
         <div className="w-full mb-4 bg-white bg-opacity-25 rounded-b-lg shadow-lg">
             <div
@@ -102,7 +107,19 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                             <RefreshCw className="w-5 h-5" />
                         </button>
                         <button
-                            onClick={() => onClose(id)}
+                            onClick={() => {
+                                if (dashboards.length === 1) {
+                                    navigate('/');
+                                }
+                                if (
+                                    dashboards.length > 1 &&
+                                    id === dashboards[0].id
+                                ) {
+                                    navigate(dashboards[1].path);
+                                }
+
+                                onClose(id);
+                            }}
                             className="p-1 text-gray-500 hover:text-red-500 transition-colors"
                             aria-label="Close"
                         >

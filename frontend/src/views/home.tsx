@@ -30,7 +30,7 @@ const Home: React.FC<VisibilityProps> = ({ isVisible = true }) => {
 const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
-            <h1 className="hidden text-xl font-bold text-orange-900 lg:block">
+            <h1 className="hidden lg:text-sm xl:text-lg font-semibold text-orange-900 lg:block">
                 {user?.username}
             </h1>
             <Link to="/private">

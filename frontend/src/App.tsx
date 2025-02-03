@@ -15,6 +15,9 @@ import DashboardManager from './layouts/DashboardManager';
 import Rules from './components/Rules';
 import BottomFooter from './components/BottomFooter';
 import MainDesignWrapper from './layouts/MainDesignWrapper';
+import ChatLobby from './layouts/ChatLobby';
+import TopList from './components/TopList';
+import GameWrapper from './components/game/GameWrapper';
 
 const App: React.FC = () => {
     return (
@@ -28,50 +31,29 @@ const App: React.FC = () => {
 
                         <DashboardManager>
                             <Routes>
+                                <Route path="/" element={<GameWrapper />} />
+                                <Route path="/lobby" element={<ChatLobby />} />
+                                <Route path="/ranks" element={<TopList />} />
                                 <Route
                                     path="/userproperties"
                                     element={<Properties />}
                                 />
-                                <Route path="/private" element={<Private />} />
+
                                 <Route path="/rules" element={<Rules />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route
+                                    path="/register"
+                                    element={<Register />}
+                                />
+                                <Route
+                                    path="/logout"
+                                    element={<Logout isVisible={false} />}
+                                />
+                                <Route path="/private" element={<Private />} />
+                                <Route path="*" element={<Navigate to="/" />} />
                             </Routes>
                         </DashboardManager>
                         <BottomFooter />
-                        <Routes>
-                            {/* <Route
-                                path="/userproperties"
-                                element={
-                                    <PrivateRoute>
-                                        <Properties />
-                                    </PrivateRoute>
-                                }
-                            /> */}
-                            {/* <Route
-                                path="/private"
-                                element={
-                                    <PrivateRoute>
-                                        <Private />
-                                    </PrivateRoute>
-                                }
-                            /> */}
-
-                            <Route
-                                path="/"
-                                element={<Home isVisible={true} />}
-                            />
-                            <Route path="/userproperties" />
-                            <Route path="/private" element={<Private />} />
-                            <Route path="/lobby" />
-                            <Route path="/ranks" />
-                            <Route path="/rules" />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route
-                                path="/logout"
-                                element={<Logout isVisible={false} />}
-                            />
-                            <Route path="*" element={<Navigate to="/" />} />
-                        </Routes>
                     </MainWrapper>
                 </BrowserRouter>
             </MainDesignWrapper>
