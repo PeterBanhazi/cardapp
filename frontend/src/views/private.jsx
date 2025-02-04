@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
-import UserPropertiesComponent from '../components/UserPropertiesComponent';
 
 const Private = () => {
     const [res, setRes] = useState('');
@@ -28,14 +27,7 @@ const Private = () => {
             setPostRes(error.response.data);
         }
     };
-    const updateUserProperties = async () => {
-        try {
-            const response = await api.get('/userproperties/');
-            console.log(response.data);
-        } catch (err) {
-            setError('Failed to update user properties.');
-        }
-    };
+
     return (
         <>
             <section>
@@ -47,9 +39,6 @@ const Private = () => {
                 </form>
                 {posRes && <p>{posRes}</p>}
             </section>
-            <div>
-                <button onClick={updateUserProperties}>Get</button>
-            </div>
         </>
     );
 };
