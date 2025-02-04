@@ -73,9 +73,13 @@ const Navbar: React.FC = () => {
     };
     useEffect(() => {
         updateNavbarHover();
+        const foundLink = navLinks.find(
+            (link) => link.path === location.pathname
+        );
+        if (foundLink) handleDashboardClick(foundLink);
     }, [location]);
 
-    // fix for hovered background if needed:
+    // ### fix for hovered background if needed:
 
     // useEffect(() => {
     //     const handleResize = () => {

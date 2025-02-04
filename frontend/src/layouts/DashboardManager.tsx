@@ -7,8 +7,7 @@ import { useBackendStatus } from '../store/useBackendStatus';
 import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
 
 import Properties from '../views/properties';
-import Private from '../views/private';
-import Landing from '../components/Landing';
+
 import TopList from '../components/TopList';
 
 import GameWrapper from '../components/game/GameWrapper';
@@ -31,9 +30,10 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
         initializeDashboard,
     } = useDashboardStore();
 
-    useEffect(() => {
-        initializeDashboard();
-    }, [initializeDashboard]);
+    // useEffect(() => {
+    //     // ### remove this for proper browser address handling
+    //     initializeDashboard();
+    // }, [initializeDashboard]);
 
     return (
         <div className="container mx-auto p-4 space-y-4">
@@ -55,7 +55,7 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     {dashboard.path === '/lobby' && <ChatLobby />}
 
                     {dashboard.path === '/userproperties' && <Properties />}
-                    {dashboard.path === '/private' && <Private />}
+
                     {dashboard.path === '/rules' && <Rules />}
 
                     {/* {dashboard.path === '/add-player' && (
