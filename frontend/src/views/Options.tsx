@@ -8,7 +8,7 @@ interface UserProperties {
     favoriteplayers: string;
 }
 
-const Properties = () => {
+const Options = () => {
     const [userProperties, setUserProperties] = useState<UserProperties>({
         isonline: false,
         friends: '',
@@ -25,7 +25,7 @@ const Properties = () => {
             setLoading(true);
             setError(null);
 
-            const response: any = await api.get('userproperties/');
+            const response: any = await api.get('options/');
             console.log(response.data);
             setUserProperties(response.data);
         } catch (err) {
@@ -42,7 +42,7 @@ const Properties = () => {
             setError(null);
             setSuccessMessage(null);
 
-            const response = await api.post('userproperties/', userProperties);
+            const response = await api.post('options/', userProperties);
 
             setSuccessMessage('User properties updated successfully.');
         } catch (err) {
@@ -163,4 +163,4 @@ const Properties = () => {
     );
 };
 
-export default Properties;
+export default Options;

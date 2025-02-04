@@ -18,7 +18,7 @@ import WebSocketChat from './components/wstest';
 import ChatComponent from './components/ChatComponent';
 import { Button } from 'flowbite-react';
 import { useState } from 'react';
-import Properties from './views/properties';
+import Properties from './views/Options';
 import TopList from './components/Toplist';
 import Navbar from './components/Navbar';
 

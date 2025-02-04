@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
         { path: '/ranks', label: 'Ranks', id: 'rank', title: 'Ranks' },
         // { path: '/players', label: 'Players', id: 'players', title: 'Players' },
         {
-            path: '/userproperties',
+            path: '/options',
             label: 'Options',
             id: 'options',
             title: 'Options',

@@ -6,13 +6,14 @@ import { useDashboardStore } from '../store/store';
 import { useBackendStatus } from '../store/useBackendStatus';
 import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
 
-import Properties from '../views/properties';
+import Properties from '../views/Options';
 
 import TopList from '../components/TopList';
 
 import GameWrapper from '../components/game/GameWrapper';
 import ChatLobby from './ChatLobby';
 import Rules from '../components/Rules';
+import Options from '../views/Options';
 
 interface DashboardManagerProps {
     children: React.ReactNode;
@@ -54,7 +55,7 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/lobby' && <ChatLobby />}
 
-                    {dashboard.path === '/userproperties' && <Properties />}
+                    {dashboard.path === '/options' && <Options />}
 
                     {dashboard.path === '/rules' && <Rules />}
 
