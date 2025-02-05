@@ -17,7 +17,8 @@ import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from .models import TennisPlayer,Friendship,UserProperties
+from .models import TennisPlayer,UserProperties, Friendship
+
 
 from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer
 
@@ -51,7 +52,7 @@ class FriendshipViewSet(RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Friendship.objects.filter(username=self.request.user)
+        return Friendship.objects.filter(username=self.request.user).order_by('-created_at')
 
 class UserPropertiesView(RetrieveUpdateAPIView):
     serializer_class = UserPropertiesSerializer
@@ -122,8 +123,8 @@ def getRoutes(request):
         '/api/test/',
         '/api/get/playerlist',
         '/api/post/add-player/',
-        '/api/get/toplist/',
-        '/api/get/userproperties/',
+        '/api/get/ranks/',
+        '/api/options',
         '/api/get/friends',
         
 

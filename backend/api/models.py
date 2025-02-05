@@ -10,10 +10,13 @@ class TennisPlayer(models.Model):
     Model representing a professional tennis player with their abilities
     """
     id = models.IntegerField(primary_key=True, unique=True, editable=False)
-    username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_players')
+    creator_username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_players')
     name = models.CharField(max_length=20, unique=True)
     avatar_url = models.CharField(max_length=255,null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    current_player = models.ManyToManyField(User, related_name='current_player_for_profile')
+    favorite_player = models.ManyToManyField(User, related_name='favorite_player_for_profile') 
+    
     
     # Abilities with integer rating (0-100)
     # Ability fields with validators
@@ -60,24 +63,16 @@ class TennisPlayer(models.Model):
 
 
     def __str__(self):
-        return f"{self.name} (Created by {self.username})"
+        return f"{self.name} (Created by {self.creator_username})"
 
 
 #Users options and details
 class UserProperties(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
-    isonline = models.BooleanField(blank=True, null=True)
-    # friends = models.CharField(max_length=250)
-    rankpoints = models.IntegerField(null=True, blank=True, default=0)
-    # customplayers = models.CharField(max_length=250)
-    favorite_players = models.CharField(max_length=250, null=True, blank=True, default=0)
-    current_player = models.ForeignKey(
-        TennisPlayer, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        related_name='active_player_for_profile'
-    )
-    
+    isonline = models.BooleanField(blank=True, null=False, default=False)
+
+    rankpoints = models.IntegerField(null=False, blank=True, default=0)
+
 
     def __str__(self):
         return f"{self.rankpoints} (Created by {self.username.username})"
@@ -103,4 +98,4 @@ class Friendship(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.friend.username}"
+        return f"{self.username.username} - {self.friend.username}"

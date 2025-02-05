@@ -8,13 +8,13 @@ from rest_framework.validators import UniqueValidator
 from .models import TennisPlayer, UserProperties, Friendship
 
 
-#Default list serializers for friend connections 
+# Default list serializers for friend connections 
 class FriendshipSerializer(serializers.ModelSerializer):
     friend_username = serializers.CharField(source='friend.username', read_only=True)
 
     class Meta:
         model = Friendship
-        fields = ['friend', 'friend_username', 'status', 'created_at']
+        fields = ['friend_username', 'status', 'created_at']
 
 
 #Default list serializers
@@ -27,14 +27,11 @@ class TopListSerializer(serializers.ModelSerializer):
         
 # Usermade custom player serializer
 
-class TennisPlayerSerializer(serializers.ModelSerializer):
- 
-   
- 
+class TennisPlayerSerializer(serializers.ModelSerializer): 
     class Meta:
         model = TennisPlayer
         fields = [
-            'id','username', 'name', 'avatar_url', 
+            'id','creator_username', 'name', 'avatar_url', 
             'serve', 'forehand', 'backhand', 
             'volley', 'stamina', 'agility'
         ]
@@ -96,9 +93,11 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='username.username')
     custom_players = TennisPlayerSerializer(source='username.custom_players', many=True, read_only=True)
     friendships = FriendshipSerializer(source='username.friendships', many=True, read_only=True)
+    favorite_players = TennisPlayerSerializer(source='username.favorite_player_for_profile', many=True, read_only=True)
+    current_player = TennisPlayerSerializer(source='username.current_player_for_profile', many=True, read_only=True)
     class Meta:
         model = UserProperties
-        fields = ['username','isonline','rankpoints','friendships','favorite_players','current_player','custom_players']
+        fields = ['username','friendships','isonline','rankpoints','favorite_players','current_player','custom_players']
 
 
 
