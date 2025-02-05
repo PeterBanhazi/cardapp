@@ -94,7 +94,7 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     custom_players = TennisPlayerSerializer(source='username.custom_players', many=True, read_only=True)
     friendships = FriendshipSerializer(source='username.friendships', many=True, read_only=True)
     favorite_players = TennisPlayerSerializer(source='username.favorite_player_for_profile', many=True, read_only=True)
-    current_player = TennisPlayerSerializer(source='username.current_player_for_profile', many=True, read_only=True)
+    current_player = TennisPlayerSerializer()
     class Meta:
         model = UserProperties
         fields = ['username','friendships','isonline','rankpoints','favorite_players','current_player','custom_players']

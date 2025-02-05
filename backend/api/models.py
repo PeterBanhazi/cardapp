@@ -10,12 +10,13 @@ class TennisPlayer(models.Model):
     Model representing a professional tennis player with their abilities
     """
     id = models.IntegerField(primary_key=True, unique=True, editable=False)
+    # TODO: remove null and blank options
     creator_username = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_players')
     name = models.CharField(max_length=20, unique=True)
     avatar_url = models.CharField(max_length=255,null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    current_player = models.ManyToManyField(User, related_name='current_player_for_profile')
-    favorite_player = models.ManyToManyField(User, related_name='favorite_player_for_profile') 
+    favorite_player = models.ManyToManyField(User, related_name='favorite_player_for_profile')
+    
     
     
     # Abilities with integer rating (0-100)
@@ -70,8 +71,9 @@ class TennisPlayer(models.Model):
 class UserProperties(models.Model):
     username = models.OneToOneField(User, on_delete=models.CASCADE)
     isonline = models.BooleanField(blank=True, null=False, default=False)
-
+    current_player = models.ForeignKey(TennisPlayer, on_delete=models.SET_DEFAULT, default=1, related_name='current_player_for_profile')
     rankpoints = models.IntegerField(null=False, blank=True, default=0)
+    
 
 
     def __str__(self):
@@ -99,3 +101,6 @@ class Friendship(models.Model):
 
     def __str__(self):
         return f"{self.username.username} - {self.friend.username}"
+    
+    class Meta:
+        ordering = ['-created_at'] 
