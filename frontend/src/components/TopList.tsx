@@ -21,7 +21,7 @@ const TopList: React.FC = () => {
         const fetchUsers = async () => {
             const api = useAxios();
             try {
-                const response = await api.get<User[]>('toplist/');
+                const response = await api.get<User[]>('ranks/');
                 setUsers(response.data);
                 setLoading(false);
             } catch (error) {
