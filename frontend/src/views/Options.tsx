@@ -1,166 +1,192 @@
-import { useEffect, useState } from 'react';
 import useAxios from '../utils/useAxios';
-
-interface UserProperties {
-    isonline: boolean;
-    friends: string;
-    customplayers: string;
-    favoriteplayers: string;
+import { useQuery } from '@tanstack/react-query';
+import { Card } from 'flowbite-react';
+import { Switch } from 'radix-ui';
+import * as React from 'react';
+import TennisPlayerCards from '../components/TennisPlayerCards';
+interface PlayerStats {
+    id: number;
+    creator_username: number | string | null;
+    name: string;
+    avatar_url: string;
+    serve: number;
+    forehand: number;
+    backhand: number;
+    volley: number;
+    stamina: number;
+    agility: number;
 }
 
-const Options = () => {
-    const [userProperties, setUserProperties] = useState<UserProperties>({
-        isonline: false,
-        friends: '',
-        customplayers: '',
-        favoriteplayers: '',
-    });
+interface Friendship {
+    friend_username: string;
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+    created_at: string;
+}
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+interface UserData {
+    username: string;
+    isonline: boolean;
+    rankpoints: number;
+    friendships: Friendship;
+    favorite_players: PlayerStats[];
+    current_player: PlayerStats[];
+    custom_players: PlayerStats[];
+}
+
+function Options() {
     const api = useAxios();
-    const fetchUserProperties = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const response: any = await api.get('options/');
-            console.log(response.data);
-            setUserProperties(response.data);
-        } catch (err) {
-            setError('Failed to fetch user properties.');
-        } finally {
-            setLoading(false);
-        }
+    const fetchUserProperties = async (): Promise<UserData[] | any> => {
+        return await api
+            .get<UserData[]>('options/')
+            .then((response) => response.data);
     };
+
+    const { isPending, isError, data, error } = useQuery({
+        queryKey: ['userproperties'],
+        queryFn: fetchUserProperties,
+    });
+    if (isPending) {
+        return <span>Loading...</span>;
+    }
+
+    if (isError) {
+        return <span>Error: {error.message}</span>;
+    }
+    console.log(data);
 
     // Update User Properties
-    const updateUserProperties = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            setSuccessMessage(null);
+    // const updateUserProperties = async () => {
+    //     try {
+    //         setLoading(true);
+    //         setError(null);
+    //         setSuccessMessage(null);
 
-            const response = await api.post('options/', userProperties);
+    //         const response = await api.post('options/', userProperties);
 
-            setSuccessMessage('User properties updated successfully.');
-        } catch (err) {
-            setError('Failed to update user properties.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         setSuccessMessage('User properties updated successfully.');
+    //     } catch (err) {
+    //         setError('Failed to update user properties.');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    const OptionsLeftContainer: React.FC<{
+        player: PlayerStats;
+        isOnline: boolean;
+        rankPoints: number;
+    }> = ({ player, isOnline, rankPoints }) => (
+        <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent border">
+            <div className="text-lg font-semibold">
+                Rank Points: {rankPoints}
+            </div>
 
-    // Fetch user properties on component mount
-    useEffect(() => {
-        // if (!jwtToken) {
-        //     setError('No JWT token found. Please log in.');
-        //     return;
-        // }
-
-        try {
-            //     jwtDecode(jwtToken); // Verify token validity
-            fetchUserProperties();
-        } catch {
-            setError('Invalid token. Please log in again.');
-        }
-    }, []);
-
-    // Handle input changes
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value, type, checked } = e.target;
-
-        setUserProperties((prev) => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-    };
-
-    return (
-        <>
-            <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-                <h1 className="text-2xl font-bold mb-4">User Properties</h1>
-
-                {loading && <p className="text-gray-500">Loading...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-                {successMessage && (
-                    <p className="text-green-500">{successMessage}</p>
-                )}
-
-                {/* Form */}
-                <div className="space-y-4">
-                    {/* Online Status */}
+            <div>
+                <form>
                     <div className="flex items-center">
-                        <label className="mr-2 font-semibold">Is Online:</label>
-                        <input
-                            type="checkbox"
-                            name="isonline"
-                            checked={userProperties.isonline}
-                            onChange={handleChange}
-                            className="h-5 w-5"
-                        />
-                    </div>
-
-                    {/* Friends */}
-                    <div>
-                        <label className="block font-semibold mb-1">
-                            Friends:
+                        <label
+                            className={`pr-[15px] text-sm leading-none font-bold
+                ${isOnline ? 'text-green-400' : 'text-gray-700'}`}
+                            htmlFor="online-mode"
+                        >
+                            {isOnline ? 'Online' : 'Go Online!'}
                         </label>
-                        <input
-                            type="text"
-                            name="friends"
-                            value={userProperties.friends}
-                            onChange={handleChange}
-                            placeholder="Enter friends (comma-separated)"
-                            className="w-full border rounded p-2"
-                        />
+                        <Switch.Root
+                            className="relative h-[25px] w-[42px] cursor-default rounded-full bg-blackA6 shadow-[0_2px_10px] shadow-blackA4 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-green-500"
+                            id="online-mode"
+                            checked={isOnline}
+                            onCheckedChange={() => {
+                                console.log('yes');
+                            }}
+                            style={{
+                                WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+                            }}
+                        >
+                            <Switch.Thumb className="block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] shadow-blackA4 transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
+                        </Switch.Root>
                     </div>
+                </form>
+            </div>
+            <div>
+                <div className="relative"></div>
+                <TennisPlayerCards players={[player]} />
 
-                    {/* Custom Players */}
-                    <div>
-                        <label className="block font-semibold mb-1">
-                            Custom Players:
-                        </label>
-                        <input
-                            type="text"
-                            name="customplayers"
-                            value={userProperties.customplayers}
-                            onChange={handleChange}
-                            placeholder="Enter custom players"
-                            className="w-full border rounded p-2"
-                        />
-                    </div>
+                <div className="flex flex-row justify-self-center">
+                    <button className="bg-slate-400 ">Option1</button>
 
-                    {/* Favorite Players */}
-                    <div>
-                        <label className="block font-semibold mb-1">
-                            Favorite Players:
-                        </label>
-                        <input
-                            type="text"
-                            name="favoriteplayers"
-                            value={userProperties.favoriteplayers}
-                            onChange={handleChange}
-                            placeholder="Enter favorite players"
-                            className="w-full border rounded p-2"
-                        />
-                    </div>
-
-                    {/* Submit Button */}
-                    <button
-                        onClick={updateUserProperties}
-                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-                        disabled={loading}
-                    >
-                        {loading ? 'Updating...' : 'Save Changes'}
-                    </button>
+                    <button>Option2</button>
                 </div>
             </div>
-        </>
+        </div>
     );
-};
+
+    const OptionsMiddleContainer: React.FC<{
+        players: PlayerStats[];
+    }> = ({ players }) => (
+        <div className="w-full h-full p-4 overflow-y-auto border-2">
+            <h3 className="text-lg font-semibold mb-4">Custom Players</h3>
+
+            <TennisPlayerCards players={players} />
+        </div>
+    );
+
+    // Right component for friendships
+    const OptionsRightContainer: React.FC<{
+        friendships: Friendship[];
+    }> = ({ friendships }) => (
+        <div className="w-full h-full p-1 border overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Friendships</h3>
+            <div className="pb-3">
+                <form action="/action_page.php" id="inviteform" className="">
+                    <input
+                        type="text"
+                        name="inviteform"
+                        placeholder="Invite friend"
+                        className="w-[138px]"
+                    />
+                    <input type="submit" value="Send Request" />
+                </form>
+            </div>
+            {friendships.map((friend) => (
+                <div
+                    key={friend.friend_username}
+                    className={`flex items-center flex-column text-sm font-semibold mb-2 pb-2 border-b ${
+                        friend.status === `PENDING`
+                            ? 'bg-yellow-500'
+                            : friend.status === 'ACCEPTED'
+                            ? 'bg-green-500'
+                            : 'bg-red-500'
+                    }`}
+                >
+                    <div>
+                        <span>{friend.friend_username}</span>
+                        {friend.status === `PENDING` ? (
+                            <div> Accept Reject:</div>
+                        ) : (
+                            <div>Chat Play Del Info</div>
+                        )}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <div className="flex justify-evenly gap-1 w-full h-[536px] border-2 border-purple-500">
+            <div className="w-[148px] h-[528px]">
+                <OptionsLeftContainer
+                    player={data.current_player}
+                    isOnline={data.isonline}
+                    rankPoints={data.rankpoints}
+                />
+            </div>
+            <div className="w-[418px] h-[528px]">
+                <OptionsMiddleContainer players={data.custom_players} />
+            </div>
+            <div className="w-[148px] h-[528px]">
+                <OptionsRightContainer friendships={data.friendships} />
+            </div>
+        </div>
+    );
+}
 
 export default Options;

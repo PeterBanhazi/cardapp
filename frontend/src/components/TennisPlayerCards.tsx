@@ -7,7 +7,19 @@ import {
     CardFooter,
 } from './ui/card';
 
-interface PlayerAbilities {
+// interface PlayerAbilities {
+//     serve: number;
+//     forehand: number;
+//     backhand: number;
+//     volley: number;
+//     stamina: number;
+//     agility: number;
+// }
+interface PlayerStats {
+    id: number;
+    creator_username: number | string | null;
+    name: string;
+    avatar_url: string;
     serve: number;
     forehand: number;
     backhand: number;
@@ -16,15 +28,11 @@ interface PlayerAbilities {
     agility: number;
 }
 
-interface Player {
-    name: string;
-    avatarUrl: string;
-    abilities: PlayerAbilities;
-}
-
-const TennisPlayerCards: React.FC<{ players: Player[] }> = ({ players }) => {
+const TennisPlayerCards: React.FC<{ players: PlayerStats[] }> = ({
+    players,
+}) => {
     return (
-        <div className="flex flex-wrap gap-3 mx-auto p-4">
+        <div className="flex flex-wrap gap-1 mx-auto p-2">
             {players.map((player) => (
                 <Card
                     key={player.name}
@@ -32,7 +40,7 @@ const TennisPlayerCards: React.FC<{ players: Player[] }> = ({ players }) => {
                 >
                     <CardHeader className="space-y-1.5 p-2">
                         <img
-                            src={player.avatarUrl}
+                            src={player.avatar_url}
                             alt={player.name}
                             className="w-20 h-20 rounded-full mx-auto"
                         />
@@ -43,12 +51,12 @@ const TennisPlayerCards: React.FC<{ players: Player[] }> = ({ players }) => {
                                 {player.name}
                             </CardTitle>
                             <div className="flex-col pl-2">
-                                <div>Serve: {player.abilities.serve}</div>
-                                <div>Forehand: {player.abilities.forehand}</div>
-                                <div>Backhand: {player.abilities.backhand}</div>
-                                <div>Volley: {player.abilities.volley}</div>
-                                <div>Stamina: {player.abilities.stamina}</div>
-                                <div>Agility: {player.abilities.agility}</div>
+                                <div>Serve: {player.serve}</div>
+                                <div>Forehand: {player.forehand}</div>
+                                <div>Backhand: {player.backhand}</div>
+                                <div>Volley: {player.volley}</div>
+                                <div>Stamina: {player.stamina}</div>
+                                <div>Agility: {player.agility}</div>
                             </div>
                         </CardContent>
                         <CardFooter className="p-0 flex justify-center">
