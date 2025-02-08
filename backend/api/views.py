@@ -62,6 +62,46 @@ class UserPropertiesView(RetrieveUpdateAPIView):
         """Fetch the UserProperties for the current logged-in user."""
         user_properties, created = UserProperties.objects.get_or_create(username=self.request.user)
         return user_properties
+    
+    def update(self, request, *args, **kwargs):
+    # partial=True esetén PATCH kérés, partial=False esetén PUT kérés
+        partial = kwargs.pop('partial', True)
+        
+        # Lekérjük az aktuális termék példányt
+        instance = self.get_instance()
+        
+        # Példa a részleges frissítés működésére
+        print("Eredeti adatok:", instance.username, instance.isonline)
+        print("Beérkező adatok:", request.data)
+        
+        # Szerializáljuk az adatokat
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial  # Ha True, akkor csak a megadott mezők frissülnek
+        )
+        if 'isonline' in request.data:
+            # Boolean mező módosítása
+            instance.isonline = request.data['isonline']
+        
+        if 'current_player' in request.data:
+            # ForeignKey mező módosítása
+            try:
+                try_current_player = TennisPlayer.objects.get(id=request.data['current_player'])
+                instance.current_player = try_current_player
+            except TennisPlayer.DoesNotExist:
+                return Response(
+                    {"error": "A megadott playa nem létezik"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        # Itt lehet további műveleteket végezni mentés előtt
+        serializer.save()
 
         
 #User made Custom players: 
@@ -72,7 +112,7 @@ class AddTennisPlayerView(APIView):
     
     """
     permission_classes = [IsAuthenticated]
-    # queryset = TennisPlayer.objects.all()
+    queryset = TennisPlayer.objects.all()
     serializer_class = TennisPlayerSerializer
 
 
@@ -84,7 +124,7 @@ class AddTennisPlayerView(APIView):
         
         if serializer.is_valid():
             # Save the tennis player
-            tennis_player = serializer.save(username=self.request.user)
+            tennis_player = serializer.save(creator_username=self.request.user)
             return Response(
                 {
                     'message': 'Tennis player created successfully', 
