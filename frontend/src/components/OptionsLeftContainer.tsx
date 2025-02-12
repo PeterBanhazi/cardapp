@@ -3,6 +3,8 @@ import { PlayerStats } from '../utils/types';
 import { Switch } from 'radix-ui';
 import TennisPlayerCards from './TennisPlayerCards';
 import TennisPlayerCreator from './TennisPlayerCreator';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAxios from '../utils/useAxios';
 
 const OptionsLeftContainer: React.FC<{
     player: PlayerStats;
@@ -10,6 +12,24 @@ const OptionsLeftContainer: React.FC<{
     rankPoints: number;
 }> = ({ player, isOnline, rankPoints }) => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isOnlineSwitch, setIsOnlineSwitch] = useState(isOnline);
+
+    const queryClient = useQueryClient();
+
+    const addTodoMutation = useMutation({
+        mutationFn: (newTodo: boolean): any =>
+            useAxios().patch('options/', { isonline: newTodo }),
+        // make sure to _return_ the Promise from the query invalidation
+        // so that the mutation stays in `pending` state until the refetch is finished
+        onSettled: async () => {
+            return await queryClient.invalidateQueries({
+                queryKey: ['userproperties'],
+            });
+        },
+    });
+
+    const { isPending, submittedAt, variables, mutate, isError } =
+        addTodoMutation;
     return (
         <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent border">
             <div className="text-lg font-semibold">
@@ -18,9 +38,9 @@ const OptionsLeftContainer: React.FC<{
 
             <div>
                 <form>
-                    <div className="flex items-center">
+                    <div className="grid grid-cols-2 gap-5 w-full">
                         <label
-                            className={`pr-[15px] text-sm leading-none font-bold
+                            className={`text-sm  font-bold
             ${isOnline ? 'text-green-400' : 'text-gray-700'}`}
                             htmlFor="online-mode"
                         >
@@ -31,7 +51,8 @@ const OptionsLeftContainer: React.FC<{
                             id="online-mode"
                             checked={isOnline}
                             onCheckedChange={() => {
-                                console.log('yes');
+                                mutate(!isOnlineSwitch),
+                                    setIsOnlineSwitch((e) => !e);
                             }}
                             style={{
                                 WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
@@ -63,6 +84,14 @@ const OptionsLeftContainer: React.FC<{
                             onClose={() => setIsCreateOpen(false)}
                         />
                     )}
+                    <button
+                        className="flex rounded-xl border-2 justify-self-center"
+                        onClick={() => {
+                            mutate(isOnline ? false : true);
+                        }}
+                    >
+                        mutate
+                    </button>
                 </div>
             </div>
         </div>

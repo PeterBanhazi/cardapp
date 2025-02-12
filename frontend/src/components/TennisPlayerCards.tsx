@@ -6,27 +6,7 @@ import {
     CardContent,
     CardFooter,
 } from './ui/card';
-
-// interface PlayerAbilities {
-//     serve: number;
-//     forehand: number;
-//     backhand: number;
-//     volley: number;
-//     stamina: number;
-//     agility: number;
-// }
-interface PlayerStats {
-    id: number;
-    creator_username: number | string | null;
-    name: string;
-    avatar_url: string;
-    serve: number;
-    forehand: number;
-    backhand: number;
-    volley: number;
-    stamina: number;
-    agility: number;
-}
+import { PlayerStats } from '../utils/types';
 
 const TennisPlayerCards: React.FC<{ players: PlayerStats[] }> = ({
     players,
