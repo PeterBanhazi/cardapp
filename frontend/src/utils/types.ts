@@ -13,7 +13,7 @@ export interface PlayerStats {
 
 export interface Friendship {
     friend_username: string;
-    status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+    status: 'PENDING' | 'ACCEPTED' | 'BLOCKED';
     created_at: string;
 }
 

@@ -35,8 +35,12 @@ function Options() {
                     rankPoints={data.rankpoints}
                 />
             </div>
-            <div className="w-[418px] h-[528px]">
-                <OptionsMiddleContainer players={data.custom_players} />
+            <div className="w-[418px] h-[528px] lg:w-[816px] xl:w-[1024px]">
+                <OptionsMiddleContainer
+                    all_players={data.custom_players.concat(
+                        data.favorite_players
+                    )}
+                />
             </div>
             <div className="w-[148px] h-[528px]">
                 <OptionsRightContainer friendships={data.friendships} />

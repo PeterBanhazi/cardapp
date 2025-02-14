@@ -8,12 +8,10 @@ import {
 } from './ui/card';
 import { PlayerStats } from '../utils/types';
 
-const TennisPlayerCards: React.FC<{ players: PlayerStats[] }> = ({
-    players,
-}) => {
+const TennisPlayerCards: React.FC<{ player: PlayerStats }> = ({ player }) => {
     return (
-        <div className="flex flex-wrap gap-1 mx-auto p-2">
-            {players.map((player) => (
+        <>
+            <div className="flex flex-wrap gap-1 max-w-min">
                 <Card
                     key={player.name}
                     className="flex flex-col w-[144px] h-[316px] bg-slate-800 text-slate-100 border-1 ring-2 ring-inset ring-gray-400"
@@ -49,8 +47,8 @@ const TennisPlayerCards: React.FC<{ players: PlayerStats[] }> = ({
                         </CardFooter>
                     </div>
                 </Card>
-            ))}
-        </div>
+            </div>
+        </>
     );
 };
 

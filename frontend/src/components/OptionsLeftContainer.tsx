@@ -65,7 +65,7 @@ const OptionsLeftContainer: React.FC<{
             </div>
             <div>
                 <div className="relative"></div>
-                <TennisPlayerCards players={[player]} />
+                <TennisPlayerCards player={player} />
 
                 <div className="flex flex-row justify-self-center">
                     <button className="bg-slate-400 ">Option1</button>
