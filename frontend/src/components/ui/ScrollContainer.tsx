@@ -8,15 +8,20 @@ const ScrollContainer: React.FC<{
 }> = ({ children, headertext, className = '' }) => {
     const parentRef = useRef<HTMLDivElement>(null);
     const headerRef = useRef<HTMLDivElement>(null);
-    const [scrollHeight, setScrollHeight] = useState<number>(0);
 
-    useEffect(() => {
-        if (parentRef.current && headerRef.current) {
-            const parentHeight = parentRef.current.clientHeight;
-            const headerHeight = headerRef.current.clientHeight;
-            setScrollHeight(parentHeight - headerHeight);
-        }
-    }, []);
+    // ###For dynamic resize:
+    //
+    //
+    //
+    // const [scrollHeight, setScrollHeight] = useState<number>(0);
+
+    // // useEffect(() => {
+    // //     if (parentRef.current && headerRef.current) {
+    // //         const parentHeight = parentRef.current.clientHeight;
+    // //         const headerHeight = headerRef.current.clientHeight;
+    // //         setScrollHeight(parentHeight - headerHeight);
+    // //     }
+    // // }, []);
 
     return (
         <div
@@ -48,7 +53,7 @@ const ScrollContainer: React.FC<{
                         [&::-webkit-scrollbar-thumb]:bg-clip-padding
                         [&::-webkit-scrollbar-thumb]:hover:bg-orange-100/60
                         "
-                style={{ height: `${scrollHeight}px` }}
+                // style={{ height: `${scrollHeight}px` }}
             >
                 {children}
             </div>

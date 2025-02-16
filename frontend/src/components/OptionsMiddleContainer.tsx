@@ -7,7 +7,7 @@ const OptionsMiddleContainer: React.FC<{
 }> = ({ all_players }) => {
     return (
         <div
-            className="h-full w-full p-2 border-2
+            className="h-full w-full p-2 
                     scrollbar-container max-h-screen overflow-y-auto
                     [&::-webkit-scrollbar]:w-7
                     [&::-webkit-scrollbar]:h-2
