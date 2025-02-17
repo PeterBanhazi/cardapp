@@ -28,21 +28,21 @@ function Options() {
 
     return (
         <div className="flex justify-evenly w-full h-[532px] ">
-            <div className="w-[148px] h-[532px]">
+            <div className="w-[150px] h-[532px]">
                 <OptionsLeftContainer
                     player={data.current_player}
                     isOnline={data.isonline}
                     rankPoints={data.rankpoints}
                 />
             </div>
-            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[352px] lg:w-[656px] xl:w-[812px] 2xl:w-[1112px]">
+            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[360px] lg:w-[520px] xl:w-[828px] 2xl:w-[984px]">
                 <OptionsMiddleContainer
                     all_players={data.custom_players.concat(
                         data.favorite_players
                     )}
                 />
             </div>
-            <div className="w-[148px] h-[532px]">
+            <div className="w-[150px] h-[532px]">
                 <OptionsRightContainer friendships={data.friendships} />
             </div>
         </div>

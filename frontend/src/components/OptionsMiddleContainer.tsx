@@ -28,11 +28,15 @@ const OptionsMiddleContainer: React.FC<{
                 className="justify-center gap-2 pl-7"
                 style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, 144px)',
+                    gridTemplateColumns: 'repeat(auto-fit, 148px)',
                 }}
             >
                 {all_players.map((elem, index) => (
-                    <TennisPlayerCards key={index} player={elem} />
+                    <TennisPlayerCards
+                        key={index}
+                        player={elem}
+                        cardtype="DEFAULT"
+                    />
                 ))}
             </div>
         </div>
