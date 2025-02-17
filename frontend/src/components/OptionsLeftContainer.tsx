@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlayerStats } from '../utils/types';
 import { Switch } from 'radix-ui';
-import TennisPlayerCards from './TennisPlayerCards';
+import TennisPlayerCards from './ui/TennisPlayerCards';
 import TennisPlayerCreator from './TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';

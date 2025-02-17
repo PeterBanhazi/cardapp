@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-    CardFooter,
-} from './ui/card';
-import { PlayerStats } from '../utils/types';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './card';
+import { PlayerStats } from '../../utils/types';
 import { TbUserEdit } from 'react-icons/tb';
 import { LuHistory } from 'react-icons/lu';
 import { FaStar } from 'react-icons/fa6';
@@ -45,7 +39,7 @@ const TennisPlayerCards: React.FC<{ player: PlayerStats }> = ({ player }) => {
             <div className="flex gap-1 max-w-min">
                 <Card
                     key={player.name}
-                    className="flex flex-col w-[148px] h-[316px] bg-slate-800 text-slate-100 border-1 ring-2 ring-inset ring-gray-400"
+                    className="flex flex-col w-[148px] h-[290px] bg-slate-800 text-slate-100 border-1 ring-2 ring-inset ring-gray-400"
                 >
                     <CardHeader className="p-1">
                         <div className="w-full flex pt-1 pl-1 pr-1 justify-between relative">
@@ -69,29 +63,29 @@ const TennisPlayerCards: React.FC<{ player: PlayerStats }> = ({ player }) => {
                             <CardTitle className="mb-2.5 flex font-normal tracking-tighter justify-center ">
                                 {player.name}
                             </CardTitle>
-                            <div className="relative flex flex-col justify-self-center gap-2 w-[122px]">
+                            <div className="relative flex flex-col justify-self-center gap-2.5 w-[122px]">
                                 {Object.entries(abilities).map(
                                     ([skill, value]) => (
                                         <div
                                             key={skill}
-                                            className="bg-slate-600 flex justify-between h-4 ring-1 ring-slate-300 rounded-3xl"
+                                            className="bg-slate-600 flex justify-between h-3.5 ring-1 ring-slate-300 rounded-3xl"
                                         >
-                                            <div className="w-full bg-gray-400 self-center ring-1 ring-slate-300 rounded-3xl h-4">
+                                            <div className="w-full bg-gray-400 self-center ring-1 ring-slate-300 rounded-3xl h-3.5">
                                                 <div
-                                                    className="bg-blue-600 ring-0 h-4 flex rounded-3xl"
+                                                    className="bg-blue-600 ring-0 h-3.5 flex rounded-3xl"
                                                     style={{
                                                         width: `${value}%`,
                                                     }}
                                                 >
-                                                    <div className="capitalize self-center -translate-y-px">
+                                                    <div className="capitalize self-center  -translate-y-px">
                                                         <div className="pl-1.5 text-xs">
                                                             {skill}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="h-full w-6 ml-1.5 ring-1 ring-slate-300 rounded-full bg-slate-800 ">
-                                                <div className="text-xs font-semibold flex justify-center -translate-y-px">
+                                            <div className="h-full w-6 ml-1.5 ring-1 ring-slate-300 rounded-full bg-slate-800">
+                                                <div className="text-xs font-semibold flex justify-center -translate-y-[2px]">
                                                     {value}
                                                 </div>
                                             </div>
@@ -100,14 +94,16 @@ const TennisPlayerCards: React.FC<{ player: PlayerStats }> = ({ player }) => {
                                 )}
                             </div>
                         </CardContent>
-                        <CardFooter className="p-0 flex justify-center">
-                            <button className="bg-orange-700 hover:bg-orange-500 text-white font-bold py-1 px-3 rounded m-1">
-                                Add
-                            </button>
-                            <button className="bg-orange-700 hover:bg-orange-500 text-white font-bold py-1 px-3 rounded m-1 ">
-                                Play
-                            </button>
-                        </CardFooter>
+                        <div className="mt-3 w-full px-3">
+                            <div className="flex text-sm font-medium justify-between">
+                                <button className="bg-orange-700 hover:bg-orange-500 hover:ring-1 ring-slate-300 text-white rounded px-1 py-0.5">
+                                    Favorite
+                                </button>
+                                <button className="bg-orange-700 hover:bg-orange-500 hover:ring-1 ring-slate-300 text-white rounded px-1 py-0.5">
+                                    Choose
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </Card>
             </div>

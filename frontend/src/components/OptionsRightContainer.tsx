@@ -23,16 +23,16 @@ const OptionsRightContainer: React.FC<{
                     </div>
                 ))}
             </ScrollContainer>
-            <ScrollContainer headertext="History" className="h-[168px]">
+            <div className="">
+                <InviteInput />
+            </div>
+            <ScrollContainer headertext="History" className="h-[196px]">
                 {testContent.map((elem, index) => (
                     <div className="py-0.5 pl-0.5">
                         <FriendListItem key={index} friendship={elem} />
                     </div>
                 ))}
             </ScrollContainer>
-            <div className="pb-4">
-                <InviteInput />
-            </div>
         </div>
     );
 };

@@ -1,13 +1,13 @@
 import React from 'react';
 import { PlayerStats } from '../utils/types';
-import TennisPlayerCards from './TennisPlayerCards';
+import TennisPlayerCards from './ui/TennisPlayerCards';
 
 const OptionsMiddleContainer: React.FC<{
     all_players: PlayerStats[];
 }> = ({ all_players }) => {
     return (
         <div
-            className="h-full w-full p-2 
+            className="h-full w-full
                     scrollbar-container max-h-screen overflow-y-auto
                     [&::-webkit-scrollbar]:w-7
                     [&::-webkit-scrollbar]:h-2

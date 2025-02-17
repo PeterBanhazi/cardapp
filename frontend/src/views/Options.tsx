@@ -27,22 +27,22 @@ function Options() {
     console.log(data);
 
     return (
-        <div className="flex justify-evenly gap-1 w-full h-[536px] border-2 border-purple-500">
-            <div className="w-[148px] h-[528px]">
+        <div className="flex justify-evenly w-full h-[532px] ">
+            <div className="w-[148px] h-[532px]">
                 <OptionsLeftContainer
                     player={data.current_player}
                     isOnline={data.isonline}
                     rankPoints={data.rankpoints}
                 />
             </div>
-            <div className="w-[418px] h-[528px] lg:w-[816px] xl:w-[1024px]">
+            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[352px] lg:w-[656px] xl:w-[812px] 2xl:w-[1112px]">
                 <OptionsMiddleContainer
                     all_players={data.custom_players.concat(
                         data.favorite_players
                     )}
                 />
             </div>
-            <div className="w-[148px] h-[528px]">
+            <div className="w-[148px] h-[532px]">
                 <OptionsRightContainer friendships={data.friendships} />
             </div>
         </div>

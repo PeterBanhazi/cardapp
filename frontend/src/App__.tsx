@@ -10,7 +10,7 @@ import Register from './views/register';
 
 import AppTopMenu from './components/AppTopMenu';
 import playerTopList from './assets/tennis-players-data.json';
-import TennisPlayerCards from './components/TennisPlayerCards';
+import TennisPlayerCards from './components/ui/TennisPlayerCards';
 import PlayerOneCard from './components/PlayerOneCard';
 import TennisPlayersList from './components/TennisPlayersList';
 import TennisPlayerCreator from './components/TennisPlayerCreator';
