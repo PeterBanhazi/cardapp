@@ -29,9 +29,9 @@ const FriendListItem: React.FC<{
     const buttonRef = useRef<HTMLDivElement>(null);
 
     const colors = {
-        red: 'from-red-400 to-red-600 hover:from-red-300 hover:to-red-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
-        green: 'from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
-        yellow: 'from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
+        red: 'from-red-300 to-red-600 hover:from-red-400 hover:to-red-400 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
+        green: 'from-teal-300 to-green-600 hover:from-green-400 hover:to-cyan-400 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
+        yellow: 'from-amber-400 to-amber-600 hover:from-yellow-500 hover:to-orange-300 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
     };
 
     useEffect(() => {
