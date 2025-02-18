@@ -31,7 +31,7 @@ const OptionsLeftContainer: React.FC<{
     const { isPending, submittedAt, variables, mutate, isError } =
         addTodoMutation;
     return (
-        <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent border">
+        <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent">
             <div className="text-lg font-semibold">
                 Rank Points: {rankPoints}
             </div>
@@ -67,12 +67,12 @@ const OptionsLeftContainer: React.FC<{
                 <div className="relative"></div>
                 <TennisPlayerCards player={player} cardtype="CUSTOM" />
 
-                <div className="flex flex-row justify-self-center">
+                <div className="flex flex-row mt-6 justify-self-center">
                     <button className="bg-slate-400 ">Option1</button>
 
                     <button>Option2</button>
                 </div>
-                <div>
+                <div className="mt-3">
                     <button
                         className="flex rounded-xl border-2 justify-self-center"
                         onClick={() => setIsCreateOpen(true)}

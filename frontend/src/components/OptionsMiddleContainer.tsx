@@ -35,7 +35,7 @@ const OptionsMiddleContainer: React.FC<{
                     <TennisPlayerCards
                         key={index}
                         player={elem}
-                        cardtype="DEFAULT"
+                        cardtype={elem.cardtype}
                     />
                 ))}
             </div>

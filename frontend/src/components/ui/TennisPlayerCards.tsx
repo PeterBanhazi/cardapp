@@ -23,10 +23,10 @@ interface PlayerCardProps {
 }
 
 interface CardColors {
-    mainborder: string;
+    nametext: string;
     mainbackground: string;
-    text: string;
-    barraing: string;
+    ringcolor: string;
+    barprogress: string;
     bartext: string;
     barnumber: string;
     button: string;
@@ -35,47 +35,60 @@ interface CardColors {
 }
 
 const colors: Record<string, CardColors> = {
+    // blue DEFAULT: {
+    //     mainborder: 'E2E8f0',
+    //     mainbackground: '1D3557',
+    //     text: 'F1FAEE',
+    //     barprogress: '457B9D',
+    //     bartext: 'FFFFFF',
+    //     barnumber: 'F1FAEE',
+    //     button: '457B9D',
+    //     buttonhover: '457B9D',
+    //     buttontext: 'FDFDFF',
+    // },
+
     DEFAULT: {
-        mainborder: 'E63946',
-        mainbackground: '669BBC',
-        text: 'E63946',
-        barraing: 'E63946',
-        bartext: 'E63946',
-        barnumber: 'E63946',
-        button: 'E63946',
-        buttonhover: 'E63946',
-        buttontext: 'E63946',
+        nametext: 'E2E8f0',
+        mainbackground: '1D3557',
+        ringcolor: 'F1FAEE',
+        barprogress: '457B9D',
+        bartext: 'FFFFFF',
+        barnumber: 'F1FAEE',
+        button: 'CA6702',
+        buttonhover: '457B9D',
+        buttontext: 'FFFFFF',
     },
+
     CUSTOM: {
-        mainborder: 'E63946',
-        mainbackground: '003049',
-        text: 'FDF0D5',
-        barraing: 'E63946',
-        bartext: 'E63946',
-        barnumber: 'E63946',
-        button: 'E63946',
+        nametext: '0f172a',
+        mainbackground: 'A2CBC5',
+        ringcolor: '023047',
+        barprogress: 'EAAF51',
+        bartext: '111827',
+        barnumber: 'F1FAEE',
+        button: 'C8553D',
         buttonhover: 'E63946',
-        buttontext: 'E63946',
+        buttontext: 'fef9c3',
     },
     FAVORITE: {
-        mainborder: '457B9D',
-        mainbackground: '457B9D',
-        text: '457B9D',
-        barraing: '457B9D',
-        bartext: '457B9D',
-        barnumber: '457B9D',
-        button: '457B9D',
+        nametext: 'E2E8f0',
+        mainbackground: 'ef4444',
+        ringcolor: 'a7f3d0',
+        barprogress: '0891b2',
+        bartext: 'fff1e6',
+        barnumber: 'F1FAEE',
+        button: '155e75',
         buttonhover: '457B9D',
-        buttontext: '457B9D',
+        buttontext: 'fefae0',
     },
     CURRENT: {
-        mainborder: '1D3557',
+        nametext: '1D3557',
         mainbackground: '1D3557',
-        text: '1D3557',
-        barraing: '1D3557',
+        ringcolor: '1D3557',
+        barprogress: '1D3557',
         bartext: '1D3557',
         barnumber: '1D3557',
-        button: '1D3557',
+        button: '6d28d9',
         buttonhover: '1D3557',
         buttontext: '1D3557',
     },
@@ -102,13 +115,19 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
         agility: player.agility,
     };
     const cardColors = getColorsByCardType(cardtype);
+    /// ### use base textcolor for ring also
 
     return (
         <>
             <div className="flex w-[148px]">
                 <Card
                     key={player.name}
-                    className={`flex flex-col bg-slate-800 text-slate-200 w-[148px] h-[290px] border-1 ring-2 ring-inset ring-gray-400`}
+                    className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current`}
+                    style={{
+                        backgroundColor: `#${cardColors.mainbackground}`,
+
+                        color: `#${cardColors.ringcolor}`,
+                    }}
                 >
                     <CardHeader className="p-1">
                         <div className="w-full flex pt-1 pl-1 pr-1 justify-between relative">
@@ -117,7 +136,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
                             <img
                                 src={player.avatar_url}
                                 alt={player.name}
-                                className="w-16 h-16 rounded-full mx-auto ring-2 ring-gray-400"
+                                className="w-16 h-16 rounded-full mx-auto ring-2 ring-current"
                             />
                             <div className="absolute top-5 right-24 translate-x-0.5 flex-col items-center justify-center bg-slate-800 rounded-2xl py-0.5 ring-1 ring-slate-500">
                                 <FaStar className="w-2.5 h-2.5 text-yellow-300" />
@@ -129,33 +148,51 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
                     </CardHeader>
                     <div className="flex flex-col justify-between">
                         <CardContent className="p-1">
-                            <CardTitle className="mb-2.5 flex font-normal tracking-tighter justify-center ">
+                            <CardTitle
+                                className="mb-2.5 flex font-normal tracking-tighter justify-center"
+                                style={{ color: `#${cardColors.nametext}` }}
+                            >
                                 {player.name}
                             </CardTitle>
-                            <div className="relative flex flex-col justify-self-center gap-2.5 w-[122px]">
+                            <div className="relative flex flex-col justify-self-center gap-2.5 w-[126px]">
                                 {Object.entries(abilities).map(
                                     ([skill, value]) => (
                                         <div
                                             key={skill}
-                                            className="bg-slate-600 flex justify-between h-3.5 ring-1 ring-slate-300 rounded-3xl overflow-hidden"
+                                            className="bg-black/20 flex justify-between h-3.5 ring-1 ring-current rounded-3xl overflow-hidden"
                                         >
                                             <div className="capitalize self-center absolute z-10 -translate-y-px">
-                                                <div className="pl-1.5 text-xs ">
+                                                <div
+                                                    className="pl-1.5 text-xs"
+                                                    style={{
+                                                        color: `#${cardColors.bartext}`,
+                                                    }}
+                                                >
                                                     {skill}
                                                 </div>
                                             </div>
                                             <div
-                                                className="w-full bg-gray-400 self-center ring-1 ring-slate-300 rounded-3xl h-3.5"
+                                                className="w-full bg-gray-400 self-center ring-1 ring-current rounded-3xl h-3.5"
                                                 style={{
                                                     transform: `translateX(${
                                                         value - 100
                                                     }%)`,
                                                 }}
                                             >
-                                                <div className="bg-blue-600 ring-0 h-3.5 flex rounded-3xl origin-left"></div>
+                                                <div
+                                                    className="ring-0 h-3.5 flex rounded-3xl origin-left"
+                                                    style={{
+                                                        backgroundColor: `#${cardColors.barprogress}`,
+                                                    }}
+                                                ></div>
                                             </div>
-                                            <div className="h-full w-6 ml-1.5 ring-1 ring-slate-300 rounded-full bg-slate-800">
-                                                <div className="text-xs font-semibold flex justify-center -translate-y-[2px]">
+                                            <div className="h-full w-6 ml-1.5 ring-1 ring-current rounded-full bg-black/60">
+                                                <div
+                                                    className="text-xs font-semibold flex justify-center -translate-y-[2px]"
+                                                    style={{
+                                                        color: `#${cardColors.barnumber}`,
+                                                    }}
+                                                >
                                                     {value}
                                                 </div>
                                             </div>
@@ -166,11 +203,35 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
                         </CardContent>
                         <div className="w-full">
                             <div className="flex text-sm font-normal justify-between m-2.5 pt-0.5">
-                                <button className="bg-orange-700 hover:bg-orange-500 hover:ring-1 ring-1 ring-slate-300 text-white rounded-xl px-1.5">
-                                    Favorite
+                                <button
+                                    className="hover:ring-1 ring-1 hover:cursor-pointer ring-current rounded-xl px-1.5 mb-0.5"
+                                    style={{
+                                        backgroundColor: `#${cardColors.button}`,
+                                    }}
+                                >
+                                    <div
+                                        className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
+                                        style={{
+                                            color: `#${cardColors.buttontext}`,
+                                        }}
+                                    >
+                                        Favorite
+                                    </div>
                                 </button>
-                                <button className="bg-orange-700 hover:bg-orange-500 hover:ring-1 ring-1 ring-slate-300 text-white rounded-xl px-1.5">
-                                    Choose
+                                <button
+                                    className="hover:ring-1 ring-1 hover:cursor-pointer ring-current rounded-xl px-1.5 mb-0.5"
+                                    style={{
+                                        backgroundColor: `#${cardColors.button}`,
+                                    }}
+                                >
+                                    <div
+                                        className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
+                                        style={{
+                                            color: `#${cardColors.buttontext}`,
+                                        }}
+                                    >
+                                        Choose
+                                    </div>
                                 </button>
                             </div>
                         </div>

@@ -13,9 +13,20 @@ function Options() {
             .then((response) => response.data);
     };
 
+    const fetchPlayerProperties = async (): Promise<UserData[] | any> => {
+        return await api
+            .get<PlayerStats[]>('get/playerlist/')
+            .then((response) => response.data);
+    };
+
     const { isPending, isError, data, error } = useQuery({
         queryKey: ['userproperties'],
         queryFn: fetchUserProperties,
+    });
+
+    const playerlistdata = useQuery({
+        queryKey: ['playerlist'],
+        queryFn: fetchPlayerProperties,
     });
     if (isPending) {
         return <span>Loading...</span>;
@@ -24,8 +35,24 @@ function Options() {
     if (isError) {
         return <span>Error: {error.message}</span>;
     }
-    console.log(data);
+    console.log(playerlistdata);
+    const defaultPlayerArray = [];
+    for (let i = 0; i < 10; i++) {
+        defaultPlayerArray[i] = playerlistdata.data.players[i];
+        defaultPlayerArray[i].cardtype = 'DEFAULT';
+    }
+    console.log(defaultPlayerArray);
 
+    console.log(data.custom_players);
+    data.custom_players.forEach(myFunction);
+    data.favorite_players.forEach(myFunctioFav);
+    function myFunction(item: { cardtype: string }) {
+        item.cardtype = 'CUSTOM';
+    }
+
+    function myFunctioFav(item: { cardtype: string }) {
+        item.cardtype = 'FAVORITE';
+    }
     return (
         <div className="flex justify-evenly w-full h-[532px] ">
             <div className="w-[150px] h-[532px]">
@@ -37,8 +64,8 @@ function Options() {
             </div>
             <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[360px] lg:w-[520px] xl:w-[828px] 2xl:w-[984px]">
                 <OptionsMiddleContainer
-                    all_players={data.custom_players.concat(
-                        data.favorite_players
+                    all_players={defaultPlayerArray.concat(
+                        data.custom_players.concat(data.favorite_players)
                     )}
                 />
             </div>
