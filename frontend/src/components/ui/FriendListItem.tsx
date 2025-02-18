@@ -29,9 +29,9 @@ const FriendListItem: React.FC<{
     const buttonRef = useRef<HTMLDivElement>(null);
 
     const colors = {
-        red: 'from-red-400 to-red-600 hover:from-red-300 hover:to-red-500',
-        green: 'from-green-400 to-green-600 hover:from-green-300 hover:to-green-500',
-        yellow: 'from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500',
+        red: 'from-red-400 to-red-600 hover:from-red-300 hover:to-red-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
+        green: 'from-green-400 to-green-600 hover:from-green-300 hover:to-green-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
+        yellow: 'from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 hover:ring-1 ring-inset ring-slate-200 ring-opacity-70',
     };
 
     useEffect(() => {
@@ -152,11 +152,11 @@ const FriendListItem: React.FC<{
                 className={`relative
                       
                 
-                text-slate-900
+                text-slate-900               
                 font-semibold 
                 text-sm
-                border-2
-                rounded-2xl
+                border
+                rounded-md
                 transition-all 
                 duration-300
                 bg-gradient-to-br
@@ -177,16 +177,19 @@ const FriendListItem: React.FC<{
                     className="
                 absolute 
                 inset-0 
-                border-0
+                border-1
                
                 bg-gradient-to-b 
                 from-white/30 
                 to-transparent
-                rounded-xl
+                rounded-md
                 cursor-pointer
                 "
                 />
-                <div className="px-1 "> {friendship.friend_username}</div>
+                <div className="px-1 mr-1 overflow-hidden">
+                    {' '}
+                    {friendship.friend_username}
+                </div>
             </div>
         </div>
     );
