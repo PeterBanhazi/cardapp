@@ -46,7 +46,7 @@ const colors: Record<string, CardColors> = {
     //     buttonhover: '457B9D',
     //     buttontext: 'FDFDFF',
     // },
-    // ## current:       mainbackground: 'f9844a',ca6702, e85d04
+    // ## current:       mainbackground: 'f9844a',ca6702, e85d04, ff5733
 
     DEFAULT: {
         nametext: 'E2E8f0',
@@ -73,7 +73,7 @@ const colors: Record<string, CardColors> = {
     },
     FAVORITE: {
         nametext: 'E2E8f0',
-        mainbackground: 'e56b6f',
+        mainbackground: 'de7171',
         ringcolor: 'a7f3d0',
         barprogress: '0891b2',
         bartext: 'fff1e6',
