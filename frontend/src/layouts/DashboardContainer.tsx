@@ -43,7 +43,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     const { dashboards } = useDashboardStore();
     const navigate = useNavigate();
     return (
-        <div className="w-full mb-4 bg-white bg-opacity-25 rounded-b-lg shadow-lg">
+        <div className="w-full mb-4 h-full bg-white bg-opacity-25 rounded-b-lg shadow-lg">
             <div
                 className={`flex items-center justify-between px-4 py-2 bg-gray-100 border-b cursor-pointer 
             hover:bg-gray-200 transition-colors ${

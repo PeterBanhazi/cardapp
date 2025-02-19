@@ -16,7 +16,7 @@ const OptionsRightContainer: React.FC<{
     }
     return (
         <div className="w-full h-full flex flex-col justify-between ">
-            <ScrollContainer headertext="Friendships" className="h-[280px]">
+            <ScrollContainer headertext="Friendships" className="h-[316px]">
                 {friendships.map((elem, index) => (
                     <div className="py-0.5 pl-0.5">
                         <FriendListItem key={index} friendship={elem} />
@@ -26,7 +26,7 @@ const OptionsRightContainer: React.FC<{
             <div className="">
                 <InviteInput />
             </div>
-            <ScrollContainer headertext="History" className="h-[196px]">
+            <ScrollContainer headertext="History" className="h-[212px]">
                 {testContent.map((elem, index) => (
                     <div className="py-0.5 pl-0.5">
                         <FriendListItem key={index} friendship={elem} />

@@ -54,7 +54,7 @@ function Options() {
         item.cardtype = 'FAVORITE';
     }
     return (
-        <div className="flex justify-evenly w-full h-[532px] ">
+        <div className="flex justify-evenly w-full h-[592px] ">
             <div className="w-[150px] h-[532px]">
                 <OptionsLeftContainer
                     player={data.current_player}
@@ -69,7 +69,7 @@ function Options() {
                     )}
                 />
             </div>
-            <div className="w-[150px] h-[532px]">
+            <div className="w-[150px] h-[592px]">
                 <OptionsRightContainer friendships={data.friendships} />
             </div>
         </div>
