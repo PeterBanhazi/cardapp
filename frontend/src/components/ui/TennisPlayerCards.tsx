@@ -17,9 +17,8 @@ import { color } from 'framer-motion';
 // stamina: number;
 // agility: number;
 
-interface PlayerCardProps {
+export interface PlayerCardProps {
     player: PlayerStats;
-    cardtype: 'DEFAULT' | 'CUSTOM' | 'FAVORITE' | 'CURRENT';
 }
 
 interface CardColors {
@@ -71,9 +70,9 @@ const colors: Record<string, CardColors> = {
         buttonhover: 'E63946',
         buttontext: 'fef9c3',
     },
-    FAVORITE: {
+    FAVOURITE: {
         nametext: 'E2E8f0',
-        mainbackground: 'de7171',
+        mainbackground: 'cb5656',
         ringcolor: 'a7f3d0',
         barprogress: '0891b2',
         bartext: 'fff1e6',
@@ -100,13 +99,11 @@ type PlayerAbilities = Omit<
     'id' | 'name' | 'creator_username' | 'avatar_url'
 >;
 
-const getColorsByCardType = (
-    cardtype: PlayerCardProps['cardtype']
-): CardColors => {
+const getColorsByCardType = (cardtype: PlayerStats['cardtype']): CardColors => {
     return colors[cardtype] || colors.DEFAULT;
 };
 
-const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
+const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
     const abilities = {
         serve: player.serve,
         forehand: player.forehand,
@@ -115,7 +112,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player, cardtype }) => {
         stamina: player.stamina,
         agility: player.agility,
     };
-    const cardColors = getColorsByCardType(cardtype);
+    const cardColors = getColorsByCardType(player.cardtype);
     /// ### use base textcolor for ring also
 
     return (

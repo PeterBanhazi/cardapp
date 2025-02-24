@@ -51,7 +51,7 @@ function Options() {
     }
 
     function myFunctioFav(item: { cardtype: string }) {
-        item.cardtype = 'FAVORITE';
+        item.cardtype = 'FAVOURITE';
     }
     return (
         <div className="flex justify-evenly w-full h-[592px] ">

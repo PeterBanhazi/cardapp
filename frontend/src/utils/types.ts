@@ -1,5 +1,5 @@
 export interface PlayerStats {
-    cardtype: "DEFAULT" | "CUSTOM" | "FAVORITE" | "CURRENT";
+    cardtype: "DEFAULT" | "CUSTOM" | "FAVOURITE" | "CURRENT";
     id: number;
     creator_username: number | string | null;
     name: string;

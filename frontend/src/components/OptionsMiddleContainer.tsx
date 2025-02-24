@@ -1,6 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PlayerStats } from '../utils/types';
 import TennisPlayerCards from './ui/TennisPlayerCards';
+import { PlayerCardsContainer } from './PlayerCardsContainer';
+
+const playerCards = [
+    {
+        player: { id: 1, name: 'John Doe' /* other stats */ },
+        cardtype: 'FAVOURITE' as const,
+    },
+    {
+        player: { id: 2, name: 'Jane Smith' /* other stats */ },
+        cardtype: 'DEFAULT' as const,
+    },
+    // More player cards...
+];
 
 const OptionsMiddleContainer: React.FC<{
     all_players: PlayerStats[];
@@ -25,18 +38,14 @@ const OptionsMiddleContainer: React.FC<{
                     overflow-auto"
         >
             <div
-                className="justify-center gap-2 pl-7"
+                className="self-center gap-2 pl-7 flex flex-row flex-wrap justify-start content-start"
                 style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, 148px)',
                 }}
             >
                 {all_players.map((elem, index) => (
-                    <TennisPlayerCards
-                        key={index}
-                        player={elem}
-                        cardtype={elem.cardtype}
-                    />
+                    <TennisPlayerCards key={index} player={elem} />
                 ))}
             </div>
         </div>
