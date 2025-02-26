@@ -30,7 +30,7 @@ export const SortablePlayerCard: React.FC<SortablePlayerCardProps> = ({
 
     // Determine card border color based on cardtype
     const getBorderColor = () => {
-        switch (cardProps.cardtype) {
+        switch (cardProps.player.cardtype) {
             case 'FAVOURITE':
                 return 'border-yellow-500';
             case 'DEFAULT':
@@ -59,7 +59,7 @@ export const SortablePlayerCard: React.FC<SortablePlayerCardProps> = ({
                     ID: {cardProps.player.id}
                 </div>
                 <div className="text-sm text-gray-600">
-                    Type: {cardProps.cardtype}
+                    Type: {cardProps.player.cardtype}
                 </div>
                 {/* Add more player stats here */}
             </div>

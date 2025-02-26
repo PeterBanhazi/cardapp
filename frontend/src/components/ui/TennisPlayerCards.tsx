@@ -5,6 +5,8 @@ import { TbUserEdit } from 'react-icons/tb';
 import { LuHistory } from 'react-icons/lu';
 import { FaStar } from 'react-icons/fa6';
 import { color } from 'framer-motion';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 // id: number;
 // creator_username: string | number | null;
@@ -104,6 +106,24 @@ const getColorsByCardType = (cardtype: PlayerStats['cardtype']): CardColors => {
 };
 
 const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: player.plusid,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 10 : 1,
+        opacity: isDragging ? 0.8 : 1,
+    };
+
     const abilities = {
         serve: player.serve,
         forehand: player.forehand,
@@ -117,7 +137,13 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
 
     return (
         <>
-            <div className="flex w-[148px]">
+            <div
+                ref={setNodeRef}
+                style={style}
+                {...attributes}
+                {...listeners}
+                className="flex w-[148px]"
+            >
                 <Card
                     key={player.name}
                     className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current`}

@@ -1,6 +1,7 @@
 export interface PlayerStats {
     cardtype: "DEFAULT" | "CUSTOM" | "FAVOURITE" | "CURRENT";
     id: number;
+    plusid: string;
     creator_username: number | string | null;
     name: string;
     avatar_url: string;

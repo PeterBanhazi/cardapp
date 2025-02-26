@@ -53,6 +53,19 @@ function Options() {
     function myFunctioFav(item: { cardtype: string }) {
         item.cardtype = 'FAVOURITE';
     }
+
+    const allPlayersPlusId = defaultPlayerArray.concat(
+        data.custom_players.concat(data.favorite_players)
+    );
+    function addPlusId(item: {
+        [x: string]: any;
+        plusid: string;
+    }): PlayerStats[] {
+        return (item.plusid = item.id + item.cardtype);
+    }
+    allPlayersPlusId.forEach(addPlusId);
+    console.log(allPlayersPlusId);
+
     return (
         <div className="flex justify-evenly w-full h-[592px] ">
             <div className="w-[150px] h-[532px]">
@@ -63,11 +76,7 @@ function Options() {
                 />
             </div>
             <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[360px] lg:w-[520px] xl:w-[828px] 2xl:w-[984px]">
-                <OptionsMiddleContainer
-                    all_players={defaultPlayerArray.concat(
-                        data.custom_players.concat(data.favorite_players)
-                    )}
-                />
+                <OptionsMiddleContainer all_players={allPlayersPlusId} />
             </div>
             <div className="w-[150px] h-[592px]">
                 <OptionsRightContainer friendships={data.friendships} />
