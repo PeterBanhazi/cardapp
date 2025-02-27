@@ -31,7 +31,12 @@ export const PlayerCardsContainer: React.FC<PlayerCardsContainerProps> = ({
 
     // Initialize sensors for drag and drop
     const sensors = useSensors(
-        useSensor(PointerSensor),
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                // Only start dragging after moving 8px
+                distance: 6,
+            },
+        }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         })
@@ -124,7 +129,7 @@ export const PlayerCardsContainer: React.FC<PlayerCardsContainerProps> = ({
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full py-1">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -135,7 +140,7 @@ export const PlayerCardsContainer: React.FC<PlayerCardsContainerProps> = ({
                     strategy={rectSortingStrategy}
                 >
                     <div
-                        className="self-center gap-2 pl-7 flex"
+                        className="self-center gap-1.5 pl-7 flex"
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fit, 148px)',

@@ -75,7 +75,7 @@ function Options() {
                     rankPoints={data.rankpoints}
                 />
             </div>
-            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[360px] lg:w-[520px] xl:w-[828px] 2xl:w-[984px]">
+            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[368px] lg:w-[520px] xl:w-[836px] 2xl:w-[996px]">
                 <OptionsMiddleContainer all_players={allPlayersPlusId} />
             </div>
             <div className="w-[150px] h-[592px]">

@@ -7,7 +7,7 @@ import { FaStar } from 'react-icons/fa6';
 import { color } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-
+import { motion } from 'framer-motion';
 // id: number;
 // creator_username: string | number | null;
 // name: string;
@@ -142,11 +142,11 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
                 style={style}
                 {...attributes}
                 {...listeners}
-                className="flex w-[148px]"
+                className="flex w-[148px] select-none"
             >
                 <Card
                     key={player.name}
-                    className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current`}
+                    className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current transition duration-0 hover:shadow-md scale-100  hover:scale-[1.02] hover:shadow-slate-700 cursor-grab`}
                     style={{
                         backgroundColor: `#${cardColors.mainbackground}`,
 
@@ -238,6 +238,10 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            alert(`Favorite ${player.name}`);
+                                        }}
                                     >
                                         Favorite
                                     </div>
@@ -253,6 +257,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
+                                        onClick={() => console.log('click')}
                                     >
                                         Choose
                                     </div>
