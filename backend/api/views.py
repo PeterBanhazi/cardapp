@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth.decorators import login_required
-
+import time
 import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
@@ -66,14 +66,15 @@ class UserPropertiesView(RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
     # partial=True esetén PATCH kérés, partial=False esetén PUT kérés
         partial = kwargs.pop('partial', True)
-        
+        print(request.data)
         # Lekérjük az aktuális termék példányt
-        instance = self.get_instance()
-        
+        # instance = self.get_instance()
+        instance = self.get_object()
         # Példa a részleges frissítés működésére
         print("Eredeti adatok:", instance.username, instance.isonline)
+        time.sleep(2)
         print("Beérkező adatok:", request.data)
-        
+        print("Beérkező adatok:", request.data['current_player_id_change'])
         # Szerializáljuk az adatokat
         serializer = self.get_serializer(
             instance,
@@ -84,10 +85,11 @@ class UserPropertiesView(RetrieveUpdateAPIView):
             # Boolean mező módosítása
             instance.isonline = request.data['isonline']
         
-        if 'current_player' in request.data:
+        if 'current_player_id_change' in request.data:
             # ForeignKey mező módosítása
+            print("probalnam modositani")
             try:
-                try_current_player = TennisPlayer.objects.get(id=request.data['current_player'])
+                try_current_player = TennisPlayer.objects.get(id=request.data['current_player_id_change'])
                 instance.current_player = try_current_player
             except TennisPlayer.DoesNotExist:
                 return Response(
