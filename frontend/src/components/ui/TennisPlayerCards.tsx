@@ -8,6 +8,8 @@ import { color } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { motion } from 'framer-motion';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAxios from '../../utils/useAxios';
 // id: number;
 // creator_username: string | number | null;
 // name: string;
@@ -21,6 +23,8 @@ import { motion } from 'framer-motion';
 
 export interface PlayerCardProps {
     player: PlayerStats;
+    isInCurrentContainer?: boolean;
+    currentCardId: number;
 }
 
 interface CardColors {
@@ -105,7 +109,11 @@ const getColorsByCardType = (cardtype: PlayerStats['cardtype']): CardColors => {
     return colors[cardtype] || colors.DEFAULT;
 };
 
-const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
+const TennisPlayerCards: React.FC<PlayerCardProps> = ({
+    player,
+    isInCurrentContainer,
+    currentCardId,
+}) => {
     const {
         attributes,
         listeners,
@@ -115,6 +123,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
         isDragging,
     } = useSortable({
         id: player.plusid,
+        disabled: isInCurrentContainer,
     });
 
     const style = {
@@ -135,6 +144,29 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
     const cardColors = getColorsByCardType(player.cardtype);
     /// ### use base textcolor for ring also
 
+    const queryClient = useQueryClient();
+
+    const chooseCurrentPlayerMutation = useMutation({
+        mutationFn: (newCurrentPlayer: number): any =>
+            useAxios().patch('options/', {
+                current_player_id_change: newCurrentPlayer,
+            }),
+        // make sure to _return_ the Promise from the query invalidation
+        // so that the mutation stays in `pending` state until the refetch is finished
+        onSettled: async () => {
+            return await queryClient.invalidateQueries({
+                queryKey: ['userproperties'],
+            });
+        },
+    });
+
+    const { isPending, submittedAt, variables, mutate, isError } =
+        chooseCurrentPlayerMutation;
+
+    function handleChooseClick(id: number): void {
+        mutate(id);
+        console.log('szretett plyer id: ' + id);
+    }
     return (
         <>
             <div
@@ -147,11 +179,26 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
                 <Card
                     key={player.name}
                     className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current transition duration-0 hover:shadow-md scale-100  hover:scale-[1.02] hover:shadow-slate-700 cursor-grab`}
-                    style={{
-                        backgroundColor: `#${cardColors.mainbackground}`,
-
-                        color: `#${cardColors.ringcolor}`,
-                    }}
+                    style={
+                        isInCurrentContainer
+                            ? {
+                                  cursor: `default`,
+                                  boxShadow:
+                                      '0px 0px 2px rgba(250, 202, 21, 1)',
+                                  transform: 'scale(1.02)',
+                                  backgroundColor: `#${cardColors.mainbackground}`,
+                                  color: `#EAAF51`,
+                              }
+                            : currentCardId == player.id
+                            ? {
+                                  backgroundColor: `#${cardColors.mainbackground}`,
+                                  color: `#EAAF51`,
+                              }
+                            : {
+                                  backgroundColor: `#${cardColors.mainbackground}`,
+                                  color: `#${cardColors.ringcolor}`,
+                              }
+                    }
                 >
                     <CardHeader className="p-1">
                         <div className="w-full flex pt-1 pl-1 pr-1 justify-between relative">
@@ -257,7 +304,9 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({ player }) => {
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
-                                        onClick={() => console.log('click')}
+                                        onClick={() =>
+                                            handleChooseClick(player.id)
+                                        }
                                     >
                                         Choose
                                     </div>

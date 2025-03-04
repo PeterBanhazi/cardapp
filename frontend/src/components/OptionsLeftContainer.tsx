@@ -7,10 +7,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
 
 const OptionsLeftContainer: React.FC<{
-    player: PlayerStats;
+    currentPlayer: PlayerStats[];
     isOnline: boolean;
     rankPoints: number;
-}> = ({ player, isOnline, rankPoints }) => {
+    currentCardId: number;
+}> = ({ currentPlayer, isOnline, rankPoints, currentCardId }) => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isOnlineSwitch, setIsOnlineSwitch] = useState(isOnline);
 
@@ -27,6 +28,10 @@ const OptionsLeftContainer: React.FC<{
             });
         },
     });
+
+    const current = currentPlayer.filter(
+        (player) => currentCardId == player.id
+    );
 
     const { isPending, submittedAt, variables, mutate, isError } =
         addTodoMutation;
@@ -65,8 +70,13 @@ const OptionsLeftContainer: React.FC<{
             </div>
             <div>
                 <div className="relative"></div>
-                <TennisPlayerCards player={player} />
-
+                {current && (
+                    <TennisPlayerCards
+                        player={current[0]}
+                        isInCurrentContainer={true}
+                        currentCardId={currentCardId}
+                    />
+                )}
                 <div className="flex flex-row mt-6 justify-self-center">
                     <button className="bg-slate-400 ">Option1</button>
 

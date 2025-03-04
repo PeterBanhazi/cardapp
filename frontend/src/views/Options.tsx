@@ -4,6 +4,8 @@ import { Friendship, PlayerStats, UserData } from '../utils/types';
 import OptionsLeftContainer from '../components/OptionsLeftContainer';
 import OptionsRightContainer from '../components/OptionsRightContainer';
 import OptionsMiddleContainer from '../components/OptionsMiddleContainer';
+import OptionsDnDCardWrapper from '../layouts/OptionsDnDCardWrapper';
+// import { console } from 'inspector';
 
 function Options() {
     const api = useAxios();
@@ -35,15 +37,15 @@ function Options() {
     if (isError) {
         return <span>Error: {error.message}</span>;
     }
-    console.log(playerlistdata);
+
     const defaultPlayerArray = [];
     for (let i = 0; i < 10; i++) {
         defaultPlayerArray[i] = playerlistdata.data.players[i];
         defaultPlayerArray[i].cardtype = 'DEFAULT';
     }
-    console.log(defaultPlayerArray);
 
-    console.log(data.custom_players);
+    console.log(data);
+
     data.custom_players.forEach(myFunction);
     data.favorite_players.forEach(myFunctioFav);
     function myFunction(item: { cardtype: string }) {
@@ -53,6 +55,7 @@ function Options() {
     function myFunctioFav(item: { cardtype: string }) {
         item.cardtype = 'FAVOURITE';
     }
+    // data.current_player.cardtype = 'CURRENT';
 
     const allPlayersPlusId = defaultPlayerArray.concat(
         data.custom_players.concat(data.favorite_players)
@@ -64,20 +67,52 @@ function Options() {
         return (item.plusid = item.id + item.cardtype);
     }
     allPlayersPlusId.forEach(addPlusId);
+    function getFavoritePlayerIds(response: UserData): number[] {
+        return response.favorite_players && response.favorite_players.length > 0
+            ? response.favorite_players.map((player) => player.id)
+            : [];
+    }
+
+    function filterOutFavoritePlayers<T extends PlayerStats>(
+        players: T[],
+        favoritePlayerIds: number[]
+    ): T[] {
+        return players.filter(
+            (player) =>
+                player.cardtype === 'FAVOURITE' ||
+                !favoritePlayerIds.includes(player.id)
+        );
+    }
+
     console.log(allPlayersPlusId);
+    const currentCardId = data.current_player.id;
+    const favouriteCardIds = getFavoritePlayerIds(data);
+    console.log('fav' + favouriteCardIds);
+    console.log(currentCardId);
+
+    const filteredPlayers = filterOutFavoritePlayers(
+        allPlayersPlusId,
+        favouriteCardIds
+    );
+    console.log(filteredPlayers);
+    console.log(filteredPlayers.filter((player) => currentCardId == player.id));
 
     return (
         <div className="flex justify-evenly w-full h-[592px] ">
-            <div className="w-[150px] h-[532px]">
-                <OptionsLeftContainer
-                    player={data.current_player}
-                    isOnline={data.isonline}
-                    rankPoints={data.rankpoints}
-                />
-            </div>
-            <div className="w-[418px] h-[532x] sm:w-[200px] md:w-[368px] lg:w-[520px] xl:w-[836px] 2xl:w-[996px]">
-                <OptionsMiddleContainer all_players={allPlayersPlusId} />
-            </div>
+            <OptionsDnDCardWrapper
+                playerCards={filteredPlayers}
+                currentCardId={currentCardId}
+            >
+                <div className="w-[150px] h-[532px]">
+                    <OptionsLeftContainer
+                        currentPlayer={filteredPlayers}
+                        currentCardId={currentCardId}
+                        isOnline={data.isonline}
+                        rankPoints={data.rankpoints}
+                    />
+                </div>
+            </OptionsDnDCardWrapper>
+
             <div className="w-[150px] h-[592px]">
                 <OptionsRightContainer friendships={data.friendships} />
             </div>
