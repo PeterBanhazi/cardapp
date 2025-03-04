@@ -94,6 +94,7 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     friendships = FriendshipSerializer(source='username.friendships', many=True, read_only=True)
     custom_players = TennisPlayerSerializer(source='username.custom_players', many=True, read_only=True)
     favorite_players = TennisPlayerSerializer(source='username.favorite_player_for_profile', many=True, read_only=False)
+    favorite_player_id_change = serializers.IntegerField(write_only=True, required=False)
     current_player = TennisPlayerSerializer(read_only=True)
     current_player_id_change = serializers.PrimaryKeyRelatedField(
         queryset=TennisPlayer.objects.all(), source="current_player", write_only=True
@@ -101,9 +102,29 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     ### TODO: only default+ custom = current
     class Meta:
         model = UserProperties
-        fields = ['username','friendships','isonline','rankpoints','current_player_id_change','favorite_players','current_player','custom_players']
+        fields = ['username','friendships','isonline','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
 
+        def update(self, instance, validated_data):
+            user = instance.username
+            favorite_player_id = validated_data.pop("favorite_player_id_change", None)
 
+            if favorite_player_id is not None:
+                try:
+                    favorite_player = TennisPlayer.objects.get(id=favorite_player_id)
+                except TennisPlayer.DoesNotExist:
+                    raise serializers.ValidationError({"error": "A megadott játékos nem létezik."})
+
+                # **Validáció**: Csak az 1–10 ID közötti vagy a user által létrehozott játékos lehet kedvenc
+                if favorite_player.creator_username is not None and favorite_player.creator_username != user:
+                    raise serializers.ValidationError({"error": "Csak az általad létrehozott játékosokat vagy az 1-10 ID közötti alapjátékosokat adhatod hozzá."})
+
+                # Ha a játékos már benne van a kedvencek között → eltávolítás
+                if user.favorite_player_for_profile.filter(id=favorite_player_id).exists():
+                    user.favorite_player_for_profile.remove(favorite_player)
+                else:
+                    user.favorite_player_for_profile.add(favorite_player)
+
+            return super().update(instance, validated_data)
 
 #user auth classes
 

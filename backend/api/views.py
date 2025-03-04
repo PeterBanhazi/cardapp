@@ -55,6 +55,7 @@ class FriendshipViewSet(RetrieveUpdateAPIView):
         return Friendship.objects.filter(username=self.request.user).order_by('-created_at')
 
 class UserPropertiesView(RetrieveUpdateAPIView):
+
     serializer_class = UserPropertiesSerializer
     permission_classes = [IsAuthenticated]
 
@@ -74,7 +75,7 @@ class UserPropertiesView(RetrieveUpdateAPIView):
         print("Eredeti adatok:", instance.username, instance.isonline)
         time.sleep(2)
         print("Beérkező adatok:", request.data)
-        print("Beérkező adatok:", request.data['current_player_id_change'])
+
         # Szerializáljuk az adatokat
         serializer = self.get_serializer(
             instance,
@@ -93,7 +94,30 @@ class UserPropertiesView(RetrieveUpdateAPIView):
                 instance.current_player = try_current_player
             except TennisPlayer.DoesNotExist:
                 return Response(
-                    {"error": "A megadott playa nem létezik"},
+                    {"error": "Requested player not exists."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+        if 'favorite_player_id_change' in request.data:
+            try:
+                favorite_player = TennisPlayer.objects.get(id=request.data['favorite_player_id_change'])
+                
+                # Validáció: Csak az 1-10 ID közötti vagy a user által létrehozott játékos lehet kedvenc
+                if favorite_player.creator_username is not None and favorite_player.creator_username != request.user:
+                    return Response(
+                        {"error": "Csak az általad létrehozott játékosokat vagy az 1-10 ID közötti alapjátékosokat adhatod hozzá."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Ha már kedvenc → törlés, ha még nem kedvenc → hozzáadás
+                if request.user.favorite_player_for_profile.filter(id=favorite_player.id).exists():
+                    request.user.favorite_player_for_profile.remove(favorite_player)
+                else:
+                    request.user.favorite_player_for_profile.add(favorite_player)
+
+            except TennisPlayer.DoesNotExist:
+                return Response(
+                    {"error": "A megadott játékos nem létezik."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         serializer.is_valid(raise_exception=True)
