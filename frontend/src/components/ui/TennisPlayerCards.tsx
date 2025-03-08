@@ -160,20 +160,40 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         },
     });
 
+    const toggleFavoritePlayerMutation = useMutation({
+        mutationFn: async (playerId: number) => {
+            const response = await useAxios().patch('options/', {
+                favorite_player_id_change: playerId,
+            });
+            return response.data;
+        },
+        onSettled: async () => {
+            return await queryClient.invalidateQueries({
+                queryKey: ['userproperties'],
+            });
+        },
+        onError: (error) => {
+            console.error('Hiba történt!', error);
+        },
+    });
+
     const { isPending, submittedAt, variables, mutate, isError } =
         chooseCurrentPlayerMutation;
 
-    function handleChooseClick(id: number): void {
+    const handleChooseClick = (id: number): void => {
         mutate(id);
         console.log('szretett plyer id: ' + id);
-    }
+    };
+
+    const handleToggleFavorite = (playerId: number) => {
+        toggleFavoritePlayerMutation.mutate(playerId);
+    };
     return (
         <>
             <div
                 ref={setNodeRef}
                 style={style}
-                {...attributes}
-                {...listeners}
+                {...(!isInCurrentContainer && { ...attributes, ...listeners })}
                 className="flex w-[148px] select-none"
             >
                 <Card
@@ -285,10 +305,9 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            alert(`Favorite ${player.name}`);
-                                        }}
+                                        onClick={() =>
+                                            handleToggleFavorite(player.id)
+                                        }
                                     >
                                         Favorite
                                     </div>

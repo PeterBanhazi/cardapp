@@ -5,6 +5,7 @@ import TennisPlayerCards from './ui/TennisPlayerCards';
 import TennisPlayerCreator from './TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
+import { useDroppable } from '@dnd-kit/core';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
@@ -35,6 +36,16 @@ const OptionsLeftContainer: React.FC<{
 
     const { isPending, submittedAt, variables, mutate, isError } =
         addTodoMutation;
+
+    const { setNodeRef, isOver } = useDroppable({
+        id: 'droppable',
+        // ### data can be useful to mach isover card's id equation
+        data: {
+            accepts: ['type1', 'type2'],
+        },
+    });
+    const action: boolean = isOver;
+    console.log(action);
     return (
         <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent">
             <div className="text-lg font-semibold">
@@ -69,14 +80,23 @@ const OptionsLeftContainer: React.FC<{
                 </form>
             </div>
             <div>
-                <div className="relative"></div>
-                {current && (
-                    <TennisPlayerCards
-                        player={current[0]}
-                        isInCurrentContainer={true}
-                        currentCardId={currentCardId}
-                    />
-                )}
+                <div
+                    ref={setNodeRef}
+                    className={`${
+                        isOver
+                            ? 'shadow-[0_0_8px_rgba(255,255,255,0.8)] shadow-red-800 transition-shadow duration-100'
+                            : ''
+                    }`}
+                >
+                    {current && (
+                        <TennisPlayerCards
+                            player={current[0]}
+                            isInCurrentContainer={true}
+                            currentCardId={currentCardId}
+                        />
+                    )}
+                </div>
+
                 <div className="flex flex-row mt-6 justify-self-center">
                     <button className="bg-slate-400 ">Option1</button>
 

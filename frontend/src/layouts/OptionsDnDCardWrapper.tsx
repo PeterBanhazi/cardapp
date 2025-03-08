@@ -21,6 +21,8 @@ import { PlayerStats } from '../utils/types';
 import TennisPlayerCards from '../components/ui/TennisPlayerCards';
 import DraggablePlayerCard from './DraggablePlayerCard';
 import { DraggableElement } from '@dnd-kit/core/dist/store';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAxios from '../utils/useAxios';
 
 interface PlayerCardsContainerProps {
     playerCards: PlayerStats[];
@@ -115,14 +117,25 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     };
 
     // Handle the end of a drag event
-    function handleDragStart(event: DragStartEvent) {
+    const handleDragStart = (event: DragStartEvent) => {
         setIsDragging(true);
         setActiveId(event.active.id);
-    }
+    };
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
+            if (over && over.id === 'droppable') {
+                const nextCard = items.find(
+                    (item) => item.plusid.toString() === active.id
+                );
+                console.log(nextCard);
+                if (nextCard) handleChooseClick(nextCard.id.toString());
+
+                setIsDragging(false);
+                setActiveId(null);
+                return;
+            }
             setItems((items) => {
                 const oldIndex = items.findIndex(
                     (item) => item.plusid.toString() === active.id
@@ -140,6 +153,30 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 return newItems;
             });
         }
+    };
+
+    const queryClient = useQueryClient();
+
+    const chooseCurrentPlayerMutation = useMutation({
+        mutationFn: (newCurrentPlayer: string): any =>
+            useAxios().patch('options/', {
+                current_player_id_change: newCurrentPlayer,
+            }),
+        // make sure to _return_ the Promise from the query invalidation
+        // so that the mutation stays in `pending` state until the refetch is finished
+        onSettled: async () => {
+            return await queryClient.invalidateQueries({
+                queryKey: ['userproperties'],
+            });
+        },
+    });
+
+    const { isPending, submittedAt, variables, mutate, isError } =
+        chooseCurrentPlayerMutation;
+
+    const handleChooseClick = (id: string): void => {
+        mutate(id);
+        console.log('szretett plyer id: ' + id);
     };
     return (
         <div className="">
