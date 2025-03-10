@@ -122,7 +122,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         transition,
         isDragging,
     } = useSortable({
-        id: player.plusid,
+        id: player.id,
         disabled: isInCurrentContainer,
     });
 
@@ -182,7 +182,6 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
 
     const handleChooseClick = (id: number): void => {
         mutate(id);
-        console.log('szretett plyer id: ' + id);
     };
 
     const handleToggleFavorite = (playerId: number) => {

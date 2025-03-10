@@ -44,8 +44,7 @@ const OptionsLeftContainer: React.FC<{
             accepts: ['type1', 'type2'],
         },
     });
-    const action: boolean = isOver;
-    console.log(action);
+
     return (
         <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent">
             <div className="text-lg font-semibold">
@@ -84,7 +83,7 @@ const OptionsLeftContainer: React.FC<{
                     ref={setNodeRef}
                     className={`${
                         isOver
-                            ? 'shadow-[0_0_8px_rgba(255,255,255,0.8)] shadow-red-800 transition-shadow duration-100'
+                            ? 'shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-slate-100 transition-shadow duration-100'
                             : ''
                     }`}
                 >

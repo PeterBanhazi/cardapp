@@ -9,6 +9,7 @@ import {
     useSensors,
     DragEndEvent,
     DragStartEvent,
+    UniqueIdentifier,
 } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -38,7 +39,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
 }) => {
     const [items, setItems] = useState<PlayerStats[]>([]);
     const [isDragging, setIsDragging] = useState(false);
-    const [activeId, setActiveId] = useState(null);
+    const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
     // Initialize sensors for drag and drop
     const sensors = useSensors(
@@ -90,9 +91,9 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 // Sort players based on saved positions
                 const orderedPlayers = [...playerCards].sort((a, b) => {
                     const posA =
-                        idToPositionMap[a.plusid] ?? Number.MAX_SAFE_INTEGER;
+                        idToPositionMap[a.id] ?? Number.MAX_SAFE_INTEGER;
                     const posB =
-                        idToPositionMap[b.plusid] ?? Number.MAX_SAFE_INTEGER;
+                        idToPositionMap[b.id] ?? Number.MAX_SAFE_INTEGER;
                     return posA - posB;
                 });
 
@@ -111,38 +112,39 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const saveOrderToLocalStorage = (orderedItems: PlayerStats[]) => {
         const orderMap: Record<string, number> = {};
         orderedItems.forEach((item, index) => {
-            orderMap[item.plusid] = index;
+            orderMap[item.id] = index;
         });
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(orderMap));
     };
 
     // Handle the end of a drag event
     const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
         setIsDragging(true);
-        setActiveId(event.active.id);
+        setActiveId(active.id);
     };
+    const activeDraggingCard: PlayerStats | undefined = items.find(
+        (item) => item.id === activeId
+    );
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
         if (over && active.id !== over.id) {
             if (over && over.id === 'droppable') {
-                const nextCard = items.find(
-                    (item) => item.plusid.toString() === active.id
-                );
-                console.log(nextCard);
-                if (nextCard) handleChooseClick(nextCard.id.toString());
+                const nextCard = items.find((item) => item.id === active.id);
+                console.log('next: ' + nextCard);
+                if (nextCard) handleChooseClick(nextCard.id);
 
                 setIsDragging(false);
                 setActiveId(null);
+
                 return;
             }
             setItems((items) => {
                 const oldIndex = items.findIndex(
-                    (item) => item.plusid.toString() === active.id
+                    (item) => item.id === active.id
                 );
-                const newIndex = items.findIndex(
-                    (item) => item.plusid.toString() === over.id
-                );
+                const newIndex = items.findIndex((item) => item.id === over.id);
 
                 const newItems = arrayMove(items, oldIndex, newIndex);
 
@@ -158,12 +160,16 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const queryClient = useQueryClient();
 
     const chooseCurrentPlayerMutation = useMutation({
-        mutationFn: (newCurrentPlayer: string): any =>
+        mutationFn: (newCurrentPlayer: number): any =>
             useAxios().patch('options/', {
                 current_player_id_change: newCurrentPlayer,
             }),
         // make sure to _return_ the Promise from the query invalidation
         // so that the mutation stays in `pending` state until the refetch is finished
+        onSuccess: () => {
+            console.log('megtortent');
+            setItems(items);
+        },
         onSettled: async () => {
             return await queryClient.invalidateQueries({
                 queryKey: ['userproperties'],
@@ -174,9 +180,8 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const { isPending, submittedAt, variables, mutate, isError } =
         chooseCurrentPlayerMutation;
 
-    const handleChooseClick = (id: string): void => {
+    const handleChooseClick = (id: number): void => {
         mutate(id);
-        console.log('szretett plyer id: ' + id);
     };
     return (
         <div className="">
@@ -207,9 +212,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         "
                         >
                             <SortableContext
-                                items={items.map((item) =>
-                                    item.plusid.toString()
-                                )}
+                                items={items}
                                 strategy={rectSortingStrategy}
                             >
                                 <div
@@ -222,8 +225,8 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                                 >
                                     {items.map((player) => (
                                         <DraggablePlayerCard
-                                            key={player.plusid}
-                                            id={player.plusid}
+                                            key={player.id}
+                                            id={player.id}
                                             currentCardId={currentCardId}
                                         >
                                             <TennisPlayerCards
@@ -238,15 +241,10 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                     </div>
                 </div>
                 <DragOverlay>
-                    {isDragging && activeId ? (
+                    {activeDraggingCard ? (
                         <TennisPlayerCards
                             currentCardId={currentCardId}
-                            player={
-                                items.find(
-                                    (item) => item.plusid === activeId
-                                ) || items[0]
-                            }
-                            // ### above things could have occur errors !!!!!!!!!!
+                            player={activeDraggingCard}
                         />
                     ) : null}
                 </DragOverlay>

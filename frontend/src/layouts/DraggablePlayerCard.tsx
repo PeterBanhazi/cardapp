@@ -8,6 +8,9 @@ export default function DraggablePlayerCard(props: {
 }) {
     const { attributes, listeners, setNodeRef } = useDraggable({
         id: props.id,
+        data: {
+            index: props.id,
+        },
     });
 
     return (
