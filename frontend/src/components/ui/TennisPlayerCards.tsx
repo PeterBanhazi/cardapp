@@ -25,6 +25,7 @@ export interface PlayerCardProps {
     player: PlayerStats;
     isInCurrentContainer?: boolean;
     currentCardId: number;
+    isSortable?: boolean;
 }
 
 interface CardColors {
@@ -111,8 +112,9 @@ const getColorsByCardType = (cardtype: PlayerStats['cardtype']): CardColors => {
 
 const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     player,
-    isInCurrentContainer,
+    isInCurrentContainer = false,
     currentCardId,
+    isSortable = true,
 }) => {
     const {
         attributes,
@@ -120,18 +122,21 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         setNodeRef,
         transform,
         transition,
+
         isDragging,
     } = useSortable({
         id: player.id,
-        disabled: isInCurrentContainer,
+        disabled: false,
     });
-
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         zIndex: isDragging ? 10 : 1,
         opacity: isDragging ? 0.8 : 1,
     };
+    const containerProps = isSortable
+        ? { style: style, ref: setNodeRef, ...listeners, ...attributes }
+        : {};
 
     const abilities = {
         serve: player.serve,
@@ -147,16 +152,21 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     const queryClient = useQueryClient();
 
     const chooseCurrentPlayerMutation = useMutation({
-        mutationFn: (newCurrentPlayer: number): any =>
-            useAxios().patch('options/', {
+        mutationFn: async (newCurrentPlayer: number) => {
+            const response = await useAxios().patch('options/', {
                 current_player_id_change: newCurrentPlayer,
-            }),
+            });
+            return response.data;
+        },
         // make sure to _return_ the Promise from the query invalidation
         // so that the mutation stays in `pending` state until the refetch is finished
         onSettled: async () => {
             return await queryClient.invalidateQueries({
                 queryKey: ['userproperties'],
             });
+        },
+        onError: (error) => {
+            console.error('Hiba történt!', error);
         },
     });
 
@@ -181,19 +191,20 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         chooseCurrentPlayerMutation;
 
     const handleChooseClick = (id: number): void => {
-        mutate(id);
+        chooseCurrentPlayerMutation.mutate(id);
     };
 
     const handleToggleFavorite = (playerId: number) => {
         toggleFavoritePlayerMutation.mutate(playerId);
     };
+
     return (
         <>
             <div
-                ref={setNodeRef}
-                style={style}
-                {...(!isInCurrentContainer && { ...attributes, ...listeners })}
-                className="flex w-[148px] select-none"
+                {...containerProps}
+                className={`flex w-[148px] ${
+                    isSortable ? 'touch-manipulation' : {}
+                }`}
             >
                 <Card
                     key={player.name}
@@ -202,6 +213,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                         isInCurrentContainer
                             ? {
                                   cursor: `default`,
+                                  userSelect: 'none',
                                   boxShadow:
                                       '0px 0px 2px rgba(250, 202, 21, 1)',
                                   transform: 'scale(1.02)',
@@ -322,9 +334,10 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
-                                        onClick={() =>
-                                            handleChooseClick(player.id)
-                                        }
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleChooseClick(player.id);
+                                        }}
                                     >
                                         Choose
                                     </div>

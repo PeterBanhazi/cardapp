@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode, useCallback } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -10,6 +10,9 @@ import {
     DragEndEvent,
     DragStartEvent,
     UniqueIdentifier,
+    TouchSensor,
+    DragOverEvent,
+    MeasuringStrategy,
 } from '@dnd-kit/core';
 import {
     arrayMove,
@@ -24,6 +27,7 @@ import DraggablePlayerCard from './DraggablePlayerCard';
 import { DraggableElement } from '@dnd-kit/core/dist/store';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
+import CurrentCardDropZone from '../components/ui/CurrentCardDropZone';
 
 interface PlayerCardsContainerProps {
     playerCards: PlayerStats[];
@@ -40,6 +44,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const [items, setItems] = useState<PlayerStats[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+    const [isOverDropZone, setIsOverDropZone] = useState(false);
 
     // Initialize sensors for drag and drop
     const sensors = useSensors(
@@ -47,6 +52,12 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
             activationConstraint: {
                 // Only start dragging after moving 8px
                 distance: 6,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
             },
         }),
         useSensor(KeyboardSensor, {
@@ -117,7 +128,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(orderMap));
     };
 
-    // Handle the end of a drag event
+    // Handle the drag events
     const handleDragStart = (event: DragStartEvent) => {
         const { active } = event;
         setIsDragging(true);
@@ -126,35 +137,46 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const activeDraggingCard: PlayerStats | undefined = items.find(
         (item) => item.id === activeId
     );
+    const handleDragOver = (event: DragOverEvent) => {
+        // Check if hovering over drop zone
+        if (event.over && event.over.id === 'drop-zone') {
+            setIsOverDropZone(true);
+        } else {
+            setIsOverDropZone(false);
+        }
+    };
+
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
-        if (over && active.id !== over.id) {
-            if (over && over.id === 'droppable') {
-                const nextCard = items.find((item) => item.id === active.id);
-                console.log('next: ' + nextCard);
-                if (nextCard) handleChooseClick(nextCard.id);
-
-                setIsDragging(false);
-                setActiveId(null);
-
-                return;
-            }
+        if (over && over.id === 'drop-zone') {
+            const nextCard = items.find((item) => item.id === active.id);
+            console.log('next: ' + nextCard);
+            if (nextCard) handleChooseClick(nextCard.id);
+        } else if (over && active.id !== over.id) {
             setItems((items) => {
                 const oldIndex = items.findIndex(
                     (item) => item.id === active.id
                 );
                 const newIndex = items.findIndex((item) => item.id === over.id);
-
-                const newItems = arrayMove(items, oldIndex, newIndex);
-
+                let newItems: PlayerStats[] = [];
+                if (oldIndex !== -1 && newIndex !== -1) {
+                    newItems = arrayMove(items, oldIndex, newIndex);
+                    saveOrderToLocalStorage(newItems);
+                } else {
+                    newItems = arrayMove(items, oldIndex, newIndex);
+                }
                 // Save the new order to local storage
+
                 saveOrderToLocalStorage(newItems);
-                setIsDragging(false);
-                setActiveId(null);
+
                 return newItems;
             });
         }
+        setItems((items) => items.map((item) => ({ ...item })));
+        setIsDragging(false);
+        setActiveId(null);
+        setIsOverDropZone(false);
     };
 
     const queryClient = useQueryClient();
@@ -168,7 +190,6 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
         // so that the mutation stays in `pending` state until the refetch is finished
         onSuccess: () => {
             console.log('megtortent');
-            setItems(items);
         },
         onSettled: async () => {
             return await queryClient.invalidateQueries({
@@ -183,13 +204,26 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const handleChooseClick = (id: number): void => {
         mutate(id);
     };
+    const handleReIndex = useCallback(() => {
+        // Toggle the selected card's active state
+        setItems((items) => items.map((item) => ({ ...item })));
+    }, []);
+    const foundPlayer = playerCards.filter((p) => p.id === currentCardId);
+
+    const updatedPlayer = foundPlayer ? { ...foundPlayer } : null;
     return (
         <div className="">
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
                 onDragStart={handleDragStart}
+                measuring={{
+                    droppable: {
+                        strategy: MeasuringStrategy.Always,
+                    },
+                }}
             >
                 <div className="flex">
                     {children}
@@ -211,8 +245,20 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         [&::-webkit-scrollbar-thumb]:hover:bg-orange-100/60
                         "
                         >
+                            <div data-id="drop-zone" id="drop-zone">
+                                <CurrentCardDropZone isOver={true}>
+                                    {updatedPlayer && (
+                                        <TennisPlayerCards
+                                            player={updatedPlayer[0]}
+                                            isInCurrentContainer={true}
+                                            isSortable={false}
+                                            currentCardId={currentCardId}
+                                        />
+                                    )}
+                                </CurrentCardDropZone>
+                            </div>
                             <SortableContext
-                                items={items}
+                                items={items.map((item) => item.id)}
                                 strategy={rectSortingStrategy}
                             >
                                 <div
@@ -223,17 +269,17 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                                             'repeat(auto-fit, 148px)',
                                     }}
                                 >
+                                    <button onClick={handleReIndex}>
+                                        ReIndex
+                                    </button>
                                     {items.map((player) => (
                                         <DraggablePlayerCard
                                             key={player.id}
                                             id={player.id}
                                             currentCardId={currentCardId}
-                                        >
-                                            <TennisPlayerCards
-                                                player={player}
-                                                currentCardId={currentCardId}
-                                            />
-                                        </DraggablePlayerCard>
+                                            isSortable={true}
+                                            item={player}
+                                        />
                                     ))}
                                 </div>
                             </SortableContext>
@@ -245,6 +291,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         <TennisPlayerCards
                             currentCardId={currentCardId}
                             player={activeDraggingCard}
+                            isSortable={true}
                         />
                     ) : null}
                 </DragOverlay>

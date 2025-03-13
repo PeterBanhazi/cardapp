@@ -6,6 +6,8 @@ import TennisPlayerCreator from './TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
+import DraggablePlayerCard from '../layouts/DraggablePlayerCard';
+import CurrentCardDropZone from './ui/CurrentCardDropZone';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
@@ -30,20 +32,8 @@ const OptionsLeftContainer: React.FC<{
         },
     });
 
-    const current = currentPlayer.filter(
-        (player) => currentCardId == player.id
-    );
-
     const { isPending, submittedAt, variables, mutate, isError } =
         addTodoMutation;
-
-    const { setNodeRef, isOver } = useDroppable({
-        id: 'droppable',
-        // ### data can be useful to mach isover card's id equation
-        data: {
-            accepts: ['type1', 'type2'],
-        },
-    });
 
     return (
         <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent">
@@ -78,50 +68,44 @@ const OptionsLeftContainer: React.FC<{
                     </div>
                 </form>
             </div>
-            <div>
-                <div
-                    ref={setNodeRef}
-                    className={`${
-                        isOver
-                            ? 'shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-slate-100 transition-shadow duration-100'
-                            : ''
-                    }`}
-                >
-                    {current && (
+            {/* <div data-id="drop-zone" id="drop-zone">
+                <CurrentCardDropZone isOver={true}>
+                    {currentPlayer && (
                         <TennisPlayerCards
-                            player={current[0]}
+                            player={currentPlayer[0]}
                             isInCurrentContainer={true}
+                            isSortable={false}
                             currentCardId={currentCardId}
                         />
                     )}
-                </div>
+                </CurrentCardDropZone>
+            </div> */}
 
-                <div className="flex flex-row mt-6 justify-self-center">
-                    <button className="bg-slate-400 ">Option1</button>
+            <div className="flex flex-row mt-6 justify-self-center">
+                <button className="bg-slate-400 ">Option1</button>
 
-                    <button>Option2</button>
-                </div>
-                <div className="mt-3">
-                    <button
-                        className="flex rounded-xl border-2 justify-self-center"
-                        onClick={() => setIsCreateOpen(true)}
-                    >
-                        Create
-                    </button>
-                    {isCreateOpen && (
-                        <TennisPlayerCreator
-                            onClose={() => setIsCreateOpen(false)}
-                        />
-                    )}
-                    <button
-                        className="flex rounded-xl border-2 justify-self-center"
-                        onClick={() => {
-                            mutate(isOnline ? false : true);
-                        }}
-                    >
-                        mutate
-                    </button>
-                </div>
+                <button>Option2</button>
+            </div>
+            <div className="mt-3">
+                <button
+                    className="flex rounded-xl border-2 justify-self-center"
+                    onClick={() => setIsCreateOpen(true)}
+                >
+                    Create
+                </button>
+                {isCreateOpen && (
+                    <TennisPlayerCreator
+                        onClose={() => setIsCreateOpen(false)}
+                    />
+                )}
+                <button
+                    className="flex rounded-xl border-2 justify-self-center"
+                    onClick={() => {
+                        mutate(isOnline ? false : true);
+                    }}
+                >
+                    mutate
+                </button>
             </div>
         </div>
     );
