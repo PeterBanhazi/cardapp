@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -24,10 +24,9 @@ import {
 import { PlayerStats } from '../utils/types';
 import TennisPlayerCards from '../components/ui/TennisPlayerCards';
 import DraggablePlayerCard from './DraggablePlayerCard';
-import { DraggableElement } from '@dnd-kit/core/dist/store';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
-import CurrentCardDropZone from '../components/ui/CurrentCardDropZone';
 
 interface PlayerCardsContainerProps {
     playerCards: PlayerStats[];
@@ -137,21 +136,21 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const activeDraggingCard: PlayerStats | undefined = items.find(
         (item) => item.id === activeId
     );
-    const handleDragOver = (event: DragOverEvent) => {
-        // Check if hovering over drop zone
-        if (event.over && event.over.id === 'drop-zone') {
-            setIsOverDropZone(true);
-        } else {
-            setIsOverDropZone(false);
-        }
-    };
+    // const handleDragOver = (event: DragOverEvent) => {
+    //     // Check if hovering over drop zone
+    //     if (event.over && event.over.id === 'doppable') {
+    //         setIsOverDropZone(true);
+    //     } else {
+    //         setIsOverDropZone(false);
+    //     }
+    // };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
 
-        if (over && over.id === 'drop-zone') {
+        if (over && over.id === 'droppable') {
             const nextCard = items.find((item) => item.id === active.id);
-            console.log('next: ' + nextCard);
+
             if (nextCard) handleChooseClick(nextCard.id);
         } else if (over && active.id !== over.id) {
             setItems((items) => {
@@ -159,21 +158,15 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                     (item) => item.id === active.id
                 );
                 const newIndex = items.findIndex((item) => item.id === over.id);
-                let newItems: PlayerStats[] = [];
-                if (oldIndex !== -1 && newIndex !== -1) {
-                    newItems = arrayMove(items, oldIndex, newIndex);
-                    saveOrderToLocalStorage(newItems);
-                } else {
-                    newItems = arrayMove(items, oldIndex, newIndex);
-                }
-                // Save the new order to local storage
+
+                const newItems = arrayMove(items, oldIndex, newIndex);
 
                 saveOrderToLocalStorage(newItems);
 
                 return newItems;
             });
         }
-        setItems((items) => items.map((item) => ({ ...item })));
+
         setIsDragging(false);
         setActiveId(null);
         setIsOverDropZone(false);
@@ -204,10 +197,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const handleChooseClick = (id: number): void => {
         mutate(id);
     };
-    const handleReIndex = useCallback(() => {
-        // Toggle the selected card's active state
-        setItems((items) => items.map((item) => ({ ...item })));
-    }, []);
+
     const foundPlayer = playerCards.filter((p) => p.id === currentCardId);
 
     const updatedPlayer = foundPlayer ? { ...foundPlayer } : null;
@@ -217,7 +207,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
+                // onDragOver={handleDragOver}
                 onDragStart={handleDragStart}
                 measuring={{
                     droppable: {
@@ -245,18 +235,6 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         [&::-webkit-scrollbar-thumb]:hover:bg-orange-100/60
                         "
                         >
-                            <div data-id="drop-zone" id="drop-zone">
-                                <CurrentCardDropZone isOver={true}>
-                                    {updatedPlayer && (
-                                        <TennisPlayerCards
-                                            player={updatedPlayer[0]}
-                                            isInCurrentContainer={true}
-                                            isSortable={false}
-                                            currentCardId={currentCardId}
-                                        />
-                                    )}
-                                </CurrentCardDropZone>
-                            </div>
                             <SortableContext
                                 items={items.map((item) => item.id)}
                                 strategy={rectSortingStrategy}
@@ -269,9 +247,6 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                                             'repeat(auto-fit, 148px)',
                                     }}
                                 >
-                                    <button onClick={handleReIndex}>
-                                        ReIndex
-                                    </button>
                                     {items.map((player) => (
                                         <DraggablePlayerCard
                                             key={player.id}

@@ -116,27 +116,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     currentCardId,
     isSortable = true,
 }) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-
-        isDragging,
-    } = useSortable({
-        id: player.id,
-        disabled: false,
-    });
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        zIndex: isDragging ? 10 : 1,
-        opacity: isDragging ? 0.8 : 1,
-    };
-    const containerProps = isSortable
-        ? { style: style, ref: setNodeRef, ...listeners, ...attributes }
-        : {};
+    const containerProps = isSortable ? {} : {};
 
     const abilities = {
         serve: player.serve,

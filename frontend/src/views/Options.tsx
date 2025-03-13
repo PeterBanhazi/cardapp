@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Friendship, PlayerStats, UserData } from '../utils/types';
 import OptionsLeftContainer from '../components/OptionsLeftContainer';
 import OptionsRightContainer from '../components/OptionsRightContainer';
-import OptionsMiddleContainer from '../components/OptionsMiddleContainer';
+import OptionsMiddleContainer from '../temp/OptionsMiddleContainer';
 import OptionsDnDCardWrapper from '../layouts/OptionsDnDCardWrapper';
 import { PassThrough } from 'stream';
 // import { console } from 'inspector';
@@ -110,12 +110,12 @@ function Options() {
                 currentCardId={currentCardId}
             >
                 <div className="w-[150px] h-[532px]">
-                    {/* <OptionsLeftContainer
+                    <OptionsLeftContainer
                         currentPlayer={updatedPlayer!}
                         currentCardId={currentCardId}
                         isOnline={data.isonline}
                         rankPoints={data.rankpoints}
-                    /> */}
+                    />
                 </div>
             </OptionsDnDCardWrapper>
 
