@@ -4,12 +4,11 @@ import { PlayerStats } from '../../utils/types';
 import { TbUserEdit } from 'react-icons/tb';
 import { LuHistory } from 'react-icons/lu';
 import { FaStar } from 'react-icons/fa6';
-import { color } from 'framer-motion';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { motion } from 'framer-motion';
+import { Spinner } from 'flowbite-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../utils/useAxios';
+
+import { useCurrentPlayerMutation } from './useCurrentPlayerMutation';
 // id: number;
 // creator_username: string | number | null;
 // name: string;
@@ -101,11 +100,6 @@ const colors: Record<string, CardColors> = {
     },
 };
 
-type PlayerAbilities = Omit<
-    PlayerStats,
-    'id' | 'name' | 'creator_username' | 'avatar_url'
->;
-
 const getColorsByCardType = (cardtype: PlayerStats['cardtype']): CardColors => {
     return colors[cardtype] || colors.DEFAULT;
 };
@@ -116,7 +110,10 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     currentCardId,
     isSortable = true,
 }) => {
-    const containerProps = isSortable ? {} : {};
+    // const containerProps = isSortable ? {} : {};
+    const { chooseCurrentPlayer, isPending, error } =
+        useCurrentPlayerMutation();
+    const isLoading = isPending;
 
     const abilities = {
         serve: player.serve,
@@ -130,25 +127,6 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     /// ### use base textcolor for ring also
 
     const queryClient = useQueryClient();
-
-    const chooseCurrentPlayerMutation = useMutation({
-        mutationFn: async (newCurrentPlayer: number) => {
-            const response = await useAxios().patch('options/', {
-                current_player_id_change: newCurrentPlayer,
-            });
-            return response.data;
-        },
-        // make sure to _return_ the Promise from the query invalidation
-        // so that the mutation stays in `pending` state until the refetch is finished
-        onSettled: async () => {
-            return await queryClient.invalidateQueries({
-                queryKey: ['userproperties'],
-            });
-        },
-        onError: (error) => {
-            console.error('Hiba történt!', error);
-        },
-    });
 
     const toggleFavoritePlayerMutation = useMutation({
         mutationFn: async (playerId: number) => {
@@ -167,13 +145,6 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         },
     });
 
-    const { isPending, submittedAt, variables, mutate, isError } =
-        chooseCurrentPlayerMutation;
-
-    const handleChooseClick = (id: number): void => {
-        chooseCurrentPlayerMutation.mutate(id);
-    };
-
     const handleToggleFavorite = (playerId: number) => {
         toggleFavoritePlayerMutation.mutate(playerId);
     };
@@ -181,11 +152,15 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     return (
         <>
             <div
-                {...containerProps}
+                // {...containerProps}
                 className={`flex w-[148px] ${
                     isSortable ? 'touch-manipulation' : {}
                 }`}
             >
+                {isLoading ? 'Updating...' : ''}
+                {error && (
+                    <p style={{ color: 'red' }}>Error: {error.message}</p>
+                )}
                 <Card
                     key={player.name}
                     className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current transition duration-0 hover:shadow-md scale-100  hover:scale-[1.02] hover:shadow-slate-700 cursor-grab`}
@@ -308,16 +283,16 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                                     style={{
                                         backgroundColor: `#${cardColors.button}`,
                                     }}
+                                    disabled={isLoading}
                                 >
                                     <div
                                         className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
                                         style={{
                                             color: `#${cardColors.buttontext}`,
                                         }}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleChooseClick(player.id);
-                                        }}
+                                        onClick={() =>
+                                            chooseCurrentPlayer(player.id)
+                                        }
                                     >
                                         Choose
                                     </div>

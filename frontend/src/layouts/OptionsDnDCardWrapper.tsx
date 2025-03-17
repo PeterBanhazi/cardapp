@@ -198,9 +198,6 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
         mutate(id);
     };
 
-    const foundPlayer = playerCards.filter((p) => p.id === currentCardId);
-
-    const updatedPlayer = foundPlayer ? { ...foundPlayer } : null;
     return (
         <div className="">
             <DndContext
