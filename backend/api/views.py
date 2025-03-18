@@ -43,9 +43,9 @@ class PlayerListView(APIView):
     def get(self, request):
         players = TennisPlayer.objects.all()
         serializer = TennisPlayerSerializer(players, many=True)
-        return Response({
-            'players': serializer.data
-        })
+        return Response(
+            serializer.data, status=status.HTTP_200_OK)
+        
 
 class FriendshipViewSet(RetrieveUpdateAPIView):
     serializer_class = FriendshipSerializer
