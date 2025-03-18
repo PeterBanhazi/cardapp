@@ -4,10 +4,7 @@ import axios from '../../utils/axios';
 import GamePlayerCardRight from './GamePlayerCardRight';
 import GamePlayerCardLeft from './GamePlayerCardLeft';
 import TennisBallScene from './TennisBallScene';
-
-interface ApiResponse {
-    players: Player[];
-}
+import { UserData, PlayerStats } from '../../utils/types';
 
 interface PlayerAbilities {
     serve: number;
@@ -24,7 +21,7 @@ interface Player extends PlayerAbilities {
 }
 
 const GameWrapper: React.FC = () => {
-    const [players, setPlayers] = useState<Player[]>([]);
+    const [players, setPlayers] = useState<PlayerStats[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const handleStartGame = () => {
@@ -36,10 +33,10 @@ const GameWrapper: React.FC = () => {
         const fetchPlayers = async (): Promise<void> => {
             try {
                 setIsLoading(true);
-                const response = await axios.get<ApiResponse>(
+                const response = await axios.get<PlayerStats[]>(
                     '/get/playerlist/'
                 );
-                setPlayers(response.data.players);
+                setPlayers(response.data);
                 setIsLoading(false);
             } catch (err) {
                 setError(

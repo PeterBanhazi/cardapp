@@ -23,8 +23,8 @@ export interface UserData {
     username: string;
     isonline: boolean;
     rankpoints: number;
-    friendships: Friendship;
+    friendships: Friendship[];
     favorite_players: PlayerStats[];
-    current_player: PlayerStats[];
+    current_player: PlayerStats;
     custom_players: PlayerStats[];
 }

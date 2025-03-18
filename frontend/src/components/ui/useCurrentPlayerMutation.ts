@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../utils/useAxios';
 
-export const useCurrentPlayerMutation = () => {
+export function useCurrentPlayerMutation() {
     const queryClient = useQueryClient();
 
     // Mutation function for updating the current player

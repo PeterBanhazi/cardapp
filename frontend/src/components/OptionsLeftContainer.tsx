@@ -86,7 +86,6 @@ const OptionsLeftContainer: React.FC<{
                 >
                     {currentPlayer && (
                         <TennisPlayerCards
-                            key={3333}
                             isSortable={false}
                             player={currentPlayer[0]}
                             isInCurrentContainer={true}
