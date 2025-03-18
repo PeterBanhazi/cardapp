@@ -26,20 +26,20 @@ function Options() {
     if (isError) {
         return <span>Error: {error!.message}</span>;
     }
+    if (!updatedPlayer) return <span>Error: Something went wrong!</span>;
 
-    console.log(updatedPlayer);
     return (
         <div className="flex justify-evenly w-full h-[592px] ">
             <OptionsDnDCardWrapper
-                playerCards={filteredPlayers!}
-                currentCardId={currentCardId!}
+                playerCards={filteredPlayers}
+                currentCardId={currentCardId}
             >
                 <div className="w-[150px] h-[532px]">
                     <OptionsLeftContainer
-                        currentPlayer={updatedPlayer!}
-                        currentCardId={currentCardId!}
-                        isOnline={isOnline!}
-                        rankPoints={rankPoints!}
+                        currentPlayer={updatedPlayer}
+                        currentCardId={currentCardId}
+                        isOnline={isOnline}
+                        rankPoints={rankPoints}
                     />
                 </div>
             </OptionsDnDCardWrapper>

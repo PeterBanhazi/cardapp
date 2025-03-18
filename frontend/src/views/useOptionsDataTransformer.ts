@@ -82,7 +82,7 @@ export function useOptionsDataTransformer(): OptionsDataResult {
             error: error || playerListError,
         };
     }
-    console.log(playerListData);
+   
     // Transform data
     // Add type for card design colors
     const defaultPlayerArray = playerListData.slice(0, 10).map((player) => ({
@@ -127,8 +127,7 @@ export function useOptionsDataTransformer(): OptionsDataResult {
 
     const currentCardId: number = userData.current_player.id;
     const favouriteCardIds = getFavoritePlayerIds(userData);
-    console.log('fav' + favouriteCardIds);
-    console.log(currentCardId);
+
 
     const filteredPlayers: PlayerStats[] = filterOutFavoritePlayers(
         allPlayersPlusId,
