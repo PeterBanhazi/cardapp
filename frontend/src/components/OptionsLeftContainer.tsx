@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Children, ReactNode, useState } from 'react';
 import { PlayerStats } from '../utils/types';
 import { Switch } from 'radix-ui';
 import TennisPlayerCards from './ui/TennisPlayerCards';
@@ -6,19 +6,27 @@ import TennisPlayerCreator from './TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
-import DraggablePlayerCard from '../layouts/DraggablePlayerCard';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
     isOnline: boolean;
     rankPoints: number;
     currentCardId: number;
-}> = ({ currentPlayer, isOnline, rankPoints, currentCardId }) => {
+    children: ReactNode;
+    isDragging: boolean;
+}> = ({
+    currentPlayer,
+    isOnline,
+    rankPoints,
+    currentCardId,
+    children,
+    isDragging,
+}) => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isOnlineSwitch, setIsOnlineSwitch] = useState(isOnline);
 
     const queryClient = useQueryClient();
-
+    console.log('drag' + isDragging);
     const addTodoMutation = useMutation({
         mutationFn: (newTodo: boolean): any =>
             useAxios().patch('options/', { isonline: newTodo }),
@@ -47,7 +55,7 @@ const OptionsLeftContainer: React.FC<{
             <div className="text-lg font-semibold">
                 Rank Points: {rankPoints}
             </div>
-
+            {children}
             <div>
                 <form>
                     <div className="grid grid-cols-2 gap-5 w-full">
@@ -75,23 +83,30 @@ const OptionsLeftContainer: React.FC<{
                     </div>
                 </form>
             </div>
-            <div>
-                <div
-                    ref={setNodeRef}
-                    className={`${
-                        isOver
-                            ? 'shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-slate-100 transition-shadow duration-100'
-                            : ''
-                    }`}
-                >
-                    {currentPlayer && (
-                        <TennisPlayerCards
-                            isSortable={false}
-                            player={currentPlayer[0]}
-                            isInCurrentContainer={true}
-                            currentCardId={currentCardId}
-                        />
-                    )}
+            <div className="relative">
+                {isDragging ? (
+                    <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-0 rounded-xl bg-gray-800 bg-opacity-40 "></div>
+                ) : (
+                    ''
+                )}
+                <div className="z-20 relative">
+                    <div
+                        ref={setNodeRef}
+                        className={`${
+                            isOver
+                                ? 'rounded-xl shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-yellow-200 transition-shadow duration-300 animate-pulse'
+                                : ''
+                        }`}
+                    >
+                        {currentPlayer && (
+                            <TennisPlayerCards
+                                isSortable={false}
+                                player={currentPlayer[0]}
+                                isInCurrentContainer={true}
+                                currentCardId={currentCardId}
+                            />
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex flex-row mt-6 justify-self-center">

@@ -3,7 +3,8 @@ import { UserData, PlayerStats } from '../utils/types';
 import useAxios from '../utils/useAxios';
 
 interface OptionsDataResult {
-    updatedPlayer: PlayerStats[] | null;
+    userName: string|null;
+    currentPlayer: PlayerStats[] | null;
     currentCardId: number;
     filteredPlayers: PlayerStats[];
     data: UserData | null;
@@ -56,7 +57,8 @@ export function useOptionsDataTransformer(): OptionsDataResult {
     // Handle loading state
     if (isPending || isPlayerListPending) {
         return {
-            updatedPlayer: null,
+            currentPlayer: null,
+            userName: null,
             currentCardId: 0,
             filteredPlayers: [],
             data: null,
@@ -71,7 +73,8 @@ export function useOptionsDataTransformer(): OptionsDataResult {
     // Handle error state
     if (isError || isPlayerListError) {
         return {
-            updatedPlayer: null,
+            currentPlayer: null,
+            userName: null,
             currentCardId: 0,
             filteredPlayers: [],
             data: null,
@@ -137,7 +140,9 @@ export function useOptionsDataTransformer(): OptionsDataResult {
     const foundPlayer = filteredPlayers.filter((p) => p.id === currentCardId);
 
     return {
-        updatedPlayer: foundPlayer,
+        currentPlayer: foundPlayer,
+        
+        userName: userData.username,
         currentCardId,
         filteredPlayers,
         data: userData,

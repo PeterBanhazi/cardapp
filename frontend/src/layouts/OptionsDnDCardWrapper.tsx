@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -21,6 +21,8 @@ import {
     rectSortingStrategy,
 } from '@dnd-kit/sortable';
 
+import { FaArrowsRotate } from 'react-icons/fa6';
+
 import { PlayerStats } from '../utils/types';
 import TennisPlayerCards from '../components/ui/TennisPlayerCards';
 import DraggablePlayerCard from './DraggablePlayerCard';
@@ -30,6 +32,7 @@ import useAxios from '../utils/useAxios';
 import OptionsLeftContainer from '../components/OptionsLeftContainer';
 
 interface PlayerCardsContainerProps {
+    userName: string;
     playerCards: PlayerStats[];
     currentCardId: number;
     isOnline: boolean;
@@ -37,18 +40,27 @@ interface PlayerCardsContainerProps {
     currentPlayer: PlayerStats[];
 }
 
-const LOCAL_STORAGE_KEY = 'playerCardsOrder';
 const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
+    userName,
     playerCards,
     currentCardId,
     isOnline,
     rankPoints,
     currentPlayer,
 }) => {
+    const LOCAL_STORAGE_KEY = `${userName}_playerCardsOrder`;
     const [items, setItems] = useState<PlayerStats[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
     const [isOverDropZone, setIsOverDropZone] = useState(false);
+    const [listReset, setListReset] = useState<boolean>(false);
+
+    const [isClicked, setIsClicked] = useState(false);
+
+    const handleListReset = () => {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+        setListReset((value) => !value);
+    };
 
     // Initialize sensors for drag and drop
     const sensors = useSensors(
@@ -113,15 +125,18 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 });
 
                 setItems(orderedPlayers);
+                setIsClicked(false);
             } catch (e) {
                 // If there's an error parsing the saved order, use the default sort
                 setItems(sortedPlayers);
+                setIsClicked(true);
             }
         } else {
             // If no saved order, use the default sort
             setItems(sortedPlayers);
+            setIsClicked(true);
         }
-    }, [playerCards]);
+    }, [playerCards, listReset]);
 
     // Save current order to local storage whenever it changes
     const saveOrderToLocalStorage = (orderedItems: PlayerStats[]) => {
@@ -130,13 +145,13 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
             orderMap[item.id] = index;
         });
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(orderMap));
+        setIsClicked(false);
     };
 
     // Handle the drag events
     const handleDragStart = (event: DragStartEvent) => {
-        const { active } = event;
         setIsDragging(true);
-        setActiveId(active.id);
+        setActiveId(event.active.id);
     };
     const activeDraggingCard: PlayerStats | undefined = items.find(
         (item) => item.id === activeId
@@ -224,7 +239,19 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                             currentCardId={currentCardId}
                             isOnline={isOnline}
                             rankPoints={rankPoints}
-                        />
+                            isDragging={isDragging}
+                        >
+                            Reset list:{' '}
+                            <FaArrowsRotate
+                                size="20"
+                                onClick={handleListReset}
+                                className={`text-slate-800                                  ${
+                                    !isClicked
+                                        ? 'hover:animate-spin hover:text-slate-600 cursor-pointer'
+                                        : 'cursor-not-allowed hover:normal-case'
+                                }`}
+                            />
+                        </OptionsLeftContainer>
                     </div>
                     <div className="w-3.5 2xl:w-8"></div>
                     <div className="w-full h-full">

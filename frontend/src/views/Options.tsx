@@ -7,7 +7,8 @@ import { useOptionsDataTransformer } from './useOptionsDataTransformer';
 
 function Options() {
     const {
-        updatedPlayer,
+        userName,
+        currentPlayer,
         currentCardId,
         filteredPlayers,
         isOnline,
@@ -25,14 +26,16 @@ function Options() {
     if (isError) {
         return <span>Error: {error!.message}</span>;
     }
-    if (!updatedPlayer) return <span>Error: Something went wrong!</span>;
+    if (!currentPlayer || !userName)
+        return <span>Error: Something went wrong!</span>;
 
     return (
         <div className="flex justify-evenly w-full h-[592px] ">
             <OptionsDnDCardWrapper
+                userName={userName}
                 playerCards={filteredPlayers}
                 currentCardId={currentCardId}
-                currentPlayer={updatedPlayer}
+                currentPlayer={currentPlayer}
                 isOnline={isOnline}
                 rankPoints={rankPoints}
             ></OptionsDnDCardWrapper>
