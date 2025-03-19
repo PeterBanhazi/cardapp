@@ -1,4 +1,3 @@
-import OptionsLeftContainer from '../components/OptionsLeftContainer';
 import OptionsRightContainer from '../components/OptionsRightContainer';
 
 import OptionsDnDCardWrapper from '../layouts/OptionsDnDCardWrapper';
@@ -33,16 +32,10 @@ function Options() {
             <OptionsDnDCardWrapper
                 playerCards={filteredPlayers}
                 currentCardId={currentCardId}
-            >
-                <div className="w-[150px] h-[532px]">
-                    <OptionsLeftContainer
-                        currentPlayer={updatedPlayer}
-                        currentCardId={currentCardId}
-                        isOnline={isOnline}
-                        rankPoints={rankPoints}
-                    />
-                </div>
-            </OptionsDnDCardWrapper>
+                currentPlayer={updatedPlayer}
+                isOnline={isOnline}
+                rankPoints={rankPoints}
+            ></OptionsDnDCardWrapper>
 
             <div className="w-[150px] h-[592px]">
                 <OptionsRightContainer friendships={data!.friendships} />

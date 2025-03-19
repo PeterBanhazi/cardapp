@@ -27,18 +27,23 @@ import DraggablePlayerCard from './DraggablePlayerCard';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
+import OptionsLeftContainer from '../components/OptionsLeftContainer';
 
 interface PlayerCardsContainerProps {
     playerCards: PlayerStats[];
     currentCardId: number;
-    children: ReactNode;
+    isOnline: boolean;
+    rankPoints: number;
+    currentPlayer: PlayerStats[];
 }
 
 const LOCAL_STORAGE_KEY = 'playerCardsOrder';
 const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
-    children,
     playerCards,
     currentCardId,
+    isOnline,
+    rankPoints,
+    currentPlayer,
 }) => {
     const [items, setItems] = useState<PlayerStats[]>([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -66,9 +71,9 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
 
     // Load cards and apply saved order on component mount
     useEffect(() => {
-        // First, sort the players by cardtype and id
+        // Sort the players by cardtype and id
         const sortedPlayers = [...playerCards].sort((a, b) => {
-            // First sort by card type (FAVOURITE > DEFAULT > CUSTOM > CURRENT)
+            // sort by card type (FAVOURITE > DEFAULT > CUSTOM > CURRENT)
             const typeOrder = {
                 FAVOURITE: 0,
                 DEFAULT: 1,
@@ -80,7 +85,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 return typeOrder[a.cardtype] - typeOrder[b.cardtype];
             }
 
-            // Then sort by id (ascending)
+            // sort by id (ascending)
             return a.id - b.id;
         });
 
@@ -197,7 +202,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const handleChooseClick = (id: number): void => {
         mutate(id);
     };
-
+    // const curr = currentPlayer;
     return (
         <div className="">
             <DndContext
@@ -213,7 +218,14 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 }}
             >
                 <div className="flex">
-                    {children}
+                    <div className="w-[150px] h-[532px]">
+                        <OptionsLeftContainer
+                            currentPlayer={currentPlayer}
+                            currentCardId={currentCardId}
+                            isOnline={isOnline}
+                            rankPoints={rankPoints}
+                        />
+                    </div>
                     <div className="w-3.5 2xl:w-8"></div>
                     <div className="w-full h-full">
                         <div
