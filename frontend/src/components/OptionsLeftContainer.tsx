@@ -8,6 +8,7 @@ import useAxios from '../utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
 
 import { RiCrosshair2Line } from 'react-icons/ri';
+import TennisBallToggle from './ui/TennisBallToggle';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
@@ -28,7 +29,6 @@ const OptionsLeftContainer: React.FC<{
     const [isOnlineSwitch, setIsOnlineSwitch] = useState(isOnline);
 
     const queryClient = useQueryClient();
-    console.log('drag' + isDragging);
     const addTodoMutation = useMutation({
         mutationFn: (newTodo: boolean): any =>
             useAxios().patch('options/', { isonline: newTodo }),
@@ -57,7 +57,7 @@ const OptionsLeftContainer: React.FC<{
             <div className="text-lg font-semibold">
                 Rank Points: {rankPoints}
             </div>
-            {children}
+            <div className="h-2 w-2">{children}</div>
             <div>
                 <form>
                     <div className="grid grid-cols-2 gap-5 w-full">
@@ -145,6 +145,7 @@ const OptionsLeftContainer: React.FC<{
                     >
                         mutate
                     </button>
+                    <TennisBallToggle isOnline={isOnline} />
                 </div>
             </div>
         </div>
