@@ -7,6 +7,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
 
+import { RiCrosshair2Line } from 'react-icons/ri';
+
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
     isOnline: boolean;
@@ -85,7 +87,16 @@ const OptionsLeftContainer: React.FC<{
             </div>
             <div className="relative">
                 {isDragging ? (
-                    <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-0 rounded-xl bg-gray-800 bg-opacity-40 "></div>
+                    <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-2 border-slate-400 border-opacity-70 rounded-xl bg-gray-600 bg-opacity-40 flex">
+                        <div className="flex animate-pulse self-center place-content-center min-w-full">
+                            <div className="w-fit z-14">
+                                <RiCrosshair2Line
+                                    size={100}
+                                    className="opacity-50 text-slate-200"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 ) : (
                     ''
                 )}

@@ -161,7 +161,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                 {isLoading ? (
                     <div className="flex top-0 left-0 absolute min-h-full min-w-full z-20 border-0 rounded-xl bg-gray-800 bg-opacity-40">
                         <div className="flex self-center place-content-center min-w-full">
-                            <div className=" w-fit z-41">
+                            <div className=" w-fit z-12">
                                 <RotatingLines
                                     width="52px"
                                     strokeColor="black"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Friendship } from '../../utils/types';
+import { Friendship } from '../utils/types';
 import { Dropdown } from 'flowbite-react';
 import { yellow } from '@radix-ui/colors';
 interface MenuFunctions {}
