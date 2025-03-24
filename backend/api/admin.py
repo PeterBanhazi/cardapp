@@ -7,6 +7,7 @@ from .models import *
 admin.site.register(UserProperties)
 admin.site.register(TennisPlayer)
 admin.site.register(Friendship)
+admin.site.register(Profile)
 # @admin.register(TennisPlayer)
 # class TennisPlayerAdmin(admin.ModelAdmin):
 #     """

@@ -6,7 +6,7 @@ from .views import AddTennisPlayerView
 from .views import UserPropertiesView
 from .views import TopListView
 from .views import FriendshipViewSet
-
+from .views import ProfileView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -26,6 +26,7 @@ urlpatterns = [
     path('add-player/', AddTennisPlayerView.as_view(), name='add-player'),
     path('options/', UserPropertiesView.as_view(), name='options'),
     path('ranks/', TopListView.as_view(), name='ranks'),
-    path('get/friends/', FriendshipViewSet.as_view(), name='friends')
+    path('get/friends/', FriendshipViewSet.as_view(), name='friends'),
+    path('profile/', ProfileView.as_view(), name='profile'),
 ]
 

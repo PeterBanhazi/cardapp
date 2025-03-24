@@ -17,10 +17,10 @@ import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from .models import TennisPlayer,UserProperties, Friendship
+from .models import TennisPlayer,UserProperties, Friendship, Profile
 
 
-from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer
+from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer
 
 
 
@@ -46,7 +46,13 @@ class PlayerListView(APIView):
         return Response(
             serializer.data, status=status.HTTP_200_OK)
         
-
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        user_profile = Profile.objects.get(username=self.request.user)
+        return user_profile
 class FriendshipViewSet(RetrieveUpdateAPIView):
     serializer_class = FriendshipSerializer
     permission_classes = [IsAuthenticated]

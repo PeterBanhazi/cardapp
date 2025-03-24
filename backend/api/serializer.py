@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 
-from .models import TennisPlayer, UserProperties, Friendship
+from .models import TennisPlayer, UserProperties, Friendship, Profile
 
 
 # Default list serializers for friend connections 
@@ -112,11 +112,11 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
                 try:
                     favorite_player = TennisPlayer.objects.get(id=favorite_player_id)
                 except TennisPlayer.DoesNotExist:
-                    raise serializers.ValidationError({"error": "A megadott játékos nem létezik."})
+                    raise serializers.ValidationError({"error": "Given player not exits."})
 
                 # **Validáció**: Csak az 1–10 ID közötti vagy a user által létrehozott játékos lehet kedvenc
                 if favorite_player.creator_username is not None and favorite_player.creator_username != user:
-                    raise serializers.ValidationError({"error": "Csak az általad létrehozott játékosokat vagy az 1-10 ID közötti alapjátékosokat adhatod hozzá."})
+                    raise serializers.ValidationError({"error": "Invalid Id given."})
 
                 # Ha a játékos már benne van a kedvencek között → eltávolítás
                 if user.favorite_player_for_profile.filter(id=favorite_player_id).exists():
@@ -163,3 +163,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = RegisterSerializer(many=False, read_only=True)
+    class Meta:
+        model = Profile
+        fields = ('username', 'first_name', 'last_name', 'email' ,'description', 'avatar_image')

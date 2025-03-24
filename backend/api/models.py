@@ -104,3 +104,14 @@ class Friendship(models.Model):
     
     class Meta:
         ordering = ['-created_at'] 
+        
+class Profile(models.Model):
+    username = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    first_name= models.CharField(max_length=100)
+    last_name= models.CharField(max_length=100)
+    description = models.CharField(max_length=255)
+    avatar_image = models.CharField(max_length=20)    
+    email= models.EmailField()
+    
+    def __str__(self):
+        return self.username.username
