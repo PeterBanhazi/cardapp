@@ -1,24 +1,21 @@
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { Button } from 'flowbite-react';
+import { userInfo } from 'os';
+import React, { ReactNode } from 'react';
 
 interface VisibilityProps {
     isVisible?: boolean;
-    user?: {
-        user_id: any;
-        username: any;
-    };
+    user?: string;
 }
-const Home: React.FC<VisibilityProps> = ({ isVisible = true }) => {
-    const [isLoggedIn, user] = useAuthStore((state) => [
-        state.isLoggedIn,
-        state.user,
-    ]);
+const Home: React.FC = () => {
+    const [user] = useAuthStore((state) => [state.user]);
+    const loggedInUsername = user().username;
+
     return (
-        <div style={{ display: isVisible ? 'block' : 'none' }}>
+        <div>
             <div>
-                {isLoggedIn() ? (
-                    <LoggedInView user={user()} />
+                {loggedInUsername ? (
+                    <LoggedInView user={loggedInUsername} />
                 ) : (
                     <LoggedOutView />
                 )}
@@ -26,23 +23,29 @@ const Home: React.FC<VisibilityProps> = ({ isVisible = true }) => {
         </div>
     );
 };
+const HomeButton: React.FC<{ text: string; linkto: string }> = ({
+    text,
+    linkto,
+}) => {
+    return (
+        <>
+            <Link to={linkto}>
+                <button className="bg-[#CA6702] text-stone-100 px-4 py-1.5 rounded-xl text-sm font-medium hover:bg-orange-400 transition-colors">
+                    {text}
+                </button>
+            </Link>
+        </>
+    );
+};
 
 const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
-            <h1 className="hidden lg:text-sm xl:text-lg font-semibold text-orange-900 lg:block">
-                {user?.username}
+            <h1 className="hidden lg:text-sm xl:text-lg font-semibold text-[#CA6702] lg:block">
+                {user}
             </h1>
-            <Link to="/private">
-                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Private
-                </button>
-            </Link>
-            <Link to="/logout">
-                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Logout
-                </button>
-            </Link>
+            <HomeButton linkto="/private" text="Settings" />
+            <HomeButton linkto="/logout" text="Logout" />
         </div>
     );
 };
@@ -51,16 +54,8 @@ export const LoggedOutView = ({ title = 'Welcome' }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
             <h1 className="hidden lg:block">{title}</h1>
-            <Link to="/login">
-                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Login
-                </button>
-            </Link>
-            <Link to="/register">
-                <button className="bg-blue-600 bg-opacity-90 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
-                    Register
-                </button>
-            </Link>
+            <HomeButton linkto="/login" text="Login" />
+            <HomeButton linkto="/register" text="Register" />
         </div>
     );
 };
