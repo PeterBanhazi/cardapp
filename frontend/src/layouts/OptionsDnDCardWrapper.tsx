@@ -233,7 +233,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 }}
             >
                 <div className="flex">
-                    <div className="w-[150px] h-[532px]">
+                    <div className="w-[150px] h-[592px]">
                         <OptionsLeftContainer
                             currentPlayer={currentPlayer}
                             currentCardId={currentCardId}
@@ -241,7 +241,6 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                             rankPoints={rankPoints}
                             isDragging={isDragging}
                         >
-                            Reset list:{' '}
                             <FaArrowsRotate
                                 size="20"
                                 onClick={handleListReset}

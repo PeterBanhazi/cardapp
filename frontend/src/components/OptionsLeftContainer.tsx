@@ -26,7 +26,6 @@ const OptionsLeftContainer: React.FC<{
     isDragging,
 }) => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [isOnlineSwitch, setIsOnlineSwitch] = useState(isOnline);
 
     const queryClient = useQueryClient();
     const addTodoMutation = useMutation({
@@ -53,102 +52,99 @@ const OptionsLeftContainer: React.FC<{
     });
 
     return (
-        <div className="w-full h-full p-1 flex flex-col gap-1 items-center justify-start bg-transparent">
-            <div className="text-lg font-semibold">
-                Rank Points: {rankPoints}
-            </div>
-            <div className="h-2 w-2">{children}</div>
-            <div>
-                <form>
-                    <div className="grid grid-cols-2 gap-5 w-full">
-                        <label
-                            className={`text-sm  font-bold
-            ${isOnline ? 'text-green-400' : 'text-gray-700'}`}
-                            htmlFor="online-mode"
-                        >
-                            {isOnline ? 'Online' : 'Go Online!'}
-                        </label>
-                        <Switch.Root
-                            className="relative h-[25px] w-[42px] cursor-default rounded-full bg-blackA6 shadow-[0_2px_10px] shadow-blackA4 outline-none focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-green-500"
-                            id="online-mode"
-                            checked={isOnline}
-                            onCheckedChange={() => {
-                                mutate(!isOnlineSwitch),
-                                    setIsOnlineSwitch((e) => !e);
-                            }}
-                            style={{
-                                WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
-                            }}
-                        >
-                            <Switch.Thumb className="block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] shadow-blackA4 transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
-                        </Switch.Root>
+        <>
+            <div className="w-full h-full  flex flex-col items-center gap-4 justify-start">
+                <div className="w-full flex flex-col bg-slate-200 bg-opacity-20 rounded-md h-28 border border-blue-200 shadow-md">
+                    <div className="bg-slate-200/40 pl-1.5 font-semibold w-full text-slate-800 ">
+                        Rank Points: {rankPoints}
                     </div>
-                </form>
-            </div>
-            <div className="relative">
-                {isDragging ? (
-                    <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-2 border-slate-400 border-opacity-70 rounded-xl bg-gray-600 bg-opacity-40 flex">
-                        <div className="flex animate-pulse self-center place-content-center min-w-full">
-                            <div className="w-fit z-14">
-                                <RiCrosshair2Line
-                                    size={100}
-                                    className="opacity-50 text-slate-200"
-                                />
+                    <div className="pt-2 px-1.5 grid grid-rows-3 gap-0 w-full">
+                        <div className="flex justify-between">
+                            <div
+                                className={`font-semibold
+                                                    ${
+                                                        isOnline
+                                                            ? 'text-green-400'
+                                                            : 'text-gray-700'
+                                                    }`}
+                            >
+                                {isOnline ? 'Ready' : 'Ready, Set!'}
+                            </div>
+                            <div className="scale-[0.80]">
+                                <TennisBallToggle isOnline={isOnline} />
                             </div>
                         </div>
+                        <div className="h-[12px] border-b border-slate-200"></div>
+                        <div className="flex justify-between ">
+                            <div className="font-semibold text-gray-700">
+                                Reset list:
+                            </div>
+                            <div className="min-w-8 flex">{children}</div>
+                        </div>
                     </div>
-                ) : (
-                    ''
-                )}
-                <div className="z-20 relative">
-                    <div
-                        ref={setNodeRef}
-                        className={`${
-                            isOver
-                                ? 'rounded-xl shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-yellow-200 transition-shadow duration-300 animate-pulse'
-                                : ''
-                        }`}
-                    >
-                        {currentPlayer && (
-                            <TennisPlayerCards
-                                isSortable={false}
-                                player={currentPlayer[0]}
-                                isInCurrentContainer={true}
-                                currentCardId={currentCardId}
+                </div>
+
+                <div className="relative">
+                    {isDragging ? (
+                        <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-2 border-slate-400 border-opacity-70 rounded-xl bg-gray-600 bg-opacity-40 flex">
+                            <div className="flex animate-pulse self-center place-content-center min-w-full">
+                                <div className="w-fit z-14">
+                                    <RiCrosshair2Line
+                                        size={100}
+                                        className="opacity-50 text-slate-200"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        ''
+                    )}
+                    <div className="z-20 relative">
+                        <div
+                            ref={setNodeRef}
+                            className={`${
+                                isOver
+                                    ? 'rounded-xl shadow-[0_0_10px_rgba(255,255,255,0.9)] shadow-yellow-200 transition-shadow duration-300 animate-pulse'
+                                    : ''
+                            }`}
+                        >
+                            {currentPlayer && (
+                                <TennisPlayerCards
+                                    isSortable={false}
+                                    player={currentPlayer[0]}
+                                    isInCurrentContainer={true}
+                                    currentCardId={currentCardId}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="mt-5 justify-self-center">
+                        <button
+                            className="hover:ring-1 ring-1 hover:cursor-pointer drop-shadow-[0_0_3px_rgba(1,1,1,0.5)] shadow-[inset_0px_0px_8px_-4px_rgba(0,_0,_0,_0.9)] text-md font-semibold ring-current rounded-xl px-1"
+                            style={{
+                                backgroundColor: `#84cc16`,
+                            }}
+                            onClick={() => setIsCreateOpen(true)}
+                        >
+                            <div
+                                className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
+                                style={{
+                                    color: `#292524`,
+                                }}
+                            >
+                                Create new player
+                            </div>
+                        </button>
+                        {isCreateOpen && (
+                            <TennisPlayerCreator
+                                onClose={() => setIsCreateOpen(false)}
                             />
                         )}
                     </div>
                 </div>
-
-                <div className="flex flex-row mt-6 justify-self-center">
-                    <button className="bg-slate-400 ">Option1</button>
-
-                    <button>Option2</button>
-                </div>
-                <div className="mt-3">
-                    <button
-                        className="flex rounded-xl border-2 justify-self-center"
-                        onClick={() => setIsCreateOpen(true)}
-                    >
-                        Create
-                    </button>
-                    {isCreateOpen && (
-                        <TennisPlayerCreator
-                            onClose={() => setIsCreateOpen(false)}
-                        />
-                    )}
-                    <button
-                        className="flex rounded-xl border-2 justify-self-center"
-                        onClick={() => {
-                            mutate(isOnline ? false : true);
-                        }}
-                    >
-                        mutate
-                    </button>
-                    <TennisBallToggle isOnline={isOnline} />
-                </div>
             </div>
-        </div>
+        </>
     );
 };
 
