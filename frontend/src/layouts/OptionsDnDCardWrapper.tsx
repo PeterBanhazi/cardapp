@@ -233,7 +233,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 }}
             >
                 <div className="flex">
-                    <div className="w-[150px] h-[592px]">
+                    <div className="w-[150px] h-[592px] pt-1">
                         <OptionsLeftContainer
                             currentPlayer={currentPlayer}
                             currentCardId={currentCardId}
@@ -244,7 +244,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                             <FaArrowsRotate
                                 size="20"
                                 onClick={handleListReset}
-                                className={`text-slate-800                                  ${
+                                className={`text-slate-800 ${
                                     !isClicked
                                         ? 'hover:animate-spin hover:text-slate-600 cursor-pointer'
                                         : 'cursor-not-allowed hover:normal-case'
@@ -255,7 +255,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                     <div className="w-3.5 2xl:w-8"></div>
                     <div className="w-full h-full">
                         <div
-                            className="pt-1 w-[418px] h-[604px] sm:w-[200px] md:w-[368px] lg:w-[520px] xl:w-[836px] 2xl:w-[996px]
+                            className="w-[418px] h-[604px] sm:w-[200px] md:w-[368px] lg:w-[520px] xl:w-[836px] 2xl:w-[996px]
                         scrollbar-container max-h-screen overflow-y-auto
                         [&::-webkit-scrollbar]:w-7
                         [&::-webkit-scrollbar]:h-2
@@ -275,7 +275,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                                 strategy={rectSortingStrategy}
                             >
                                 <div
-                                    className="self-center gap-2.5 pl-7 flex overflow-clip"
+                                    className="pt-1 self-center gap-2.5 pl-7 flex"
                                     style={{
                                         display: 'grid',
                                         gridTemplateColumns:

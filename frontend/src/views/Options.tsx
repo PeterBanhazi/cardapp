@@ -40,7 +40,7 @@ function Options() {
                 rankPoints={rankPoints}
             ></OptionsDnDCardWrapper>
 
-            <div className="w-[150px] h-[592px]">
+            <div className="w-[150px] h-[592px] pt-1">
                 <OptionsRightContainer friendships={data!.friendships} />
             </div>
         </div>

@@ -43,10 +43,10 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     const { dashboards } = useDashboardStore();
     const navigate = useNavigate();
     return (
-        <div className="w-full mb-4 h-full bg-white bg-opacity-25 rounded-b-lg shadow-lg">
+        <div className="w-full mb-4 h-full bg-stone-200/30 border border-slate-200/40 rounded-b-lg shadow-lg">
             <div
-                className={`flex items-center justify-between px-4 py-2 bg-gray-100 border-b cursor-pointer 
-            hover:bg-gray-200 transition-colors ${
+                className={`flex items-center h-8 justify-between px-4 py-2 bg-gray-200 cursor-pointer 
+            hover:bg-gray-100 transition-colors ${
                 isCollapsed ? 'rounded-b-lg' : ''
             }`}
                 onClick={handleHeaderClick}
@@ -134,7 +134,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                     isCollapsed ? 'max-h-0' : 'max-h-screen'
                 }`}
             >
-                <div className="p-4">{children}</div>
+                <div className="p-3">{children}</div>
             </div>
         </div>
     );
