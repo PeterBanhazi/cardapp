@@ -312,7 +312,9 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                                                 chooseCurrentPlayer(player.id)
                                             }
                                         >
-                                            Choose
+                                            {isInCurrentContainer
+                                                ? 'Go Play'
+                                                : 'Choose'}
                                         </div>
                                     </button>
                                 </div>
