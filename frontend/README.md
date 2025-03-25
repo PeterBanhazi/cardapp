@@ -1,5 +1,8 @@
 TODO:
 
+Need to implement:
+    - Reset password feature, test remember password
+
 Works, but could be reFactEd/reArchEd:
     - Better implementation of home view in the comp.Navbar
     - (?) TS version of Axios interceptors 

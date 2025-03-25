@@ -41,9 +41,7 @@ const HomeButton: React.FC<{ text: string; linkto: string }> = ({
 const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
         <div className="flex gap-3 items-center h-16 text-right">
-            <h1 className="hidden lg:text-sm xl:text-lg font-semibold text-[#CA6702] lg:block">
-                {user}
-            </h1>
+            <h1 className="hidden lg:text-sm xl:text-lg lg:block">{user}</h1>
             <HomeButton linkto="/private" text="Settings" />
             <HomeButton linkto="/logout" text="Logout" />
         </div>
