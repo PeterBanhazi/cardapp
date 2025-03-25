@@ -45,7 +45,8 @@ const Login = () => {
         setPassword('');
     };
 
-    const handleLogin = async () => {
+    const handleLogin = async (e: { preventDefault: () => void }) => {
+        e.preventDefault();
         const { error } = await login(username, password);
         if (error) {
             alert(error);
@@ -144,7 +145,7 @@ const Login = () => {
                             <div className="flex justify-between text-sm font-medium  text-gray-500 dark:text-gray-300">
                                 Not registered?&nbsp;
                                 <a
-                                    href="#"
+                                    href="/register"
                                     className="text-cyan-700 hover:underline dark:text-cyan-500"
                                 >
                                     Create account
