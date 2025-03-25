@@ -2,7 +2,15 @@ import { useEffect, useState, useRef } from 'react';
 import { login } from '../utils/auth';
 import { Form, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { Button, Checkbox, Label, Modal, TextInput } from 'flowbite-react';
+import {
+    Button,
+    Checkbox,
+    Label,
+    Modal,
+    TextInput,
+    createTheme,
+    // ThemeProvider,
+} from 'flowbite-react';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,6 +20,19 @@ const Login = () => {
 
     const [openModal, setOpenModal] = useState(true);
     const usernameInputRef = useRef(null);
+    const customTheme = createTheme({
+        textInput: {
+            field: {
+                input: {
+                    colors: {
+                        orange: [
+                            'focus:ring-orange-400 focus:border-orange-400',
+                        ],
+                    },
+                },
+            },
+        },
+    });
 
     useEffect(() => {
         if (isLoggedIn()) {
@@ -37,6 +58,7 @@ const Login = () => {
     return (
         <>
             <div className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-45">
+                {/* <ThemeProvider theme={customTheme}> */}
                 <Modal
                     show={openModal}
                     size="md"
@@ -63,8 +85,10 @@ const Login = () => {
                                             value="Your username"
                                         />
                                     </div>
+
                                     <TextInput
                                         id="username"
+                                        color="orange"
                                         placeholder=""
                                         type="text"
                                         name="username"
@@ -88,7 +112,7 @@ const Login = () => {
                                         type="password"
                                         id="password"
                                         name="password"
-                                        autoComplete="new-password"
+                                        autoComplete="current-password"
                                         value={password}
                                         onChange={(e) =>
                                             setPassword(e.target.value)
@@ -130,6 +154,7 @@ const Login = () => {
                         </div>
                     </Modal.Body>
                 </Modal>
+                {/* </ThemeProvider> */}
             </div>
         </>
     );
