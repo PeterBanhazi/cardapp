@@ -8,7 +8,7 @@ import {
     Label,
     Modal,
     TextInput,
-    createTheme,
+    // createTheme,
     // ThemeProvider,
 } from 'flowbite-react';
 
@@ -20,19 +20,19 @@ const Login = () => {
 
     const [openModal, setOpenModal] = useState(true);
     const usernameInputRef = useRef(null);
-    const customTheme = createTheme({
-        textInput: {
-            field: {
-                input: {
-                    colors: {
-                        orange: [
-                            'focus:ring-orange-400 focus:border-orange-400',
-                        ],
-                    },
-                },
-            },
-        },
-    });
+    // const customTheme = createTheme({
+    //     textInput: {
+    //         field: {
+    //             input: {
+    //                 colors: {
+    //                     orange: [
+    //                         'focus:ring-orange-400 focus:border-orange-400',
+    //                     ],
+    //                 },
+    //             },
+    //         },
+    //     },
+    // });
 
     useEffect(() => {
         if (isLoggedIn()) {
@@ -45,8 +45,7 @@ const Login = () => {
         setPassword('');
     };
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
+    const handleLogin = async () => {
         const { error } = await login(username, password);
         if (error) {
             alert(error);

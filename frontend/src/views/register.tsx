@@ -28,9 +28,9 @@ function Register() {
         setEmail('');
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        const { error } = await register(username, password, password2);
+        const { error } = await register(username, password, password2, email);
         if (error) {
             alert(JSON.stringify(error));
         } else {
@@ -58,11 +58,11 @@ function Register() {
                     <Modal.Body>
                         <div className="space-y-6">
                             <form onSubmit={handleSubmit}>
-                                <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+                                <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
                                     Sign up to our platform
                                 </h3>
                                 <div>
-                                    <div className="mb-2 block">
+                                    <div className="mb-1 block mt-2">
                                         <Label
                                             htmlFor="username"
                                             value="Your username"
@@ -81,7 +81,7 @@ function Register() {
                                     />
                                 </div>
                                 <div>
-                                    <div className="mb-2 block">
+                                    <div className="mb-1 block mt-2">
                                         <Label
                                             htmlFor="password"
                                             value="Your password"
@@ -98,7 +98,7 @@ function Register() {
                                     />
                                 </div>
                                 <div>
-                                    <div className="mb-2 block">
+                                    <div className="mb-1 block mt-2">
                                         <Label
                                             htmlFor="confirm-password"
                                             value="Repeat password"
@@ -114,14 +114,14 @@ function Register() {
                                         required
                                     />
                                 </div>
-                                <div className="mb-2 block">
+                                <div className="mb-1 block mt-2">
                                     <Label htmlFor="email" value="Email" />
                                 </div>
                                 <TextInput
                                     type="email"
                                     id="email"
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Email"
+                                    placeholder="email@example.com"
                                     required
                                 />
 
@@ -131,7 +131,10 @@ function Register() {
                                         : ''}
                                 </p>
                                 <div className="w-full py-2">
-                                    <Button type="submit">
+                                    <Button
+                                        type="submit"
+                                        className="bg-orange-400 mt-2"
+                                    >
                                         Create new account
                                     </Button>
                                 </div>
@@ -145,46 +148,3 @@ function Register() {
 }
 
 export default Register;
-
-{
-    /* <section>
-            <form onSubmit={handleSubmit}>
-                <h1>Register</h1>
-                <hr />
-                <div>
-                    <label htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Username"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="confirm-password">Confirm Password</label>
-                    <input
-                        type="password"
-                        id="confirm-password"
-                        onChange={(e) => setPassword2(e.target.value)}
-                        placeholder="Confirm Password"
-                        required
-                    />
-                    <p>
-                        {password2 !== password ? 'Passwords do not match' : ''}
-                    </p>
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </section> */
-}
