@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { userInfo } from 'os';
-import React, { ReactNode } from 'react';
+
+import React from 'react';
 
 interface VisibilityProps {
     isVisible?: boolean;

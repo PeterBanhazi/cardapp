@@ -7,6 +7,8 @@ import {
     Checkbox,
     Label,
     Modal,
+    ModalBody,
+    ModalHeader,
     TextInput,
     // createTheme,
     // ThemeProvider,
@@ -57,105 +59,102 @@ const Login = () => {
     };
     return (
         <>
-            <div className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-45">
-                {/* <ThemeProvider theme={customTheme}> */}
-                <Modal
-                    show={openModal}
-                    size="md"
-                    popup
-                    position="center"
-                    dismissible
-                    onClose={() => {
-                        setOpenModal(false);
-                        navigate('/');
-                    }}
-                    initialFocus={usernameInputRef}
-                >
-                    <Modal.Header />
-                    <Modal.Body>
-                        <div className="space-y-6">
-                            <form onSubmit={handleLogin}>
-                                <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
-                                    Sign in to your account
-                                </h3>
-                                <div>
-                                    <div className="mb-1 block">
-                                        <Label
-                                            htmlFor="username"
-                                            value="Your username"
-                                        />
-                                    </div>
+            {/* <ThemeProvider theme={customTheme}> */}
+            <Modal
+                show={openModal}
+                size="md"
+                popup
+                position="top-center"
+                dismissible
+                onClose={() => {
+                    setOpenModal(false);
+                    navigate('/');
+                }}
+                initialFocus={usernameInputRef}
+            >
+                <ModalHeader>
+                    <h3 className="text-xl font-medium text-gray-900 pl-4">
+                        Sign in to your account
+                    </h3>
+                </ModalHeader>
+                <ModalBody>
+                    <div className="space-y-6">
+                        <form onSubmit={handleLogin}>
+                            <div>
+                                <div className="mb-1 block">
+                                    <Label htmlFor="username">
+                                        Your username
+                                    </Label>
+                                </div>
 
-                                    <TextInput
-                                        id="username"
-                                        color="orange"
-                                        placeholder=""
-                                        type="text"
-                                        name="username"
-                                        autoComplete="username"
-                                        required
-                                        value={username}
-                                        ref={usernameInputRef}
-                                        onChange={(e) =>
-                                            setUsername(e.target.value)
-                                        }
-                                    />
+                                <TextInput
+                                    id="username"
+                                    color="orange"
+                                    placeholder=""
+                                    type="text"
+                                    name="username"
+                                    autoComplete="username"
+                                    required
+                                    value={username}
+                                    ref={usernameInputRef}
+                                    onChange={(e) =>
+                                        setUsername(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div>
+                                <div className="mb-1 block mt-2">
+                                    <Label htmlFor="password">
+                                        Your password
+                                    </Label>
                                 </div>
-                                <div>
-                                    <div className="mb-1 block mt-2">
-                                        <Label
-                                            htmlFor="password"
-                                            value="Your password"
-                                        />
-                                    </div>
-                                    <TextInput
-                                        type="password"
-                                        id="password"
-                                        name="password"
-                                        autoComplete="current-password"
-                                        value={password}
-                                        onChange={(e) =>
-                                            setPassword(e.target.value)
-                                        }
-                                    />
+                                <TextInput
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    autoComplete="current-password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                />
+                            </div>
+                            <div className="flex justify-between py-1.5">
+                                <div className="flex items-center gap-2">
+                                    <Checkbox id="remember" />
+                                    <Label htmlFor="remember">
+                                        Remember me
+                                    </Label>
                                 </div>
-                                <div className="flex justify-between py-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <Checkbox id="remember" />
-                                        <Label htmlFor="remember">
-                                            Remember me
-                                        </Label>
-                                    </div>
-                                    <a
-                                        href="#"
-                                        className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
-                                    >
-                                        Lost Password?
-                                    </a>
-                                </div>
-                                <div className="w-full">
-                                    <Button
-                                        type="submit"
-                                        className="bg-orange-400 mt-2"
-                                    >
-                                        Log in to your account
-                                    </Button>
-                                </div>
-                            </form>
-                            <div className="flex justify-between text-sm font-medium  text-gray-500 dark:text-gray-300">
-                                Not registered?&nbsp;
                                 <a
-                                    href="/register"
-                                    className="text-cyan-700 hover:underline dark:text-cyan-500"
+                                    href="#"
+                                    className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
                                 >
-                                    Create account
+                                    Lost Password?
                                 </a>
                             </div>
+                            <div className="w-full">
+                                <Button
+                                    type="submit"
+                                    className="bg-orange-400 mt-2"
+                                >
+                                    Log in to your account
+                                </Button>
+                            </div>
+                        </form>
+                        <div className="flex justify-between text-sm font-medium  text-gray-500 dark:text-gray-300">
+                            Not registered?&nbsp;
+                            <a
+                                href="/register"
+                                className="text-cyan-700 hover:underline dark:text-cyan-500"
+                            >
+                                Create account
+                            </a>
                         </div>
-                    </Modal.Body>
-                </Modal>
-                {/* </ThemeProvider> */}
-            </div>
+                    </div>
+                </ModalBody>
+            </Modal>
+            {/* </ThemeProvider> */}
         </>
     );
 };

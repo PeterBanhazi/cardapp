@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { DashboardContainer } from './DashboardContainer';
 import { useDashboardStore } from '../store/store';
-import { useBackendStatus } from '../store/useBackendStatus';
-import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
+// import { useBackendStatus } from '../store/useBackendStatus';
+// import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
 
 import Properties from '../views/Options';
 

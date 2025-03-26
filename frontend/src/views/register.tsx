@@ -2,7 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import { register } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
-import { Button, Label, Modal, TextInput } from 'flowbite-react';
+import {
+    Button,
+    Label,
+    Modal,
+    ModalBody,
+    ModalHeader,
+    TextInput,
+} from 'flowbite-react';
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -41,32 +48,33 @@ function Register() {
 
     return (
         <>
-            <div className="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-45">
+            <div className="">
                 <Modal
                     show={openModal}
                     size="md"
                     popup
+                    position="top-center"
                     dismissible
                     onClose={() => {
                         setOpenModal(false);
                         navigate('/');
                     }}
-                    className="bg-opacity-75"
                     initialFocus={usernameInputRef}
                 >
-                    <Modal.Header />
-                    <Modal.Body>
+                    <ModalHeader>
+                        <h3 className="text-xl font-medium text-gray-900 pl-4">
+                            Sign up to our platform
+                        </h3>
+                    </ModalHeader>
+
+                    <ModalBody>
                         <div className="space-y-6">
                             <form onSubmit={handleSubmit}>
-                                <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-4">
-                                    Sign up to our platform
-                                </h3>
                                 <div>
-                                    <div className="mb-1 block mt-2">
-                                        <Label
-                                            htmlFor="username"
-                                            value="Your username"
-                                        />
+                                    <div className="mb-1 block">
+                                        <Label htmlFor="username">
+                                            Your username
+                                        </Label>
                                     </div>
                                     <TextInput
                                         ref={usernameInputRef}
@@ -83,10 +91,9 @@ function Register() {
                                 </div>
                                 <div>
                                     <div className="mb-1 block mt-2">
-                                        <Label
-                                            htmlFor="password"
-                                            value="Your password"
-                                        />
+                                        <Label htmlFor="password">
+                                            Your password
+                                        </Label>
                                     </div>
                                     <TextInput
                                         type="password"
@@ -101,10 +108,9 @@ function Register() {
                                 </div>
                                 <div>
                                     <div className="mb-1 block mt-2">
-                                        <Label
-                                            htmlFor="confirm-password"
-                                            value="Repeat password"
-                                        />
+                                        <Label htmlFor="confirm-password">
+                                            Repeat password
+                                        </Label>
                                     </div>
                                     <TextInput
                                         type="password"
@@ -117,7 +123,7 @@ function Register() {
                                     />
                                 </div>
                                 <div className="mb-1 block mt-2">
-                                    <Label htmlFor="email" value="Email" />
+                                    <Label htmlFor="email">Email </Label>
                                 </div>
                                 <TextInput
                                     type="email"
@@ -142,7 +148,7 @@ function Register() {
                                 </div>
                             </form>
                         </div>
-                    </Modal.Body>
+                    </ModalBody>
                 </Modal>
             </div>
         </>
