@@ -37,7 +37,7 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
     // }, [initializeDashboard]);
 
     return (
-        <div className="container mx-auto p-4 space-y-4">
+        <div className="container mx-auto p-4 pt-0">
             {dashboards.map((dashboard) => (
                 <DashboardContainer
                     key={`${dashboard.id}-${dashboard.key}`}

@@ -242,7 +242,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                             isDragging={isDragging}
                         >
                             <FaArrowsRotate
-                                size="20"
+                                size="23"
                                 onClick={handleListReset}
                                 className={`text-slate-800 ${
                                     !isClicked

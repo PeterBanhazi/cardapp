@@ -11,20 +11,17 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
             <div
                 className="scrollbar-container max-h-screen overflow-y-auto
                     [&::-webkit-scrollbar]:w-6
-                    [&::-webkit-scrollbar]:h-2
-                   
+                    [&::-webkit-scrollbar]:h-2                   
                     [&::-webkit-scrollbar-button]:h-2
                     [&::-webkit-scrollbar-track]:bg-transparent
-                  [&::-webkit-scrollbar-thumb]:bg-slate-300/30
-
+                  [&::-webkit-scrollbar-thumb]:bg-slate-300/50
+                  [&::-webkit-scrollbar-thumb]:hover:bg-orange-200/80
                     [&::-webkit-scrollbar-thumb]:rounded-full
                     [&::-webkit-scrollbar-thumb]:border-8
                     [&::-webkit-scrollbar-thumb]:border-solid
                     [&::-webkit-scrollbar-thumb]:border-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                    [&::-webkit-scrollbar-thumb]:hover:bg-orange-200/60
+                    [&::-webkit-scrollbar-thumb]:bg-clip-padding                   
                     overflow-auto
-
             "
             >
                 {children}

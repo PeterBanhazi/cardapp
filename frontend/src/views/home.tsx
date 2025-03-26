@@ -30,8 +30,8 @@ const HomeButton: React.FC<{ text: string; linkto: string }> = ({
     return (
         <>
             <Link to={linkto}>
-                <button className="bg-[#CA6702] text-stone-100 px-4 py-1.5 rounded-xl text-sm font-medium hover:bg-orange-400 transition-colors">
-                    {text}
+                <button className="bg-[#CA6702] text-stone-100 px-3 py-1 rounded-xl text-md font-medium hover:bg-orange-400 hover:cursor-pointer transition-colors">
+                    <div className="-translate-y-[1px]">{text}</div>
                 </button>
             </Link>
         </>
@@ -50,7 +50,7 @@ const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
 
 export const LoggedOutView = ({ title = 'Welcome' }) => {
     return (
-        <div className="flex gap-3 items-center h-16 text-right">
+        <div className="flex gap-3 items-center text-right">
             <h1 className="hidden lg:block">{title}</h1>
             <HomeButton linkto="/login" text="Login" />
             <HomeButton linkto="/register" text="Register" />
