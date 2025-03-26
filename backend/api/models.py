@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -105,13 +107,49 @@ class Friendship(models.Model):
     class Meta:
         ordering = ['-created_at'] 
         
+AVATAR_CHOICES = [
+    ('avatar1.png', 'Avatar 1'),
+    ('avatar2.png', 'Avatar 2'),
+    ('avatar3.png', 'Avatar 3'),
+    ('avatar4.png', 'Avatar 4'),
+    ('avatar5.png', 'Avatar 5'),
+    ('avatar6.png', 'Avatar 6'),
+    ('avatar7.png', 'Avatar 7'),
+    ('avatar8.png', 'Avatar 8'),
+    ('avatar9.png', 'Avatar 9'),
+    ('avatar10.png', 'Avatar 10'),
+]
+        
 class Profile(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    first_name= models.CharField(max_length=100)
-    last_name= models.CharField(max_length=100)
-    description = models.CharField(max_length=255)
-    avatar_image = models.CharField(max_length=20)    
-    email= models.EmailField()
-    
+    """
+    Extended user profile with additional information
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    description = models.CharField(max_length=500, blank=True, null=True)
+    avatar_image = models.CharField(
+        max_length=20, 
+        choices=AVATAR_CHOICES, 
+        default=AVATAR_CHOICES[0][0]
+    )
+    birthday = models.DateField(null=True, blank=True)
+
     def __str__(self):
-        return self.username.username
+        return f"{self.user.username}'s Profile"
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Automatically create a profile when a new user is created
+    """
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """
+    Automatically save the profile when the user is saved
+    """
+    try:
+        instance.profile.save()
+    except Profile.DoesNotExist:
+        Profile.objects.create(user=instance)

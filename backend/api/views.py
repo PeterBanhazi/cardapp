@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 import time
 import json
@@ -203,6 +204,31 @@ def getRoutes(request):
     ]
     return Response(routes)
 
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    """
+    Retrieve and update user profile
+    """
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        """
+        Retrieve the profile for the logged-in user
+        """
+        # Ensure user can only access their own profile
+        try:
+            return self.request.user.profile
+        except Profile.DoesNotExist:
+            # Create profile if it doesn't exist
+            return Profile.objects.create(user=self.request.user)
+
+    def check_object_permissions(self, request, obj):
+        """
+        Ensure only the profile owner can modify the profile
+        """
+        if obj.user != request.user:
+            raise PermissionDenied("You can only modify your own profile.")
+        return super().check_object_permissions(request, obj)
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

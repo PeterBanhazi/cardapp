@@ -6,6 +6,7 @@ from rest_framework.validators import UniqueValidator
 
 
 from .models import TennisPlayer, UserProperties, Friendship, Profile
+from .models import Profile, AVATAR_CHOICES
 
 
 # Default list serializers for friend connections 
@@ -170,7 +171,51 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = RegisterSerializer(many=False, read_only=True)
+    """
+    Serializer for the Profile model with nested user serialization
+    """
+    username = serializers.CharField(source='user.username', read_only=True)
+    first_name = serializers.CharField(source='user.first_name', required=False)
+    last_name = serializers.CharField(source='user.last_name', required=False)
+    
     class Meta:
         model = Profile
-        fields = ('username', 'first_name', 'last_name', 'email' ,'description', 'avatar_image')
+        fields = [
+            'username', 
+            'first_name', 
+            'last_name', 
+            'description', 
+            'avatar_image', 
+            'birthday'
+        ]
+    
+    def update(self, instance, validated_data):
+        """
+        Custom update method to handle user model updates
+        """
+        # Extract user data if present
+        user_data = validated_data.pop('user', {})
+        user = instance.user
+
+        # Update user first and last name if provided
+        if 'first_name' in user_data:
+            user.first_name = user_data['first_name']
+        if 'last_name' in user_data:
+            user.last_name = user_data['last_name']
+        user.save()
+
+        # Update profile fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+
+    def validate_avatar_image(self, value):
+        """
+        Validate that the avatar is from the predefined choices
+        """
+        valid_avatars = [choice[0] for choice in AVATAR_CHOICES]
+        if value not in valid_avatars:
+            raise serializers.ValidationError("Invalid avatar image selection.")
+        return value
