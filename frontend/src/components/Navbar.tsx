@@ -16,22 +16,6 @@ const Navbar: React.FC = () => {
 
     const { addDashboard } = useDashboardStore();
 
-    const handleTestClick = () => {
-        addDashboard({
-            id: 'TestOne', // or use uuid() if you want multiple instances
-            path: '/testone',
-            title: 'TestEgyes',
-        });
-    };
-
-    const handleTestTwoClick = () => {
-        addDashboard({
-            id: 'TestTwo', // or use uuid() if you want multiple instances
-            path: '/testtwo',
-            title: 'TestKettes',
-        });
-    };
-
     const handleDashboardClick = (
         link: Omit<DashboardItem, 'isCollapsed' | 'key'>
     ) => {
@@ -112,9 +96,9 @@ const Navbar: React.FC = () => {
 
     return (
         <div className="container p-4 mx-auto">
-            <nav className="top-8 bg-white bg-opacity-70 backdrop-blur-md border border-white border-opacity-40 rounded-t-lg shadow-lg w-full">
+            <nav className="top-8 bg-gray-200 backdrop-blur-md rounded-t-lg drop-shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="grid grid-cols-3 justify-between items-center h-16">
+                    <div className="grid grid-cols-3 justify-between items-center h-12">
                         {/* Logo/Brand */}
                         <div className="flex-shrink-0 w-32">
                             <NavLink
@@ -138,7 +122,7 @@ const Navbar: React.FC = () => {
                             >
                                 {/* Sliding Background */}
                                 <div
-                                    className="absolute h-8 rounded-md bg-blue-100 bg-opacity-80 transition-all duration-300 ease-out"
+                                    className="absolute h-8 rounded-md bg-green-300/70 transition-all duration-300 ease-out"
                                     style={{
                                         left:
                                             (hoveredDimensions?.left ??
@@ -158,8 +142,8 @@ const Navbar: React.FC = () => {
                                             `px-1 py-2 mx-1 lg:px-1 lg:mx-1 text-sm font-semibold relative z-10 transition-colors duration-200 
                       ${
                           isActive
-                              ? 'text-blue-700 active'
-                              : 'text-gray-600 hover:text-blue-700'
+                              ? 'text-green-700 active'
+                              : 'text-orange-800 hover:text-orange-400'
                       }`
                                         }
                                         onMouseEnter={handleMouseEnter}
