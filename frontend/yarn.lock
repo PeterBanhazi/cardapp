@@ -482,7 +482,7 @@
   dependencies:
     "@radix-ui/react-primitive" "2.0.2"
 
-"@radix-ui/react-avatar@^1.1.2", "@radix-ui/react-avatar@1.1.3":
+"@radix-ui/react-avatar@^1.1.3", "@radix-ui/react-avatar@1.1.3":
   version "1.1.3"
   resolved "https://registry.npmjs.org/@radix-ui/react-avatar/-/react-avatar-1.1.3.tgz"
   integrity sha512-Paen00T4P8L8gd9bNsRMw7Cbaz85oxiv+hzomsRZgFm2byltPFDtfcoqlWJ8GyZlIBWgLssJlzLCnKU0G0302g==
@@ -552,7 +552,7 @@
   resolved "https://registry.npmjs.org/@radix-ui/react-context/-/react-context-1.1.1.tgz"
   integrity sha512-UASk9zi+crv9WteK/NU4PLvOoL3OuE6BWVKNF6hPRBtYBDXQ2u5iu3O59zUlJiTVvkyuycnqrztsHVJwcK9K+Q==
 
-"@radix-ui/react-dialog@^1.1.4", "@radix-ui/react-dialog@1.1.6":
+"@radix-ui/react-dialog@^1.1.6", "@radix-ui/react-dialog@1.1.6":
   version "1.1.6"
   resolved "https://registry.npmjs.org/@radix-ui/react-dialog/-/react-dialog-1.1.6.tgz"
   integrity sha512-/IVhJV5AceX620DUJ4uYVMymzsipdKBzo3edo+omeskCKGm9FRHM0ebIdbPnlQVJqyuHbuBltQUOG2mOTq2IYw==
@@ -721,7 +721,7 @@
     "@radix-ui/react-use-previous" "1.1.0"
     "@radix-ui/react-visually-hidden" "1.1.2"
 
-"@radix-ui/react-popover@^1.1.4", "@radix-ui/react-popover@1.1.6":
+"@radix-ui/react-popover@^1.1.6", "@radix-ui/react-popover@1.1.6":
   version "1.1.6"
   resolved "https://registry.npmjs.org/@radix-ui/react-popover/-/react-popover-1.1.6.tgz"
   integrity sha512-NQouW0x4/GnkFJ/pRqsIS3rM/k97VzKnVb2jB7Gq7VEGPy5g7uNV1ykySFt7eWSp3i2uSGFwaJcvIRJBAHmmFg==
@@ -820,7 +820,7 @@
     "@radix-ui/react-use-callback-ref" "1.1.0"
     "@radix-ui/react-use-controllable-state" "1.1.0"
 
-"@radix-ui/react-scroll-area@^1.2.2", "@radix-ui/react-scroll-area@1.2.3":
+"@radix-ui/react-scroll-area@^1.2.3", "@radix-ui/react-scroll-area@1.2.3":
   version "1.2.3"
   resolved "https://registry.npmjs.org/@radix-ui/react-scroll-area/-/react-scroll-area-1.2.3.tgz"
   integrity sha512-l7+NNBfBYYJa9tNqVcP2AGvxdE3lmE6kFTBXdvHgUaZuy+4wGCL1Cl2AfaR7RKyimj7lZURGLwFO59k4eBnDJQ==
@@ -973,7 +973,7 @@
     "@radix-ui/react-separator" "1.1.2"
     "@radix-ui/react-toggle-group" "1.1.2"
 
-"@radix-ui/react-tooltip@^1.1.6", "@radix-ui/react-tooltip@1.1.8":
+"@radix-ui/react-tooltip@^1.1.8", "@radix-ui/react-tooltip@1.1.8":
   version "1.1.8"
   resolved "https://registry.npmjs.org/@radix-ui/react-tooltip/-/react-tooltip-1.1.8.tgz"
   integrity sha512-YAA2cu48EkJZdAMHC0dqo9kialOcRStbtiY4nJPaht7Ptrhcvpo+eDChaM6BIs8kL6a8Z5l5poiqLnXcNduOkA==
@@ -1303,10 +1303,12 @@
   resolved "https://registry.npmjs.org/@tweenjs/tween.js/-/tween.js-23.1.3.tgz"
   integrity sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA==
 
-"@types/axios@^0.9.36":
-  version "0.9.36"
-  resolved "https://registry.npmjs.org/@types/axios/-/axios-0.9.36.tgz"
-  integrity sha512-NLOpedx9o+rxo/X5ChbdiX6mS1atE4WHmEEIcR9NLenRVa5HoVjAvjafwU3FPTqnZEstpoqCaW7fagqSoTDNeg==
+"@types/axios@^0.14.4":
+  version "0.14.4"
+  resolved "https://registry.npmjs.org/@types/axios/-/axios-0.14.4.tgz"
+  integrity sha512-9JgOaunvQdsQ/qW2OPmE5+hCeUB52lQSolecrFrthct55QekhmXEwT203s20RL+UHtCQc15y3VXpby9E7Kkh/g==
+  dependencies:
+    axios "*"
 
 "@types/babel__core@^7.20.5":
   version "7.20.5"
@@ -1366,10 +1368,10 @@
   resolved "https://registry.npmjs.org/@types/js-cookie/-/js-cookie-3.0.6.tgz"
   integrity sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==
 
-"@types/node@^18.0.0 || ^20.0.0 || >=22.0.0", "@types/node@^22.10.7":
-  version "22.10.7"
-  resolved "https://registry.npmjs.org/@types/node/-/node-22.10.7.tgz"
-  integrity sha512-V09KvXxFiutGp6B7XkpaDXlNadZxrzajcY50EuoLIpQ6WWYCSvf19lVIazzfIzQvhUN2HjX12spLojTnhuKlGg==
+"@types/node@^18.0.0 || ^20.0.0 || >=22.0.0", "@types/node@^22.13.13":
+  version "22.13.13"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.13.13.tgz"
+  integrity sha512-ClsL5nMwKaBRwPcCvH8E7+nU4GxHVx1axNvMZTFHMEfNI7oahimt26P5zjVCRrjiIWj6YFXfE1v3dEp94wLcGQ==
   dependencies:
     undici-types "~6.20.0"
 
@@ -1709,10 +1711,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-axios@^1.7.8:
-  version "1.7.8"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.7.8.tgz"
-  integrity sha512-Uu0wb7KNqK2t5K+YQyVCLM76prD5sRFjKHbJYCP1J7JFGEQ6nN7HWn9+04LAeiJ3ji54lgS/gZCH1oxyrf1SPw==
+axios@*, axios@^1.8.4:
+  version "1.8.4"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.8.4.tgz"
+  integrity sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.0"
@@ -2691,7 +2693,7 @@ hls.js@^1.5.17:
   resolved "https://registry.npmjs.org/hls.js/-/hls.js-1.5.19.tgz"
   integrity sha512-C020dKWEJcyvLnrqsFKW4q6D/6IEzKWdhktIS5bgoyEFE8lHgrFBq4RIngdy113abJOlIruhv8qjg7UX8hwxOw==
 
-howler@^2.1.3:
+howler@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/howler/-/howler-2.2.4.tgz"
   integrity sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==
@@ -3094,10 +3096,10 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
-lucide-react@^0.462.0:
-  version "0.462.0"
-  resolved "https://registry.npmjs.org/lucide-react/-/lucide-react-0.462.0.tgz"
-  integrity sha512-NTL7EbAao9IFtuSivSZgrAh4fZd09Lr+6MTkqIxuHaH2nnYiYIzXPo06cOxHg9wKLdj6LL8TByG4qpePqwgx/g==
+lucide-react@^0.484.0:
+  version "0.484.0"
+  resolved "https://registry.npmjs.org/lucide-react/-/lucide-react-0.484.0.tgz"
+  integrity sha512-oZy8coK9kZzvqhSgfbGkPtTgyjpBvs3ukLgDPv14dSOZtBtboryWF5o8i3qen7QbGg7JhiJBz5mK1p8YoMZTLQ==
 
 maath@^0.10.8:
   version "0.10.8"
@@ -3366,10 +3368,10 @@ prelude-ls@^1.2.1:
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prettier@^2.8.8:
-  version "2.8.8"
-  resolved "https://registry.npmjs.org/prettier/-/prettier-2.8.8.tgz"
-  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
+prettier@^3.5.3:
+  version "3.5.3"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-3.5.3.tgz"
+  integrity sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==
 
 promise-worker-transferable@^1.0.4:
   version "1.0.4"
@@ -3557,7 +3559,7 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     get-nonce "^1.0.0"
     tslib "^2.0.0"
 
-react@*, "react@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc", "react@^16.8 || ^17 || ^18", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1", "react@^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc", react@^18, "react@^18 || ^19", "react@^18 || ^19 || ^19.0.0-rc", react@^18.0.0, "react@^18.0.0 || ^19.0.0", react@^18.3.1, "react@>= 16 || ^19.0.0-rc", "react@>= 16.8.0", react@>=16.8, react@>=16.8.0, react@>=17.0, react@>=17.0.0, "react@>=18 <19", react@>=18.0, react@>=18.0.0:
+react@*, "react@^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8 || ^17 || ^18", "react@^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1", "react@^16.x || ^17.x || ^18.x || ^19.0.0 || ^19.0.0-rc", react@^18, "react@^18 || ^19", "react@^18 || ^19 || ^19.0.0-rc", react@^18.0.0, "react@^18.0.0 || ^19.0.0", react@^18.3.1, "react@>= 16 || ^19.0.0-rc", "react@>= 16.8.0", react@>=16.8, react@>=16.8.0, react@>=17.0, react@>=17.0.0, "react@>=18 <19", react@>=18.0, react@>=18.0.0:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
@@ -4140,12 +4142,12 @@ use-sidecar@^1.1.3:
     detect-node-es "^1.1.0"
     tslib "^2.0.0"
 
-use-sound@^4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/use-sound/-/use-sound-4.0.3.tgz"
-  integrity sha512-L205pEUFIrLsGYsCUKHQVCt0ajs//YQOFbEQeNwaWaqQj3y3st4SuR+rvpMHLmv8hgTcfUFlvMQawZNI3OE18w==
+use-sound@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/use-sound/-/use-sound-5.0.0.tgz"
+  integrity sha512-MNHT3FFC5HxNCrgZtrnpIMJI2cw/0D2xismcrtyht8BTuF5FhFhb57xO/jlQr2xJaFrc/0btzRQvGyHQwB7PVA==
   dependencies:
-    howler "^2.1.3"
+    howler "^2.2.4"
 
 use-sync-external-store@>=1.2.0, use-sync-external-store@1.2.2:
   version "1.2.2"
@@ -4157,10 +4159,10 @@ utility-types@^3.11.0:
   resolved "https://registry.npmjs.org/utility-types/-/utility-types-3.11.0.tgz"
   integrity sha512-6Z7Ma2aVEWisaL6TvBCy7P8rm2LQoPv6dJ7ecIaIixHcwfbJ0x7mWdbcwlIM5IGQxPZSFYeqRCqlOOeKoJYMkw==
 
-uuid@^11.0.4:
-  version "11.0.4"
-  resolved "https://registry.npmjs.org/uuid/-/uuid-11.0.4.tgz"
-  integrity sha512-IzL6VtTTYcAhA/oghbFJ1Dkmqev+FpQWnCBaKq/gUluLxliWvO8DPFWfIviRmYbtaavtSQe4WBL++rFjdcGWEg==
+uuid@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-11.1.0.tgz"
+  integrity sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==
 
 uuid@^9.0.1:
   version "9.0.1"
