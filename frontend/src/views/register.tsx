@@ -72,6 +72,7 @@ function Register() {
                                         ref={usernameInputRef}
                                         type="text"
                                         id="username"
+                                        autoComplete="username"
                                         maxLength={20}
                                         onChange={(e) =>
                                             setUsername(e.target.value)
@@ -94,6 +95,7 @@ function Register() {
                                             setPassword(e.target.value)
                                         }
                                         placeholder="Password"
+                                        autoComplete="new-password"
                                         required
                                     />
                                 </div>
@@ -130,10 +132,10 @@ function Register() {
                                         ? 'Passwords do not match'
                                         : ''}
                                 </p>
-                                <div className="w-full py-2">
+                                <div className="w-full pt-4">
                                     <Button
                                         type="submit"
-                                        className="bg-orange-400 mt-2"
+                                        className="bg-orange-400"
                                     >
                                         Create new account
                                     </Button>
