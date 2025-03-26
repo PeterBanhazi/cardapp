@@ -1,4 +1,4 @@
-import React, { Children } from 'react';
+import React from 'react';
 
 const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
     return (

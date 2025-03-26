@@ -5,7 +5,6 @@ import TopList from '../components/TopList';
 
 import ChatLobby from './ChatLobby';
 import DashboardManager from './DashboardManager';
-import React from 'react';
 import Options from '../views/Options';
 
 const DashboardMainLayout = () => {
