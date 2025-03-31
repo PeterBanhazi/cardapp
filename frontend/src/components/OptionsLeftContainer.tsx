@@ -87,8 +87,8 @@ const OptionsLeftContainer: React.FC<{
                 <div className="current-card-container pt-2">
                     <div className="relative">
                         {isDragging ? (
-                            <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-2 border-slate-400 border-opacity-70 rounded-xl bg-gray-600 bg-opacity-40 flex">
-                                <div className="flex animate-pulse self-center place-content-center min-w-full">
+                            <div className="top-0 left-0 absolute z-30 w-[148px] h-[290px] border-2 border-slate-400/70 rounded-xl bg-gray-600/40 flex">
+                                <div className="flex animate-pulse self-center place-content-center  min-w-full">
                                     <div className="w-fit z-14">
                                         <RiCrosshair2Line
                                             size={100}

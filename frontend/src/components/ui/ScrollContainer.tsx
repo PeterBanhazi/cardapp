@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef } from 'react';
 import { cn } from '../../lib/utils';
 
 const ScrollContainer: React.FC<{
@@ -27,13 +27,13 @@ const ScrollContainer: React.FC<{
         <div
             ref={parentRef}
             className={cn(
-                'w-full flex flex-col bg-slate-200 bg-opacity-20 rounded-md h-40 border border-blue-200 shadow-md',
+                'w-full flex flex-col bg-slate-200/20 rounded-md h-40 border border-blue-200 shadow-md',
                 className
             )}
         >
             <div
                 ref={headerRef}
-                className="bg-slate-200/40 pl-1.5 font-semibold w-full text-slate-800 "
+                className="bg-slate-200/40 pl-1.5 font-semibold w-full text-slate-800"
             >
                 {headertext}
             </div>

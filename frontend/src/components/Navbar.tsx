@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
 
     return (
         <div className="container p-4 mx-auto">
-            <nav className="top-8 bg-gray-200 backdrop-blur-md rounded-t-lg drop-shadow-md w-full">
+            <nav className="top-8 bg-gray-200 rounded-t-lg  *: w-full">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="grid grid-cols-3 justify-between items-center h-12">
                         {/* Logo/Brand */}

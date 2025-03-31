@@ -29,9 +29,9 @@ const FriendListItem: React.FC<{
     const buttonRef = useRef<HTMLDivElement>(null);
 
     const colors = {
-        red: 'from-red-300 to-red-600 hover:from-red-500 hover:to-rose-400 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
-        green: 'from-teal-200 to-green-500 hover:from-green-400 hover:to-teal-300 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
-        yellow: 'from-amber-400 to-amber-600 hover:from-yellow-500 hover:to-orange-300 hover:ring-1 ring-inset ring-slate-200 ring-opacity-30',
+        red: 'from-red-300 to-red-600 hover:from-red-500 hover:to-rose-400 hover:ring-1 ring-inset ring-slate-200/30',
+        green: 'from-teal-200 to-green-500 hover:from-green-400 hover:to-teal-300 hover:ring-1 ring-inset ring-slate-200/30',
+        yellow: 'from-amber-400 to-amber-600 hover:from-yellow-500 hover:to-orange-300 hover:ring-1 ring-inset ring-slate-200/30',
     };
 
     useEffect(() => {
@@ -164,8 +164,8 @@ const FriendListItem: React.FC<{
                     friendship.status === `PENDING`
                         ? colors.yellow
                         : friendship.status === 'ACCEPTED'
-                        ? colors.green
-                        : colors.red
+                          ? colors.green
+                          : colors.red
                 }
                
                 border-slate-400/50

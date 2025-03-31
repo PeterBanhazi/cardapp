@@ -15,8 +15,6 @@ const OptionsRightContainer: React.FC<{
         testContent.push(friendships[i]);
     }
 
-    console.log(friendships);
-    console.log(testContent);
     return (
         <div className="w-full h-full flex flex-col justify-between ">
             <ScrollContainer headertext="Friendships" className="h-[316px]">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './card';
 import { PlayerStats } from '../../utils/types';
 import { TbUserEdit } from 'react-icons/tb';
@@ -26,6 +26,7 @@ export interface PlayerCardProps {
     isInCurrentContainer?: boolean;
     currentCardId: number;
     isSortable?: boolean;
+    isDragging?: boolean;
 }
 
 interface CardColors {
@@ -110,8 +111,8 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
     isInCurrentContainer = false,
     currentCardId,
     isSortable = true,
+    isDragging,
 }) => {
-    // const containerProps = isSortable ? {} : {};
     const { chooseCurrentPlayer, isPending, error } =
         useCurrentPlayerMutation();
     const isLoading = isPending;
@@ -154,12 +155,13 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
         <>
             <div
                 // {...containerProps}
+
                 className={`flex w-[148px] relative ${
                     isSortable ? 'touch-manipulation' : {}
                 }`}
             >
                 {isLoading ? (
-                    <div className="flex top-0 left-0 absolute min-h-full min-w-full z-20 border-0 rounded-xl bg-gray-800 bg-opacity-40">
+                    <div className="flex top-0 left-0 absolute min-h-full min-w-full z-20 border-0 rounded-xl bg-gray-800/40">
                         <div className="flex self-center place-content-center min-w-full">
                             <div className=" w-fit z-12">
                                 <RotatingLines
@@ -194,14 +196,14 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                                       color: `#EAAF51`,
                                   }
                                 : currentCardId == player.id
-                                ? {
-                                      backgroundColor: `#${cardColors.mainbackground}`,
-                                      color: `#EAAF51`,
-                                  }
-                                : {
-                                      backgroundColor: `#${cardColors.mainbackground}`,
-                                      color: `#${cardColors.ringcolor}`,
-                                  }
+                                  ? {
+                                        backgroundColor: `#${cardColors.mainbackground}`,
+                                        color: `#EAAF51`,
+                                    }
+                                  : {
+                                        backgroundColor: `#${cardColors.mainbackground}`,
+                                        color: `#${cardColors.ringcolor}`,
+                                    }
                         }
                     >
                         <CardHeader className="p-1">

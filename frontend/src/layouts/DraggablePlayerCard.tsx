@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { PlayerStats } from '../utils/types';
 import { CSS } from '@dnd-kit/utilities';
 import TennisPlayerCards from '../components/ui/TennisPlayerCards';
+import { isDragActive } from 'framer-motion';
 const DraggablePlayerCard: React.FC<{
     id: number;
 
@@ -25,6 +26,7 @@ const DraggablePlayerCard: React.FC<{
         transform,
         transition,
         isDragging,
+        isSorting,
     } = useSortable({
         id: item.id,
         disabled: false,
