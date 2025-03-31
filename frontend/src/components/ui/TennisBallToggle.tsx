@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import useAxios from '../../utils/useAxios';
 
 export const TennisBallToggle: React.FC<{ isOnline: boolean }> = ({
@@ -30,7 +29,7 @@ export const TennisBallToggle: React.FC<{ isOnline: boolean }> = ({
         addTodoMutation;
     return (
         <div
-            className={`relative h-6 w-11 cursor-pointer ring-2  ring-slate-900 shadow-[inset_0px_0px_10px_-4px_rgba(0,_0,_0,_0.7)] drop-shadow-[0_0_3px_rgba(0,0,0,0.7)] rounded-full transition-colors duration-200 ease-in-out
+            className={`relative h-6 w-11 cursor-pointer ring-2  ring-slate-900 shadow-[inset_0px_0px_10px_-4px_rgba(0,_0,_0,_0.7)] rounded-full transition-colors duration-200 ease-in-out
         ${
             isOnSwitch
                 ? 'bg-green-500 bg-opacity-80 '
@@ -59,7 +58,7 @@ export const TennisBallToggle: React.FC<{ isOnline: boolean }> = ({
                     <div className="relative h-full w-full overflow-hidden rounded-full hover:animate-spin hover:brightness-[1.15] ">
                         <img
                             src="src/assets/ui/icons/tennisballtoggle.png"
-                            alt=""
+                            alt="toggle-ball"
                         />
                     </div>
                 </div>

@@ -182,7 +182,7 @@ const TennisPlayerCards: React.FC<PlayerCardProps> = ({
                 ) : (
                     <Card
                         key={player.name}
-                        className={`flex flex-col w-[148px] h-[290px] border-1 ring-1 ring-inset ring-current transition duration-0 hover:shadow-md scale-100  hover:scale-[1.02] hover:shadow-slate-700 cursor-grab`}
+                        className={`flex flex-col w-[148px] h-[290px] border-0 ring-1 ring-inset ring-current transition duration-0 hover:shadow-md scale-100  hover:scale-[1.02] hover:shadow-slate-700 cursor-grab`}
                         style={
                             isInCurrentContainer
                                 ? {

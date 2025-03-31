@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { createWithEqualityFn as create } from 'zustand/traditional'
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // Define types for user data
