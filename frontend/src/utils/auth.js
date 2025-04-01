@@ -2,7 +2,7 @@ import { useAuthStore } from '../store/auth';
 import axios from './axios';
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie';
-
+///### todo set the token and the invalidator time in prod. 
 
 export const login = async (username, password) => {
     try {
@@ -63,6 +63,8 @@ export const setUser = async () => {
 };
 
 export const setAuthUser = (access_token, refresh_token) => {
+    const expireTime = jwtDecode(access_token).exp;
+    console.log(expireTime)
     Cookies.set('access_token', access_token, {
         expires: 1,
         secure: true,
@@ -92,8 +94,10 @@ export const getRefreshToken = async () => {
 export const isAccessTokenExpired = (accessToken) => {
     try {
         const decodedToken = jwtDecode(accessToken);
- 
-        return decodedToken.exp < Date.now() / 1000;
+        console.log(decodedToken.exp)
+        console.log(Date.now() / 1000)
+        console.log("time left: " + (decodedToken.exp-Date.now() / 1000)/60)
+        return ((decodedToken.exp-Date.now() / 1000)/60)<1;
     } catch (err) {
         return true; // Token is invalid or expired
     }
