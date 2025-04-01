@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
 
     return (
         <div className="container p-4 mx-auto">
-            <nav className="top-8 bg-gray-200 rounded-t-lg  *: w-full">
+            <nav className="top-8 bg-gray-200 rounded-t-lg drop-shadow-md w-full">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="grid grid-cols-3 justify-between items-center h-12">
                         {/* Logo/Brand */}
@@ -122,7 +122,7 @@ const Navbar: React.FC = () => {
                             >
                                 {/* Sliding Background */}
                                 <div
-                                    className="absolute h-8 rounded-md bg-green-300/70 transition-all duration-300 ease-out"
+                                    className="absolute h-8 rounded-md bg-green-300/50 transition-all duration-300 ease-out"
                                     style={{
                                         left:
                                             (hoveredDimensions?.left ??

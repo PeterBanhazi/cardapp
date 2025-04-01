@@ -3,6 +3,7 @@ import axios from './axios';
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie';
 
+
 export const login = async (username, password) => {
     try {
         const { data, status } = await axios.post('token/', {
@@ -47,6 +48,7 @@ export const logout = () => {
 
 export const setUser = async () => {
     // ON PAGE LOAD
+
     const accessToken = Cookies.get('access_token');
     const refreshToken = Cookies.get('refresh_token');
     if (!accessToken || !refreshToken) {
@@ -90,6 +92,7 @@ export const getRefreshToken = async () => {
 export const isAccessTokenExpired = (accessToken) => {
     try {
         const decodedToken = jwtDecode(accessToken);
+ 
         return decodedToken.exp < Date.now() / 1000;
     } catch (err) {
         return true; // Token is invalid or expired
