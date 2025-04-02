@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getRefreshToken, isAccessTokenExpired, setAuthUser } from './auth';
 import { API_BASE_URL } from './constants';
 import Cookies from 'js-cookie';
+import { useNotifications } from '../components/ui/notifications';
 
 const useAxios = () => {
     const accessToken = Cookies.get('access_token');
@@ -22,8 +23,22 @@ const useAxios = () => {
         req.headers.Authorization = `Bearer ${response.access}`;
         return req;
     });
-
-    return axiosInstance;
+    axiosInstance.interceptors.response.use(
+        (response) => {
+            return response;
+        },
+        (error) => {
+            const message = error.response?.data?.message || error.message;
+            useNotifications.getState().addNotification({
+              type: 'error',
+              title: 'Error',
+              message,
+            });
+     
+      
+            return Promise.reject(error);
+        });
+    return axiosInstance
 };
 
 export default useAxios;

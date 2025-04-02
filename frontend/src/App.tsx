@@ -17,6 +17,7 @@ import BottomFooter from './components/BottomFooter';
 import MainDesignWrapper from './layouts/MainDesignWrapper';
 
 import DashboardMainLayout from './layouts/DashboardMainLayout';
+import { Notifications } from './components/ui/notifications';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App: React.FC = () => {
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     <MainDesignWrapper>
+                        <Notifications />
                         <Navbar />
                         <MainWrapper>
                             <Routes>
