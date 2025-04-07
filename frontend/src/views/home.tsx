@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 
 import React from 'react';
+import ProfileEditModal from '../components/ProfileEditModal';
 
 interface VisibilityProps {
     isVisible?: boolean;
@@ -42,7 +43,7 @@ const LoggedInView: React.FC<VisibilityProps> = ({ user }) => {
     return (
         <div className="flex gap-3 items-center text-right">
             <h1 className="hidden lg:text-sm xl:text-lg lg:block">{user}</h1>
-            <HomeButton linkto="/private" text="Settings" />
+            <ProfileEditModal />
             <HomeButton linkto="/logout" text="Logout" />
         </div>
     );

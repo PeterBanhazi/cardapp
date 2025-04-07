@@ -2,6 +2,7 @@ import { useQuery, useMutation, UseQueryOptions, UseMutationOptions, useQueryCli
 import { AxiosError, AxiosResponse } from 'axios';
 import  useAxios  from './useAxios';
 import { useNotifications } from '../components/ui/notifications';
+import { PasswordChangeData, ProfileData } from './types';
 
 // Hook for GET requests with React Query
 export function useApiQuery<T>(
@@ -19,13 +20,6 @@ export function useApiQuery<T>(
     },
     ...options
   });
-}
-interface ProfileData {
-  first_name: string;
-  last_name: string;
-  description: string;
-  avatar_image?: string;
-  birthday: string | null;
 }
 
 export type ApiError = {
@@ -53,6 +47,28 @@ export const useProfile = (enabled = true) => {
       }
     },
     enabled,
+  });
+};
+
+export const useProfilePasswordChange = () => {
+
+  return useMutation<PasswordChangeData, ApiError, PasswordChangeData>({    
+    mutationFn: async (changePasswordData) => {
+      try {
+        const { data } = await useAxios().post('passwordchange/', changePasswordData);
+        return data;
+      } catch (error) {
+        throw parseError(error as AxiosError);
+      }
+    },
+    onSuccess: () => {    
+      useNotifications.getState().addNotification({
+        type: 'success',
+        title: 'Congratulatios!',
+        message: "Your password has been changed successfully!",
+      });
+    },
+    
   });
 };
 

@@ -1,3 +1,17 @@
+export interface ProfileData {
+  username: string;
+  first_name: string;
+  last_name: string;
+  description: string;
+  avatar_image?: string;
+  birthday: string | null;
+}
+
+export interface PasswordChangeData {
+  old_password: string;
+  new_password: string;
+  confirm_new_password: string;
+}
 export interface PlayerStats {
     cardtype: "DEFAULT" | "CUSTOM" | "FAVOURITE" | "CURRENT";
     id: number;

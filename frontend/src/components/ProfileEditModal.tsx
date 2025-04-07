@@ -1,13 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import useAxios from '../utils/useAxios';
-import { format } from 'date-fns';
+import React, { useEffect, useState } from 'react';
 import {
-    useApiQuery,
     useProfile,
+    useProfilePasswordChange,
     useUpdateProfile,
 } from '../utils/useDataQuery';
-// import { Calendar as CalendarIcon } from 'lucide-react';
 import {
     Modal,
     Button,
@@ -18,7 +14,9 @@ import {
     ModalHeader,
     ModalBody,
 } from 'flowbite-react';
+import { PasswordChangeData, ProfileData } from '../utils/types';
 
+// TODO: when there is no birthday and user logout and login with another account the prv. bd should have been invalidated
 // Input field configuration for consistent styling
 const INPUT_STYLES = {
     base: 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2',
@@ -42,32 +40,19 @@ const AVATAR_OPTIONS = [
 ];
 
 // Type definitions
-interface ProfileData {
-    first_name: string;
-    last_name: string;
-    description: string;
-    avatar_image?: string;
-    birthday: string | null;
-}
 
-interface PasswordChangeData {
-    old_password: string;
-    new_password: string;
-    confirm_new_password: string;
-}
-
-const axios = useAxios();
 const ProfileEditModal: React.FC = () => {
     // State for modal
     const [isOpen, setIsOpen] = useState(false);
 
     // State for form data and errors
     const [profileData, setProfileData] = useState<ProfileData>({
+        username: '',
         first_name: '',
         last_name: '',
         description: '',
         // avatar_image: AVATAR_OPTIONS[0],
-        birthday: null,
+        birthday: '',
     });
 
     const [passwordData, setPasswordData] = useState<PasswordChangeData>({
@@ -75,6 +60,7 @@ const ProfileEditModal: React.FC = () => {
         new_password: '',
         confirm_new_password: '',
     });
+    const [bdayData, setbdayData] = useState<Date>();
 
     const [validationErrors, setValidationErrors] = useState<{
         profile: Partial<Record<keyof ProfileData, string>>;
@@ -84,86 +70,40 @@ const ProfileEditModal: React.FC = () => {
         password: {},
     });
 
-    interface Option {
-        id: number;
-        name: string;
-        description: string;
-    }
+    // Fetch profile data
 
-    // Fetch options data
-
-    const {
-        data: initialProfileData,
-        isLoading,
-        error,
-        isError,
-    } = useProfile();
-    console.log(initialProfileData);
+    const getProfile = useProfile();
+    const initialProfileData = getProfile.data;
 
     useEffect(() => {
         if (initialProfileData) {
             setProfileData({
+                username: initialProfileData.username,
                 first_name: initialProfileData.first_name,
                 last_name: initialProfileData.last_name,
                 description: initialProfileData.description || '',
                 avatar_image: initialProfileData.avatar_image,
-                birthday: initialProfileData.birthday,
+                birthday: initialProfileData.birthday || null,
             });
         }
+        if (initialProfileData?.birthday) {
+            // Convert YYYY-MM-DD string to Date object
+            const [year, month, day] = initialProfileData.birthday.split('-');
+            const date = new Date(
+                parseInt(year),
+                parseInt(month) - 1,
+                parseInt(day)
+            );
+            setbdayData(date);
+        }
     }, [initialProfileData]);
-
-    // const {
-    //     data: initialProfileData,
-    //     isLoading,
-    //     error,
-    // } = useApiQuery<ProfileData[]>(['userProfile'], 'profile/');
-    // useEffect(() => {
-    //     async function fetchdata() {
-    //         const response = await axios.get('profile/');
-
-    //         setProfileData(response.data);
-    //         console.log(response.data);
-    //     }
-    //     fetchdata();
-    // }, []);
-
-    // if (initialProfileData) {
-    //     console.log(initialProfileData);
-    //     (initialProfileData: React.SetStateAction<ProfileData>) =>
-    //         setProfileData(initialProfileData);
-    // }
-    // Fetch profile data
-    // const { data: initialProfileData, isLoading: isProfileLoading } = useQuery({
-    //     queryKey: ['userProfile'],
-    //     queryFn: async () => {
-    //         const response = await axios.get('profile/');
-    //         return response.data;
-    //     },
-    //     isSuccess: (data: ProfileData) => {
-    //         setProfileData({
-    //             first_name: data.first_name,
-    //             last_name: data.last_name,
-    //             description: data.description || '',
-    //             avatar_image: data.avatar_image,
-    //             birthday: data.birthday,
-    //         });
-    //     },
-    // });
 
     // Profile update mutation
 
     const updateProfile = useUpdateProfile();
 
     // Password change mutation
-    const passwordChangeMutation = useMutation({
-        mutationFn: async (data: PasswordChangeData) => {
-            const response = await axios.post('change-password/', data);
-            return response.data;
-        },
-        onError: (error) => {
-            console.error('Password change error', error);
-        },
-    });
+    const passwordChangeMutation = useProfilePasswordChange();
 
     // Validation functions
     const validateProfileData = (): boolean => {
@@ -228,27 +168,62 @@ const ProfileEditModal: React.FC = () => {
     // Form submission handlers
     const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (validateProfileData()) {
             await updateProfile.mutateAsync(profileData);
         }
     };
 
-    const handlePasswordSubmit = (e: React.FormEvent) => {
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validatePasswordData()) {
-            passwordChangeMutation.mutate(passwordData);
+            await passwordChangeMutation.mutateAsync(passwordData);
         }
+        setPasswordData({
+            old_password: '',
+            new_password: '',
+            confirm_new_password: '',
+        });
     };
 
+    const handleDateChange = (
+        datetoset: React.SetStateAction<Date | undefined> | null
+    ) => {
+        if (datetoset) {
+            setbdayData(datetoset);
+            parseandSetDateBack(datetoset);
+        }
+    };
+    const parseandSetDateBack = (date: any) => {
+        if (date !== null) {
+            const year = date!.getFullYear();
+            // Month is 0-indexed in JS Date, so add 1 and ensure two digits
+            const month = String(date!.getMonth() + 1).padStart(2, '0');
+            const day = String(date!.getDate()).padStart(2, '0');
+
+            const formattedDate = `${year}-${month}-${day}`;
+
+            setProfileData((prev) => ({
+                ...prev,
+                birthday: formattedDate,
+            }));
+        }
+    };
     return (
         <>
-            <Button color="light" onClick={() => setIsOpen(true)}>
-                Edit Profile
-            </Button>
-
+            <button
+                className="bg-[#CA6702] text-stone-100 px-3 py-1 rounded-xl text-md font-medium hover:bg-orange-400 hover:cursor-pointer transition-colors"
+                onClick={() => setIsOpen(true)}
+            >
+                <div className="-translate-y-[1px]">Settings</div>
+            </button>
             <Modal show={isOpen} onClose={() => setIsOpen(false)} size="xl">
-                <ModalHeader>Edit Profile</ModalHeader>
-                <ModalBody className="max-h-[70vh] overflow-y-auto">
+                <ModalHeader>
+                    Edit Profile (
+                    {getProfile.isLoading ? 'Loading...' : profileData.username}
+                    )
+                </ModalHeader>
+                <ModalBody className="max-h-[80vh] overflow-y-auto">
                     {/* Profile Information Form */}
                     <form onSubmit={handleProfileSubmit} className="space-y-4">
                         <h2 className="text-lg font-semibold">
@@ -374,22 +349,11 @@ const ProfileEditModal: React.FC = () => {
                             </div>
                             <Datepicker
                                 id="birthday"
-                                value={
-                                    profileData.birthday
-                                        ? format(
-                                              new Date(profileData.birthday),
-                                              'PPP'
-                                          )
-                                        : ''
-                                }
-                                onSelectedDateChanged={(date) => {
-                                    setProfileData((prev) => ({
-                                        ...prev,
-                                        birthday: date
-                                            .toISOString()
-                                            .split('T')[0],
-                                    }));
-                                }}
+                                maxDate={new Date()}
+                                showTodayButton={false}
+                                defaultValue={bdayData}
+                                value={bdayData}
+                                onChange={(value) => handleDateChange(value)}
                                 color={
                                     validationErrors.profile.birthday
                                         ? 'failure'
@@ -521,10 +485,10 @@ const ProfileEditModal: React.FC = () => {
                         {/* Password Change Button */}
                         <Button
                             type="submit"
-                            disabled={passwordChangeMutation.isLoading}
+                            disabled={passwordChangeMutation.isPending}
                             color="blue"
                         >
-                            {passwordChangeMutation.isLoading
+                            {passwordChangeMutation.isPending
                                 ? 'Changing...'
                                 : 'Change Password'}
                         </Button>
