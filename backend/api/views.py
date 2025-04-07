@@ -13,6 +13,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
 import time
 import json
 from rest_framework.views import APIView
@@ -21,7 +22,7 @@ from rest_framework import viewsets
 from .models import TennisPlayer,UserProperties, Friendship, Profile
 
 
-from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer
+from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer, PasswordChangeSerializer
 
 
 
@@ -215,6 +216,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         """
         Retrieve the profile for the logged-in user
         """
+        time.sleep(2)
         # Ensure user can only access their own profile
         try:
             return self.request.user.profile
@@ -248,3 +250,15 @@ def testEndPoint(request):
         except json.JSONDecodeError:
             return Response("Invalid JSON data", status.HTTP_400_BAD_REQUEST)
     return Response("Invalid JSON data", status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()        
+            update_session_auth_hash(request, request.user)
+            return Response({"detail": "Jelszó sikeresen megváltoztatva."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

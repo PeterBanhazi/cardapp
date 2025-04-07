@@ -219,3 +219,30 @@ class ProfileSerializer(serializers.ModelSerializer):
         if value not in valid_avatars:
             raise serializers.ValidationError("Invalid avatar image selection.")
         return value
+    
+
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_new_password = serializers.CharField(required=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("A jelenlegi jelszó nem megfelelő.")
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_new_password']:
+            raise serializers.ValidationError({"confirm_new_password": "A jelszavak nem egyeznek."})
+        
+        # Ellenőrizzük a jelszó erősségét a Django beépített validátorával
+        user = self.context['request'].user
+        validate_password(data['new_password'], user)
+        
+        return data
+
+    def save(self):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
