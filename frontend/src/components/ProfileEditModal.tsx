@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
 import { format } from 'date-fns';
-import { useApiQuery } from '../utils/useDataQuery';
+import {
+    useApiQuery,
+    useProfile,
+    useUpdateProfile,
+} from '../utils/useDataQuery';
 // import { Calendar as CalendarIcon } from 'lucide-react';
 import {
     Modal,
@@ -87,20 +91,41 @@ const ProfileEditModal: React.FC = () => {
     }
 
     // Fetch options data
+
     const {
         data: initialProfileData,
         isLoading,
         error,
-    } = useApiQuery<ProfileData[]>(['userProfile'], 'profile/');
-    useEffect(() => {
-        async function fetchdata() {
-            const response = await axios.get('profile/');
+        isError,
+    } = useProfile();
+    console.log(initialProfileData);
 
-            setProfileData(response.data);
-            console.log(response.data);
+    useEffect(() => {
+        if (initialProfileData) {
+            setProfileData({
+                first_name: initialProfileData.first_name,
+                last_name: initialProfileData.last_name,
+                description: initialProfileData.description || '',
+                avatar_image: initialProfileData.avatar_image,
+                birthday: initialProfileData.birthday,
+            });
         }
-        fetchdata();
-    }, []);
+    }, [initialProfileData]);
+
+    // const {
+    //     data: initialProfileData,
+    //     isLoading,
+    //     error,
+    // } = useApiQuery<ProfileData[]>(['userProfile'], 'profile/');
+    // useEffect(() => {
+    //     async function fetchdata() {
+    //         const response = await axios.get('profile/');
+
+    //         setProfileData(response.data);
+    //         console.log(response.data);
+    //     }
+    //     fetchdata();
+    // }, []);
 
     // if (initialProfileData) {
     //     console.log(initialProfileData);
@@ -126,16 +151,8 @@ const ProfileEditModal: React.FC = () => {
     // });
 
     // Profile update mutation
-    const profileUpdateMutation = useMutation({
-        mutationFn: async (data: ProfileData) => {
-            const response = await axios.patch('profile/', data);
-            return response.data;
-        },
-        onError: (error) => {
-            // Handle API errors
-            console.error('Profile update error', error);
-        },
-    });
+
+    const updateProfile = useUpdateProfile();
 
     // Password change mutation
     const passwordChangeMutation = useMutation({
@@ -209,10 +226,10 @@ const ProfileEditModal: React.FC = () => {
     };
 
     // Form submission handlers
-    const handleProfileSubmit = (e: React.FormEvent) => {
+    const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validateProfileData()) {
-            profileUpdateMutation.mutate(profileData);
+            await updateProfile.mutateAsync(profileData);
         }
     };
 
@@ -389,10 +406,10 @@ const ProfileEditModal: React.FC = () => {
                         {/* Profile Update Button */}
                         <Button
                             type="submit"
-                            disabled={profileUpdateMutation.isLoading}
+                            disabled={updateProfile.isPending}
                             color="blue"
                         >
-                            {profileUpdateMutation.isLoading
+                            {updateProfile.isPending
                                 ? 'Updating...'
                                 : 'Update Profile'}
                         </Button>
