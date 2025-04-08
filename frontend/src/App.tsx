@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import MainWrapper from './layouts/MainWrapper';
 import Login from './views/login';
-import PrivateRoute from './layouts/PrivateRoute';
+
 import Logout from './views/logout';
 
 import Register from './views/register';
@@ -18,7 +18,7 @@ import MainDesignWrapper from './layouts/MainDesignWrapper';
 
 import DashboardMainLayout from './layouts/DashboardMainLayout';
 import { Notifications } from './components/ui/notifications';
-import Landing from './views/landing';
+import Landing from './views/Landing';
 
 const queryClient = new QueryClient();
 
@@ -29,10 +29,11 @@ const App: React.FC = () => {
                 <BrowserRouter>
                     <MainDesignWrapper>
                         <Notifications />
+
                         <Navbar />
-                        <Landing />
                         <MainWrapper>
                             <Routes>
+                                <Route path="/" element={<Landing />} />
                                 <Route
                                     path="*"
                                     element={<DashboardMainLayout />}
@@ -46,7 +47,6 @@ const App: React.FC = () => {
                                     path="/logout"
                                     element={<Logout isVisible={false} />}
                                 />
-                                {/* <Route path="/private" element={<Private />} /> */}
                             </Routes>
                         </MainWrapper>
                         <BottomFooter />

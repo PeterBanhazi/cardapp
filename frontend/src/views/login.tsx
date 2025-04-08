@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { login } from '../utils/auth';
-import { Form, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import {
     Button,
@@ -14,13 +14,18 @@ import {
     // ThemeProvider,
 } from 'flowbite-react';
 
-const Login = () => {
+const Login: React.FC<{ triggerModalOpen?: boolean }> = (triggerModalOpen) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-    const [openModal, setOpenModal] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
+    useEffect(() => {
+        setOpenModal((e) => !e);
+    }, [triggerModalOpen]);
+
     const usernameInputRef = useRef(null);
     // const customTheme = createTheme({
     //     textInput: {
@@ -40,6 +45,7 @@ const Login = () => {
         if (isLoggedIn()) {
             navigate('/');
         }
+        if (location.pathname === '/login') setOpenModal(true);
     }, []);
 
     const resetForm = () => {
@@ -68,7 +74,7 @@ const Login = () => {
                 dismissible
                 onClose={() => {
                     setOpenModal(false);
-                    navigate('/');
+                    // navigate('/');
                 }}
                 initialFocus={usernameInputRef}
             >

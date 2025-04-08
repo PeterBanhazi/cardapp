@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { register } from '../utils/auth';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import {
     Button,
@@ -11,22 +11,30 @@ import {
     TextInput,
 } from 'flowbite-react';
 
-function Register() {
+const Register: React.FC<{ triggerModalOpen?: boolean }> = (
+    triggerModalOpen
+) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const [openModal, setOpenModal] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
         if (isLoggedIn()) {
             navigate('/');
         }
+        if (location.pathname === '/register') setOpenModal(true);
     }, []);
+
+    useEffect(() => {
+        setOpenModal((e) => !e);
+    }, [triggerModalOpen]);
 
     const resetForm = () => {
         setUsername('');
@@ -57,7 +65,7 @@ function Register() {
                     dismissible
                     onClose={() => {
                         setOpenModal(false);
-                        navigate('/');
+                        // navigate('/');
                     }}
                     initialFocus={usernameInputRef}
                 >
@@ -153,6 +161,6 @@ function Register() {
             </div>
         </>
     );
-}
+};
 
 export default Register;

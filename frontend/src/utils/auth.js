@@ -44,6 +44,7 @@ export const logout = () => {
     Cookies.remove('access_token');
     Cookies.remove('refresh_token');
     useAuthStore.getState().setUser(null);
+
 };
 
 export const setUser = async () => {

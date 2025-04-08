@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
     useProfile,
     useProfilePasswordChange,
@@ -41,9 +41,16 @@ const AVATAR_OPTIONS = [
 
 // Type definitions
 
-const ProfileEditModal: React.FC = () => {
+const ProfileEditModal: React.FC<{
+    children?: React.ReactNode;
+    triggerModalOpen: boolean;
+}> = ({ children, triggerModalOpen }) => {
     // State for modal
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        setIsOpen((e) => !e);
+    }, [triggerModalOpen]);
 
     // State for form data and errors
     const [profileData, setProfileData] = useState<ProfileData>({
@@ -211,12 +218,7 @@ const ProfileEditModal: React.FC = () => {
     };
     return (
         <>
-            <button
-                className="bg-[#CA6702] text-stone-100 px-3 py-1 rounded-xl text-md font-medium hover:bg-orange-400 hover:cursor-pointer transition-colors"
-                onClick={() => setIsOpen(true)}
-            >
-                <div className="-translate-y-[1px]">Settings</div>
-            </button>
+            {children}
             <Modal
                 dismissible={true}
                 show={isOpen}
