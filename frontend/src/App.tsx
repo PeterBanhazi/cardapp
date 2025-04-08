@@ -5,7 +5,7 @@ import MainWrapper from './layouts/MainWrapper';
 import Login from './views/login';
 import PrivateRoute from './layouts/PrivateRoute';
 import Logout from './views/logout';
-import Private from './views/private';
+
 import Register from './views/register';
 
 import WebSocketChat from './components/wstest';
@@ -18,6 +18,7 @@ import MainDesignWrapper from './layouts/MainDesignWrapper';
 
 import DashboardMainLayout from './layouts/DashboardMainLayout';
 import { Notifications } from './components/ui/notifications';
+import Landing from './views/landing';
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App: React.FC = () => {
                     <MainDesignWrapper>
                         <Notifications />
                         <Navbar />
+                        <Landing />
                         <MainWrapper>
                             <Routes>
                                 <Route
@@ -44,7 +46,7 @@ const App: React.FC = () => {
                                     path="/logout"
                                     element={<Logout isVisible={false} />}
                                 />
-                                <Route path="/private" element={<Private />} />
+                                {/* <Route path="/private" element={<Private />} /> */}
                             </Routes>
                         </MainWrapper>
                         <BottomFooter />

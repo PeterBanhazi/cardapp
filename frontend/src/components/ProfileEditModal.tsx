@@ -217,8 +217,13 @@ const ProfileEditModal: React.FC = () => {
             >
                 <div className="-translate-y-[1px]">Settings</div>
             </button>
-            <Modal show={isOpen} onClose={() => setIsOpen(false)} size="xl">
-                <ModalHeader>
+            <Modal
+                dismissible={true}
+                show={isOpen}
+                onClose={() => setIsOpen(false)}
+                size="xl"
+            >
+                <ModalHeader className="">
                     Edit Profile (
                     {getProfile.isLoading ? 'Loading...' : profileData.username}
                     )
@@ -395,9 +400,17 @@ const ProfileEditModal: React.FC = () => {
                                     Current Password
                                 </Label>
                             </div>
+                            <input
+                                id="username"
+                                type="text"
+                                name="username"
+                                autoComplete="username"
+                                className="hidden"
+                            />
                             <TextInput
                                 id="currentPassword"
                                 type="password"
+                                autoComplete="off"
                                 value={passwordData.old_password}
                                 onChange={(e) =>
                                     setPasswordData((prev) => ({
@@ -428,6 +441,7 @@ const ProfileEditModal: React.FC = () => {
                             <TextInput
                                 id="newPassword"
                                 type="password"
+                                autoComplete="new-password"
                                 value={passwordData.new_password}
                                 onChange={(e) =>
                                     setPasswordData((prev) => ({
@@ -458,6 +472,7 @@ const ProfileEditModal: React.FC = () => {
                             <TextInput
                                 id="confirmPassword"
                                 type="password"
+                                autoComplete="new-password"
                                 value={passwordData.confirm_new_password}
                                 onChange={(e) =>
                                     setPasswordData((prev) => ({
@@ -494,6 +509,7 @@ const ProfileEditModal: React.FC = () => {
                         </Button>
                     </form>
                 </ModalBody>
+                <div className="h-1" />
             </Modal>
         </>
     );

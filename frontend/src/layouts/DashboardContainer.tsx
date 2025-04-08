@@ -76,8 +76,8 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                                 status?.connectionStatus === 'connected'
                                     ? 'text-green-500'
                                     : status?.connectionStatus === 'pending'
-                                    ? 'text-yellow-500'
-                                    : 'text-red-500'
+                                      ? 'text-yellow-500'
+                                      : 'text-red-500'
                             }`}
                             aria-label="Connection Status"
                         />
