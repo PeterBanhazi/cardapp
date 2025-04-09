@@ -7,20 +7,23 @@ import ChatLobby from '../pages/ChatLobby';
 
 import Options from '../features/options/Options';
 import DashboardManager from '../features/dashboard/DashboardManager';
-
+import PrivateRoute from './PrivateRoute';
+import MainWrapper from './MainWrapper';
 const DashboardMainLayout = () => {
     return (
         <div>
-            <DashboardManager>
-                <Routes>
-                    <Route path="/" element={<GameWrapper />} />
-                    <Route path="/lobby" element={<ChatLobby />} />
-                    <Route path="/ranks" element={<TopList />} />
-                    <Route path="/options" element={<Options />} />
+            <MainWrapper>
+                <DashboardManager>
+                    <Routes>
+                        <Route path="/" element={<GameWrapper />} />
+                        <Route path="/lobby" element={<ChatLobby />} />
 
-                    <Route path="/rules" element={<Rules />} />
-                </Routes>
-            </DashboardManager>
+                        <Route path="/ranks" element={<TopList />} />
+                        <Route path="/options" element={<Options />} />
+                        <Route path="/rules" element={<Rules />} />
+                    </Routes>
+                </DashboardManager>
+            </MainWrapper>
         </div>
     );
 };

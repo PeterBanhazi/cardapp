@@ -24,7 +24,7 @@ const BottomFooter = () => {
 
     return (
         <div className="container mx-auto px-4">
-            <footer className="bg-white/30 text-black container px-2 mx-auto">
+            <footer className="bg-white/95 text-black container rounded-t-lg ring-1 ring-slate-400 px-2 mx-auto">
                 <div className="container mx-auto px-28 py-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Play Column */}

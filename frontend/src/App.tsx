@@ -18,6 +18,8 @@ import { Notifications } from './components/ui/notifications';
 import Landing from './pages/Landing';
 import Login from './features/app/login';
 import Logout from './features/app/logout';
+import TopList from './features/ranks/TopList';
+import PrivateRoute from './routsandwrappers/PrivateRoute';
 
 const queryClient = new QueryClient();
 
@@ -37,11 +39,11 @@ const App: React.FC = () => {
                                     path="*"
                                     element={<DashboardMainLayout />}
                                 />
-                                <Route path="/login" element={<Login />} />
+                                {/* <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/register"
                                     element={<Register />}
-                                />
+                                /> */}
                                 <Route
                                     path="/logout"
                                     element={<Logout isVisible={false} />}

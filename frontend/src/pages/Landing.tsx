@@ -23,23 +23,23 @@ const Landing = () => {
                 >
                     <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 flex items-center h-full">
                         <div className="text-white">
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6">
-                                Experience the Thrill{' '}
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[64px] mb-6">
+                                Experience the Thrill
                                 <br className="hidden lg:block" />
-                                <span className="text-green-400">
+                                <span className="text-green-500 ">
                                     of Tennis Reimagined
                                 </span>
                             </h1>
-                            <p className="text-lg md:text-xl max-w-lg mb-8">
+                            <p className="text-lg text-green-50 md:text-xl max-w-lg mb-8">
                                 Join the ultimate tennis community where skill
                                 meets strategy, and competition comes alive in
                                 the digital court.
                             </p>
                             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                                <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300">
+                                <button className="bg-green-600 cursor-pointer hover:bg-green-300 hover:text-green-900 hover:animate-pulse text-white font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300">
                                     Join the Game
                                 </button>
-                                <button className="bg-transparent hover:bg-white hover:bg-opacity-20 text-white font-bold py-3 px-8 rounded-lg border-2 border-white transition duration-300">
+                                <button className="bg-transparent cursor-pointer hover:bg-green-50 hover:bg-opacity-20 hover:animate-pulse text-green-50 font-bold py-3 px-8 rounded-lg border-2 border-white hover:text-green-900 transition duration-300">
                                     Take a Tour
                                 </button>
                             </div>
@@ -54,13 +54,13 @@ const Landing = () => {
                             The Ultimate Tennis Experience
                         </h2> */}
 
-                        <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div className="grid md:grid-cols-2 gap-12 items-stretch">
                             <div>
                                 <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                    <h3 className="text-2xl font-bold text-teal-950 mb-3">
                                         Feel the Thrill of the Game
                                     </h3>
-                                    <p className="text-gray-600 text-lg">
+                                    <p className="text-gray-700 text-lg text-justify text-pretty">
                                         Experience tennis like never before with
                                         our immersive digital platform that
                                         captures the excitement and intensity of
@@ -84,10 +84,10 @@ const Landing = () => {
                                 </div>
 
                                 <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                    <h3 className="text-2xl font-bold text-teal-950 mb-3">
                                         Customize Your Perfect Player
                                     </h3>
-                                    <p className="text-gray-600 text-lg">
+                                    <p className="text-gray-700 text-lg text-justify text-pretty">
                                         Create your ideal tennis athlete with
                                         our advanced player customization
                                         system. Fine-tune specific abilities by
@@ -113,10 +113,10 @@ const Landing = () => {
                                 </div>
 
                                 <div className="mb-8">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                                    <h3 className="text-2xl font-bold text-teal-950 mb-3">
                                         Connect, Chat, and Compete
                                     </h3>
-                                    <p className="text-gray-600 text-lg">
+                                    <p className="text-gray-700 text-lg text-justify text-balance">
                                         TennisMatch isn't just a game—it's a
                                         thriving community of tennis enthusiasts
                                         from around the world. Challenge
@@ -132,7 +132,7 @@ const Landing = () => {
                                 </div>
 
                                 <div className="bg-green-100 rounded-xl p-6">
-                                    <h4 className="text-xl font-bold text-green-800 mb-4">
+                                    <h4 className="text-xl font-bold text-green-950 mb-4">
                                         Advanced Features
                                     </h4>
                                     <ul className="space-y-3">
@@ -181,20 +181,20 @@ const Landing = () => {
                 {/* CTA Section */}
                 <div className="bg-green-700 rounded-b-lg py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-3xl font-extrabold text-white mb-6">
+                        <h2 className="text-3xl font-extrabold text-green-50 mb-6">
                             Ready to Step onto the Court?
                         </h2>
-                        <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+                        <p className="text-xl text-green-50 mb-8 max-w-2xl mx-auto">
                             Join thousands of players already experiencing the
                             future of tennis gaming. Your perfect match is
                             waiting.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                            <button className="bg-white text-green-600 hover:bg-green-50 font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center">
+                            <button className="bg-green-50 text-green-600 hover:bg-green-50 hover:text-green-700 font-bold py-3 px-8 rounded-lg shadow-lg transition duration-300 flex items-center justify-center hover:animate-pulse cursor-pointer">
                                 Join the Game{' '}
                                 <ChevronRight className="ml-2 h-5 w-5" />
                             </button>
-                            <button className="bg-transparent hover:bg-white hover:bg-opacity-20 text-white font-bold py-3 px-8 rounded-lg border-2 border-white transition duration-300">
+                            <button className="bg-transparent hover:bg-white hover:bg-opacity-20 text-white hover:text-green-700 font-bold py-3 px-8 rounded-lg border-2 border-white transition duration-300 hover:animate-pulse cursor-pointer">
                                 Take a Tour
                             </button>
                         </div>
