@@ -10,10 +10,9 @@ import {
     ModalHeader,
     TextInput,
 } from 'flowbite-react';
+import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 
-const Register: React.FC<{ triggerModalOpen?: boolean }> = (
-    triggerModalOpen
-) => {
+const Register: React.FC = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -31,10 +30,6 @@ const Register: React.FC<{ triggerModalOpen?: boolean }> = (
         }
         if (location.pathname === '/register') setOpenModal(true);
     }, []);
-
-    useEffect(() => {
-        setOpenModal((e) => !e);
-    }, [triggerModalOpen]);
 
     const resetForm = () => {
         setUsername('');
@@ -56,8 +51,13 @@ const Register: React.FC<{ triggerModalOpen?: boolean }> = (
 
     return (
         <>
+            <ModalOpenTriggerButton
+                buttonText="Register"
+                onClick={() => setOpenModal(true)}
+            />
             <div className="">
                 <Modal
+                    id="register-modal"
                     show={openModal}
                     size="md"
                     popup
@@ -65,7 +65,7 @@ const Register: React.FC<{ triggerModalOpen?: boolean }> = (
                     dismissible
                     onClose={() => {
                         setOpenModal(false);
-                        // navigate('/');
+                        navigate('/');
                     }}
                     initialFocus={usernameInputRef}
                 >

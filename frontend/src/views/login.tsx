@@ -13,8 +13,9 @@ import {
     // createTheme,
     // ThemeProvider,
 } from 'flowbite-react';
+import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 
-const Login: React.FC<{ triggerModalOpen?: boolean }> = (triggerModalOpen) => {
+const Login: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [username, setUsername] = useState('');
@@ -22,9 +23,6 @@ const Login: React.FC<{ triggerModalOpen?: boolean }> = (triggerModalOpen) => {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
     const [openModal, setOpenModal] = useState(false);
-    useEffect(() => {
-        setOpenModal((e) => !e);
-    }, [triggerModalOpen]);
 
     const usernameInputRef = useRef(null);
     // const customTheme = createTheme({
@@ -65,8 +63,13 @@ const Login: React.FC<{ triggerModalOpen?: boolean }> = (triggerModalOpen) => {
     };
     return (
         <>
+            <ModalOpenTriggerButton
+                buttonText="Login"
+                onClick={() => setOpenModal(true)}
+            />
             {/* <ThemeProvider theme={customTheme}> */}
             <Modal
+                id="login-modal"
                 show={openModal}
                 size="md"
                 popup

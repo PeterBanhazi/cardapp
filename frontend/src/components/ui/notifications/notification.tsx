@@ -1,4 +1,5 @@
 import { Info, CircleAlert, CircleX, CircleCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const icons = {
     info: <Info className="size-6 text-blue-500" aria-hidden="true" />,
@@ -25,9 +26,32 @@ export const Notification = ({
     notification: { id, type, title, message },
     onDismiss,
 }: NotificationProps) => {
+    const [isFading, setIsFading] = useState(false);
+
+    // Handle fade out and auto-dismiss notification
+    useEffect(() => {
+        // Start fading out after 2 seconds
+        const fadeTimer = setTimeout(() => {
+            setIsFading(true);
+        }, 3000);
+
+        // Dismiss completely after 3 seconds
+        const dismissTimer = setTimeout(() => {
+            onDismiss(id);
+        }, 4000);
+
+        // Clean up timers when component unmounts
+        return () => {
+            clearTimeout(fadeTimer);
+            clearTimeout(dismissTimer);
+        };
+    }, [id, onDismiss]);
+
     return (
         <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
-            <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5">
+            <div
+                className={`pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black/5 transition-opacity duration-1000 ${isFading ? 'opacity-0' : 'opacity-100'}`}
+            >
                 <div className="p-4" role="alert" aria-label={title}>
                     <div className="flex items-start">
                         <div className="shrink-0">{icons[type]}</div>

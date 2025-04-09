@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     useProfile,
     useProfilePasswordChange,
@@ -15,6 +15,7 @@ import {
     ModalBody,
 } from 'flowbite-react';
 import { PasswordChangeData, ProfileData } from '../utils/types';
+import ModalOpenTriggerButton from '../views/ModalOpenTriggerButton';
 
 // TODO: when there is no birthday and user logout and login with another account the prv. bd should have been invalidated
 // Input field configuration for consistent styling
@@ -41,16 +42,9 @@ const AVATAR_OPTIONS = [
 
 // Type definitions
 
-const ProfileEditModal: React.FC<{
-    children?: React.ReactNode;
-    triggerModalOpen: boolean;
-}> = ({ children, triggerModalOpen }) => {
+const ProfileEditModal: React.FC<{}> = ({}) => {
     // State for modal
-    const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(() => {
-        setIsOpen((e) => !e);
-    }, [triggerModalOpen]);
+    const [openModal, setOpenModal] = useState(false);
 
     // State for form data and errors
     const [profileData, setProfileData] = useState<ProfileData>({
@@ -218,11 +212,15 @@ const ProfileEditModal: React.FC<{
     };
     return (
         <>
-            {children}
+            <ModalOpenTriggerButton
+                buttonText="Settings"
+                onClick={() => setOpenModal(true)}
+            />
             <Modal
+                id="profile-modal"
                 dismissible={true}
-                show={isOpen}
-                onClose={() => setIsOpen(false)}
+                show={openModal}
+                onClose={() => setOpenModal(false)}
                 size="xl"
             >
                 <ModalHeader className="">

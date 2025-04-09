@@ -38,11 +38,11 @@ const App: React.FC = () => {
                                     path="*"
                                     element={<DashboardMainLayout />}
                                 />
-                                <Route path="/login" element={<Login />} />
+                                {/* <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/register"
                                     element={<Register />}
-                                />
+                                /> */}
                                 <Route
                                     path="/logout"
                                     element={<Logout isVisible={false} />}

@@ -1,7 +1,8 @@
 const ModalOpenTriggerButton: React.FC<{
-    onClick: () => void;
+    onClick?: () => void;
     buttonText: string;
-}> = ({ onClick, buttonText }) => {
+    linkTo?: string;
+}> = ({ onClick, buttonText, linkTo }) => {
     return (
         <>
             <button
