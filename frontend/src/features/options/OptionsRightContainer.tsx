@@ -1,7 +1,7 @@
-import { Friendship } from '../utils/types';
-import FriendListItem from './ui/FriendListItem';
-import InviteInput from './ui/InviteInput';
-import ScrollContainer from './ui/ScrollContainer';
+import { Friendship } from '../../utils/types';
+import FriendListItem from '../../components/ui/FriendListItem';
+import InviteInput from '../../components/ui/InviteInput';
+import ScrollContainer from '../../components/ui/ScrollContainer';
 
 const OptionsRightContainer: React.FC<{
     friendships: Friendship[];

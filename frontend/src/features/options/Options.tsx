@@ -1,6 +1,6 @@
-import OptionsRightContainer from '../components/OptionsRightContainer';
+import OptionsRightContainer from './OptionsRightContainer';
 
-import OptionsDnDCardWrapper from '../layouts/OptionsDnDCardWrapper';
+import OptionsDnDCardWrapper from './playercards/OptionsDnDCardWrapper';
 import { useOptionsDataTransformer } from './useOptionsDataTransformer';
 
 // import { console } from 'inspector';

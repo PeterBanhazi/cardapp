@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 
 import React, { useState } from 'react';
-import ProfileEditModal from '../components/ProfileEditModal';
-import Login from './login';
-import Register from './register';
-import ModalOpenTriggerButton from './ModalOpenTriggerButton';
+
+import Register from '../features/app/register';
+import ModalOpenTriggerButton from '../features/app/ModalOpenTriggerButton';
+import ProfileEditModal from '../features/app/ProfileEditModal';
+import Login from '../features/app/login';
 
 const Home: React.FC = () => {
     const [user] = useAuthStore((state) => [state.user]);

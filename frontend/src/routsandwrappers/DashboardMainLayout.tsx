@@ -1,11 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import GameWrapper from '../components/game/GameWrapper';
-import Rules from '../components/Rules';
-import TopList from '../components/TopList';
+import Rules from '../pages/Rules';
+import TopList from '../features/ranks/TopList';
 
-import ChatLobby from './ChatLobby';
-import DashboardManager from './DashboardManager';
-import Options from '../views/Options';
+import ChatLobby from '../pages/ChatLobby';
+
+import Options from '../features/options/Options';
+import DashboardManager from '../features/dashboard/DashboardManager';
 
 const DashboardMainLayout = () => {
     return (

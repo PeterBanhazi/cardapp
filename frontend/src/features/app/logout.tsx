@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { logout } from '../utils/auth';
-import Landing from './Landing';
-import { useNotifications } from '../components/ui/notifications';
+import Landing from '../../pages/Landing';
+import { useNotifications } from '../../components/ui/notifications';
+import { logout } from '../../utils/auth';
 
 interface VisibilityProps {
     isVisible?: boolean;

@@ -179,7 +179,7 @@ const Landing = () => {
                 </div>
 
                 {/* CTA Section */}
-                <div className="bg-green-600 rounded-b-lg py-16">
+                <div className="bg-green-700 rounded-b-lg py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-3xl font-extrabold text-white mb-6">
                             Ready to Step onto the Court?

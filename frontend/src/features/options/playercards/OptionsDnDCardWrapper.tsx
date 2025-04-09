@@ -23,13 +23,14 @@ import {
 
 import { FaArrowsRotate } from 'react-icons/fa6';
 
-import { PlayerStats } from '../utils/types';
-import TennisPlayerCards from '../components/ui/TennisPlayerCards';
+import { PlayerStats } from '../../../utils/types';
+
 import DraggablePlayerCard from './DraggablePlayerCard';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../utils/useAxios';
-import OptionsLeftContainer from '../components/OptionsLeftContainer';
+import useAxios from '../../../utils/useAxios';
+import OptionsLeftContainer from '../OptionsLeftContainer';
+import TennisPlayerCards from './TennisPlayerCards';
 
 interface PlayerCardsContainerProps {
     userName: string;
@@ -201,9 +202,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
             }),
         // make sure to _return_ the Promise from the query invalidation
         // so that the mutation stays in `pending` state until the refetch is finished
-        onSuccess: () => {
-            console.log('megtortent');
-        },
+        onSuccess: () => {},
         onSettled: async () => {
             return await queryClient.invalidateQueries({
                 queryKey: ['userproperties'],
@@ -261,7 +260,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         [&::-webkit-scrollbar]:h-2
                         [&::-webkit-scrollbar-button]:h-0.5
                         [&::-webkit-scrollbar-track]:bg-transparent
-                                          [&::-webkit-scrollbar-thumb]:bg-slate-300/30
+                      [&::-webkit-scrollbar-thumb]:bg-slate-300/30
                         [&::-webkit-scrollbar-thumb]:rounded-full
                         [&::-webkit-scrollbar-thumb]:border-8
                         [&::-webkit-scrollbar-thumb]:border-solid

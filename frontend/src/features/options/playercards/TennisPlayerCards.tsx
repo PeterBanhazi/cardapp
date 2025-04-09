@@ -1,15 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './card';
-import { PlayerStats } from '../../utils/types';
+import React from 'react';
+
 import { TbUserEdit } from 'react-icons/tb';
 import { LuHistory } from 'react-icons/lu';
 import { FaStar } from 'react-icons/fa6';
 import { RotatingLines } from 'react-loader-spinner';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../../utils/useAxios';
+import { PlayerStats } from '../../../utils/types';
+import useAxios from '../../../utils/useAxios';
+import { useCurrentPlayerMutation } from '../useCurrentPlayerMutation';
+import { Card, CardContent, CardHeader, CardTitle } from './card';
 
-import { useCurrentPlayerMutation } from './useCurrentPlayerMutation';
 // id: number;
 // creator_username: string | number | null;
 // name: string;

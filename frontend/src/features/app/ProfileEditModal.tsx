@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    useProfile,
-    useProfilePasswordChange,
-    useUpdateProfile,
-} from '../utils/useDataQuery';
+
 import {
     Modal,
     Button,
@@ -14,8 +10,13 @@ import {
     ModalHeader,
     ModalBody,
 } from 'flowbite-react';
-import { PasswordChangeData, ProfileData } from '../utils/types';
-import ModalOpenTriggerButton from '../views/ModalOpenTriggerButton';
+import { ProfileData, PasswordChangeData } from '../../utils/types';
+import {
+    useProfile,
+    useUpdateProfile,
+    useProfilePasswordChange,
+} from '../../utils/useDataQuery';
+import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 
 // TODO: when there is no birthday and user logout and login with another account the prv. bd should have been invalidated
 // Input field configuration for consistent styling

@@ -1,14 +1,14 @@
-import React, { Children, ReactNode, useState } from 'react';
-import { PlayerStats } from '../utils/types';
-import { Switch } from 'radix-ui';
-import TennisPlayerCards from './ui/TennisPlayerCards';
-import TennisPlayerCreator from './TennisPlayerCreator';
+import React, { ReactNode, useState } from 'react';
+import { PlayerStats } from '../../utils/types';
+
+import TennisPlayerCreator from './playercards/TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../utils/useAxios';
+import useAxios from '../../utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
 
 import { RiCrosshair2Line } from 'react-icons/ri';
-import TennisBallToggle from './ui/TennisBallToggle';
+import TennisBallToggle from '../../components/ui/TennisBallToggle';
+import TennisPlayerCards from './playercards/TennisPlayerCards';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];

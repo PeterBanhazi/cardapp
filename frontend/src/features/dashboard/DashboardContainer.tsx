@@ -8,10 +8,9 @@ import {
     AlertTriangle,
     Signal,
 } from 'lucide-react';
-import { useDashboardStore } from '../store/store';
 
-import { DashboardStatus } from '../store/store';
 import { useNavigate } from 'react-router-dom';
+import { DashboardStatus, useDashboardStore } from '../../store/store';
 interface DashboardContainerProps {
     id: string;
     title: string;

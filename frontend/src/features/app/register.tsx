@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { register } from '../utils/auth';
+import { register } from '../../utils/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../../store/auth';
 import {
     Button,
     Label,

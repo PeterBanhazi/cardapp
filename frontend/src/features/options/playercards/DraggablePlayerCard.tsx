@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
-import { PlayerStats } from '../utils/types';
+import { PlayerStats } from '../../../utils/types';
 import { CSS } from '@dnd-kit/utilities';
-import TennisPlayerCards from '../components/ui/TennisPlayerCards';
+import TennisPlayerCards from './TennisPlayerCards';
+
 const DraggablePlayerCard: React.FC<{
     id: number;
 

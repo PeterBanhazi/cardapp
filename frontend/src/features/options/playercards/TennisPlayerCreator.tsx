@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import useAxios from '../utils/useAxios';
+import useAxios from '../../../utils/useAxios';
 import { X, RefreshCcw } from 'lucide-react';
-import { useAuthStore } from '../store/auth'; // Adjust import path as needed
-import { PlayerStats } from '../utils/types';
+import { useAuthStore } from '../../../store/auth'; // Adjust import path as needed
+import { PlayerStats } from '../../../utils/types';
 // Import player avatars
-import djokovic from '../assets/djokovic_head.png';
-import alcaraz from '../assets/alcaraz_head.png';
-import sinner from '../assets/sinner_head.png';
-import medvedev from '../assets/medvedev_head.png';
-import rublev from '../assets/rublev_head.png';
+import djokovic from '../../../assets/djokovic_head.png';
+import alcaraz from '../../../assets/alcaraz_head.png';
+import sinner from '../../../assets/sinner_head.png';
+import medvedev from '../../../assets/medvedev_head.png';
+import rublev from '../../../assets/rublev_head.png';
 
 // Define interface for player abilities
 type PlayerAbilities = Omit<
@@ -54,8 +54,11 @@ const TennisPlayerCreator: React.FC<{ onClose: () => void }> = ({
 
     // Update remaining points when abilities change
     useEffect(() => {
-        const totalPoints = Object.values(abilities).reduce((a, b) => a + b, 0);
-        setRemainingPoints(550 - totalPoints);
+        const totalPoints = Object.values(abilities).reduce(
+            (a, b) => Number(a) + Number(b),
+            0
+        );
+        setRemainingPoints(550 - Number(totalPoints));
     }, [abilities]);
 
     // Handle ability change

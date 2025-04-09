@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import Home from '../views/home';
+import Home from '../layouts/home';
 import { useDashboardStore, DashboardItem } from '../store/store';
 
 const Navbar: React.FC = () => {

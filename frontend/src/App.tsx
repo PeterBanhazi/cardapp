@@ -1,24 +1,23 @@
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import MainWrapper from './layouts/MainWrapper';
-import Login from './views/login';
+import MainWrapper from './routsandwrappers/MainWrapper';
 
-import Logout from './views/logout';
+import Register from './features/app/register';
 
-import Register from './views/register';
-
-import WebSocketChat from './components/wstest';
+import WebSocketChat from './temp/wstest';
 import ChatComponent from './components/ChatComponent';
 
-import Navbar from './components/Navbar';
+import Navbar from './pages/Navbar';
 
-import BottomFooter from './components/BottomFooter';
-import MainDesignWrapper from './layouts/MainDesignWrapper';
+import BottomFooter from './pages/BottomFooter';
+import MainDesignWrapper from './routsandwrappers/MainDesignWrapper';
 
-import DashboardMainLayout from './layouts/DashboardMainLayout';
+import DashboardMainLayout from './routsandwrappers/DashboardMainLayout';
 import { Notifications } from './components/ui/notifications';
-import Landing from './views/Landing';
+import Landing from './pages/Landing';
+import Login from './features/app/login';
+import Logout from './features/app/logout';
 
 const queryClient = new QueryClient();
 
@@ -38,11 +37,11 @@ const App: React.FC = () => {
                                     path="*"
                                     element={<DashboardMainLayout />}
                                 />
-                                {/* <Route path="/login" element={<Login />} />
+                                <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/register"
                                     element={<Register />}
-                                /> */}
+                                />
                                 <Route
                                     path="/logout"
                                     element={<Logout isVisible={false} />}

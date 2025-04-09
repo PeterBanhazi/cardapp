@@ -1,19 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useLocation } from 'react-router-dom';
+import GameWrapper from '../../components/game/GameWrapper';
+import ChatLobby from '../../pages/ChatLobby';
+import Rules from '../../pages/Rules';
+import { useDashboardStore } from '../../store/store';
+import Options from '../options/Options';
+import TopList from '../ranks/TopList';
 import { DashboardContainer } from './DashboardContainer';
-import { useDashboardStore } from '../store/store';
-import { useBackendStatus } from '../store/useBackendStatus';
+
 // import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package
-
-import Properties from '../views/Options';
-
-import TopList from '../components/TopList';
-
-import GameWrapper from '../components/game/GameWrapper';
-import ChatLobby from './ChatLobby';
-import Rules from '../components/Rules';
-import Options from '../views/Options';
 
 interface DashboardManagerProps {
     children: React.ReactNode;

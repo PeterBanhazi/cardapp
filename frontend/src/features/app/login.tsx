@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { login } from '../utils/auth';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
+
 import {
     Button,
     Checkbox,
@@ -13,6 +11,9 @@ import {
     // createTheme,
     // ThemeProvider,
 } from 'flowbite-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../../store/auth';
+import { login } from '../../utils/auth';
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 
 const Login: React.FC = () => {
