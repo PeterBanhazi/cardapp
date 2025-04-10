@@ -22,7 +22,7 @@ const Landing = () => {
                     }}
                 >
                     <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 flex items-center h-full">
-                        <div className="text-white">
+                        <div className="text-gray-100">
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-[64px] mb-6">
                                 Experience the Thrill
                                 <br className="hidden lg:block" />

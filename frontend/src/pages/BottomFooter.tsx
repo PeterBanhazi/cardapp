@@ -13,6 +13,7 @@ import {
     Linkedin,
     Github,
 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 const BottomFooter = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,9 +23,14 @@ const BottomFooter = () => {
 
     const currentYear = new Date().getFullYear();
 
+    const location = useLocation();
+    const isAtHome: boolean = location.pathname === '/';
+
     return (
         <div className="container mx-auto px-4">
-            <footer className="bg-white/95 text-black container rounded-t-lg ring-1 ring-slate-400 px-2 mx-auto">
+            <footer
+                className={`${isAtHome ? 'bg-white/95' : 'bg-stone-200/30 '} text-black container rounded-t-lg border border-slate-200/40 px-2 mx-auto`}
+            >
                 <div className="container mx-auto px-28 py-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Play Column */}
