@@ -110,12 +110,12 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                                 if (dashboards.length === 1) {
                                     navigate('/');
                                 }
-                                if (
-                                    dashboards.length > 1 &&
-                                    id === dashboards[0].id
-                                ) {
-                                    navigate(dashboards[1].path);
-                                }
+                                // if (
+                                //     dashboards.length > 1 &&
+                                //     id === dashboards[0].id
+                                // ) {
+                                //     navigate(dashboards[1].path);
+                                // }
 
                                 onClose(id);
                             }}

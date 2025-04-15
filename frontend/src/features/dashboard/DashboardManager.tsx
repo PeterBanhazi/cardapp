@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useLocation } from 'react-router-dom';
-import GameWrapper from '../../components/game/GameWrapper';
+import GameWrapper from '../../pages/GameWrapper';
 import ChatLobby from '../../pages/ChatLobby';
 import Rules from '../../pages/Rules';
 import { useDashboardStore } from '../../store/store';
@@ -46,13 +46,10 @@ export const DashboardManager: React.FC<DashboardManagerProps> = ({
                     onClose={removeDashboard}
                 >
                     {/* {dashboard.path === '/' && <Landing />} */}
-                    {dashboard.path === '/' && <GameWrapper />}
-
-                    {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/lobby' && <ChatLobby />}
-
+                    {dashboard.path === '/matches' && <GameWrapper />}
+                    {dashboard.path === '/ranks' && <TopList />}
                     {dashboard.path === '/options' && <Options />}
-
                     {dashboard.path === '/rules' && <Rules />}
 
                     {/* {dashboard.path === '/add-player' && (

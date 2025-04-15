@@ -47,19 +47,21 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   // })),
   
   initializeDashboard: () => set((state) => ({
-    dashboards: [{
-      id: 'landing',
-      path: '/',
-      title: 'Test Game',
-      isCollapsed: false,
-      key: Date.now(),
-      status: {
-        hasNewMessage: true,
-        hasWarning: true,
-        connectionStatus: 'connected',
-      },
+    dashboards: [
+      // {
+      // id: 'landing',
+      // path: '/',
+      // title: 'Test Game',
+      // isCollapsed: false,
+      // key: Date.now(),
+      // status: {
+      //   hasNewMessage: true,
+      //   hasWarning: true,
+      //   connectionStatus: 'connected',
+      // },
       
-    }]
+      // }
+    ]
   })),
 
   addDashboard: (dashboard) => set((state) => {

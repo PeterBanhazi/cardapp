@@ -1,4 +1,4 @@
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, ChevronsDownUp } from 'lucide-react';
 import { Button } from './ui/button';
 // import { useTheme } from "next-themes";
 
@@ -25,6 +25,9 @@ const PreferencesTab = () => {
                 ) : (
                     <VolumeX className="text-muted-foreground" />
                 )}
+            </Button>
+            <Button>
+                <ChevronsDownUp />
             </Button>
         </div>
     );

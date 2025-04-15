@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import axios from '../../utils/axios';
-import GamePlayerCardRight from './GamePlayerCardRight';
-import GamePlayerCardLeft from './GamePlayerCardLeft';
-import TennisBallScene from './TennisBallScene';
-import { UserData, PlayerStats } from '../../utils/types';
+import axios from '../utils/axios';
+import GamePlayerCardRight from '../features/matches/GamePlayerCardRight';
+import GamePlayerCardLeft from '../features/matches/GamePlayerCardLeft';
+import TennisBallScene from '../features/matches/TennisBallScene';
+import { UserData, PlayerStats } from '../utils/types';
 
 interface PlayerAbilities {
     serve: number;
@@ -33,9 +33,8 @@ const GameWrapper: React.FC = () => {
         const fetchPlayers = async (): Promise<void> => {
             try {
                 setIsLoading(true);
-                const response = await axios.get<PlayerStats[]>(
-                    '/get/playerlist/'
-                );
+                const response =
+                    await axios.get<PlayerStats[]>('/get/playerlist/');
                 setPlayers(response.data);
                 setIsLoading(false);
             } catch (err) {
@@ -74,7 +73,7 @@ const GameWrapper: React.FC = () => {
             </div>
             <TennisBallScene
                 onStartGame={handleStartGame}
-                className="z-20"
+                className="z-11"
                 style={{
                     position: 'relative',
                     top: '80%', // Center vertically

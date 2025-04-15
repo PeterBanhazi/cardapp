@@ -19,6 +19,8 @@ const Navbar: React.FC = () => {
     const handleDashboardClick = (
         link: Omit<DashboardItem, 'isCollapsed' | 'key'>
     ) => {
+        if (link.path === '/') return;
+
         addDashboard({
             id: link.id, // or use uuid() if you want multiple instances
             path: link.path,
@@ -28,8 +30,9 @@ const Navbar: React.FC = () => {
     const navLinks = [
         { path: '/', label: 'Home', id: 'home', title: 'Welcome' },
         { path: '/lobby', label: 'Lobby', id: 'lobby', title: 'Lobby' },
+        { path: '/matches', label: 'Matches', id: 'matches', title: 'Matches' },
         { path: '/ranks', label: 'Ranks', id: 'rank', title: 'Ranks' },
-        // { path: '/players', label: 'Players', id: 'players', title: 'Players' },
+
         {
             path: '/options',
             label: 'Options',

@@ -1,7 +1,7 @@
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import MainWrapper from './routsandwrappers/MainWrapper';
+import MainWrapper from './routsandwrappers/MainAuthWrapper';
 
 import Register from './features/app/register';
 

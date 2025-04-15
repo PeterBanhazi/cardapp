@@ -46,7 +46,7 @@ const GamePlayerCardLeft: React.FC<PlayerCardProps> = ({ player }) => {
             <div className="flex select-none">
                 <div className="grid  ">
                     <img
-                        src="./src/components/game/GamePlayerCardLeft.svg"
+                        src="src/features/matches/GamePlayerCardLeft.svg"
                         className="opacity-100  col-start-1 row-start-1 self-center"
                         alt="Card Background"
                     />
