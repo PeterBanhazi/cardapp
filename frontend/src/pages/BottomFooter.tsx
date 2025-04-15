@@ -29,13 +29,13 @@ const BottomFooter = () => {
     return (
         <div className="container mx-auto px-4">
             <footer
-                className={`${isAtHome ? 'bg-white/95' : 'bg-stone-200/30 '} text-black container rounded-t-lg border border-slate-200/40 px-2 mx-auto`}
+                className={`${isAtHome ? 'bg-white/95' : 'bg-stone-200/30 '} text-black container  rounded-b-lg mb-6 border border-slate-200/40 px-2 mx-auto`}
             >
-                <div className="container mx-auto px-28 py-6">
+                <div className="container mx-auto px-4 py-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Play Column */}
                         <div>
-                            <h2 className="text-2xl font-bold mb-4">
+                            <h2 className="text-2xl font-bold mb-2">
                                 Game set...
                             </h2>
                             <p className="text-gray-900">
@@ -49,15 +49,15 @@ const BottomFooter = () => {
 
                         {/* Company Info Column */}
                         <div>
-                            <h3 className="text-xl font-semibold mb-4">
+                            <h3 className="text-xl font-semibold mb-2">
                                 Made By
                             </h3>
-                            <p className="text-gray-900 mb-4">
+                            <p className="text-gray-900 mb-2">
                                 TechServe Solutions - Crafting innovative
                                 digital experiences since 2020. We're passionate
                                 about bringing sports and technology together.
                             </p>
-                            <div className="flex items-center gap-2 text-gray-900 mb-2">
+                            <div className="flex items-center gap-2 text-gray-900 mb-0">
                                 <Mail size={16} />
                                 <span>contact@techserve.com</span>
                             </div>
@@ -74,11 +74,11 @@ const BottomFooter = () => {
 
                         {/* Links Column */}
                         <div className="px-6 ">
-                            <h3 className="text-xl font-semibold mb-4">
+                            <h3 className="text-xl font-semibold mb-2">
                                 Links
                             </h3>
                             <nav>
-                                <ul className="space-y-2">
+                                <ul className="space-y-0">
                                     <li>
                                         <a
                                             href="#"
@@ -125,10 +125,10 @@ const BottomFooter = () => {
 
                         {/* Newsletter Column */}
                         <div>
-                            <h3 className="text-xl font-semibold mb-4">
+                            <h3 className="text-xl font-semibold mb-2">
                                 Newsletter
                             </h3>
-                            <form onSubmit={handleSubmit} className="mb-6">
+                            <form onSubmit={handleSubmit} className="mb-3">
                                 <div className="flex flex-col gap-2">
                                     <input
                                         type="email"
@@ -144,7 +144,7 @@ const BottomFooter = () => {
                                 </div>
                             </form>
 
-                            <div className="flex gap-4">
+                            <div className="flex justify-between px-10">
                                 <a
                                     href="#"
                                     className="text-gray-900 hover:text-black transition-colors"
@@ -181,8 +181,8 @@ const BottomFooter = () => {
                 </div>
 
                 {/* Copyright Bar */}
-                <div className="border-t border-gray-200">
-                    <div className="container mx-auto px-4 py-4">
+                <div className="border-t border-gray-200 w-86 mx-auto">
+                    <div className="container mx-auto py-1">
                         <div className="text-center text-gray-900 text-sm">
                             © {currentYear} TechServe Solutions. All Rights
                             Reserved.

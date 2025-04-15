@@ -12,7 +12,7 @@ import React from 'react';
 const Landing = () => {
     return (
         <div className="container mx-auto p-4 pt-0">
-            <div className="w-full mb-4 min-h-170 bg-stone-200/30 border border-slate-800/40 rounded-b-lg shadow-lg">
+            <div className="w-full mb-1 min-h-170 bg-stone-200/30 border border-slate-800/40 shadow-lg">
                 {/* Hero Section */}
                 <div
                     className="relative bg-cover bg-center"
@@ -179,7 +179,7 @@ const Landing = () => {
                 </div>
 
                 {/* CTA Section */}
-                <div className="bg-green-700 rounded-b-lg py-16">
+                <div className="bg-green-700 py-16">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                         <h2 className="text-3xl font-extrabold text-green-50 mb-6">
                             Ready to Step onto the Court?
