@@ -25,7 +25,22 @@ from .models import TennisPlayer,UserProperties, Friendship, Profile
 from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer, PasswordChangeSerializer
 
 
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        '/api/token/',
+        '/api/register/',
+        '/api/token/refresh/',
+        '/api/test/',
+        '/api/get/playerlist',
+        '/api/post/add-player/',
+        '/api/get/ranks/',
+        '/api/options',
+        '/api/get/friends',
+        
 
+    ]
+    return Response(routes)
 
 # class AddTennisPlayerView(APIView):
 #     def post(self, request):
@@ -186,24 +201,6 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
-
-
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        '/api/token/',
-        '/api/register/',
-        '/api/token/refresh/',
-        '/api/test/',
-        '/api/get/playerlist',
-        '/api/post/add-player/',
-        '/api/get/ranks/',
-        '/api/options',
-        '/api/get/friends',
-        
-
-    ]
-    return Response(routes)
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     """
