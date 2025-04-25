@@ -1,0 +1,98 @@
+And don't forget to create an init.py file in the game directory to make it a proper Python package.
+How the Game Works:
+
+Game Invitation Process:
+
+User A invites User B to a game through the matchmaking WebSocket
+User B receives the invitation and can accept it
+Once accepted, both users are notified that the game is ready
+
+
+Game Flow:
+
+Both users connect to the game WebSocket
+Each user sets their "ready" status to true
+When both players are ready, the game countdown begins
+After a 3-second countdown, a winner is randomly determined
+The points are transferred from the loser to the winner
+Both players receive the game result
+
+
+Key Components:
+
+GameConsumer: Handles the actual game logic, countdown, and determining winners
+GameMatchmakingConsumer: Handles finding and inviting friends to games
+Game model: Stores game state, players, and results
+GameReadyStatus model: Tracks whether players are ready to start
+
+
+
+Example Usage Flow:
+
+Starting a Game:
+
+Player A connects to the matchmaking WebSocket
+Player A sends an invitation to Player B
+
+json{
+  "action": "invite_friend",
+  "friend_username": "player_b"
+}
+
+Player B receives the invitation via WebSocket
+
+json{
+  "type": "game_invitation",
+  "from": "player_a",
+  "game_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+Player B accepts the invitation
+
+json{
+  "action": "accept_invitation",
+  "game_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+Both players receive a notification that the game is ready
+
+json{
+  "type": "game_ready",
+  "game_id": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+Playing the Game:
+
+Both players connect to the game WebSocket for their specific game ID
+Each player sets their ready status
+
+json{
+  "type": "ready",
+  "ready": true
+}
+
+When both players are ready, they receive a game starting message
+
+json{
+  "type": "game_message",
+  "message": "Game is starting!",
+  "game_status": "STARTING"
+}
+
+The countdown begins
+
+json{
+  "type": "countdown_message",
+  "count": 3
+}
+
+After the countdown, the result is sent
+
+json{
+  "type": "game_result",
+  "winner": "player_a",
+  "game_status": "COMPLETED"
+}
+
+
+This implementation creates a complete asynchronous game system that integrates with your existing user and friendship models. The game logic is simple (coin flip) but can be extended to more complex games while keeping the same structure of WebSocket-based real-time communication.

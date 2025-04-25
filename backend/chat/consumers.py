@@ -36,6 +36,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         
         await self.accept()
+        
+        ###
         await self.send(text_data=f"Hello, {self.username}!")
         # Update user status
         await self.update_user_status(True)

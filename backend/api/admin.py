@@ -2,12 +2,15 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import *
+from chat.models import *
 
 
 admin.site.register(UserProperties)
 admin.site.register(TennisPlayer)
 admin.site.register(Friendship)
 admin.site.register(Profile)
+admin.site.register(Message)
+admin.site.register(UserStatus)
 # @admin.register(TennisPlayer)
 # class TennisPlayerAdmin(admin.ModelAdmin):
 #     """
