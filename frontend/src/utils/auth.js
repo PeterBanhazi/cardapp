@@ -1,4 +1,4 @@
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../store/useAuthStore';
 import axios from './axios';
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie';

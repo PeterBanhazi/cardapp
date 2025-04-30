@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Landing from '../../pages/Landing';
 import { useNotifications } from '../../components/ui/notifications';
-import { logout } from '../../utils/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface VisibilityProps {
     isVisible?: boolean;
@@ -12,6 +12,7 @@ interface VisibilityProps {
 }
 
 const Logout: React.FC<VisibilityProps> = ({ isVisible = false }) => {
+    const { logout, isLoading, error } = useAuthStore();
     useEffect(() => {
         logout();
     }, []);

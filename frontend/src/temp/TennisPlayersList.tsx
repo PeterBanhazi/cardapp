@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../store/useAuthStore';
 
 interface PlayerAbilities {
     serve: number;
@@ -97,9 +97,8 @@ const TennisPlayersList: React.FC = () => {
         const fetchPlayers = async (): Promise<void> => {
             try {
                 setIsLoading(true);
-                const response = await axios.get<ApiResponse>(
-                    '/get/playerlist/'
-                );
+                const response =
+                    await axios.get<ApiResponse>('/get/playerlist/');
                 setPlayers(response.data.players);
                 setIsLoading(false);
             } catch (err) {

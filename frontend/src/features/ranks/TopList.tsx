@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useAxios from '../../utils/useAxios';
-import { useAuthStore } from '../../store/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface User {
     username: string;

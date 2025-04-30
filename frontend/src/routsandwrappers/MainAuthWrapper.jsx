@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { setUser } from '../utils/auth';
+import { useAuthStore } from '../store/useAuthStore';
 
 const MainWrapper = ({ children }) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const handler = async () => {
             setLoading(true);
-            await setUser();
+            useAuthStore.getState().user;
             setLoading(false);
         };
         handler();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { register } from '../../utils/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 import {
     Button,
     Label,
@@ -19,7 +19,7 @@ const Register: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+    const isLoggedIn = useAuthStore.getState().isAuthenticated;
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -27,7 +27,7 @@ const Register: React.FC = () => {
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
-        if (isLoggedIn()) {
+        if (isLoggedIn) {
             navigate('/');
         }
         if (location.pathname === '/register') setOpenModal(true);

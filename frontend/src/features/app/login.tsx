@@ -11,24 +11,26 @@ import {
     ThemeProvider,
 } from 'flowbite-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth';
-import { login } from '../../utils/auth';
+import { useAuthStore } from '../../store/useAuthStore';
+
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 import { customTheme } from '../../utils/formThemes';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    // ### loading and error handling for proper UX
+    const { login, isLoading, error } = useAuthStore();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+    const isLoggedIn = useAuthStore.getState().isAuthenticated;
 
     const [openModal, setOpenModal] = useState(false);
 
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
-        if (isLoggedIn()) {
+        if (isLoggedIn) {
             navigate('/');
         }
         if (location.pathname === '/login') setOpenModal(true);
@@ -39,15 +41,12 @@ const Login: React.FC = () => {
         setPassword('');
     };
 
-    const handleLogin = async (e: { preventDefault: () => void }) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { error } = await login(username, password);
-        if (error) {
-            alert(error);
-        } else {
-            navigate('/');
-            resetForm();
-        }
+        await login(username, password);
+
+        navigate('/');
+        resetForm();
     };
     return (
         <>
