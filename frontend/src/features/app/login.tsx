@@ -31,7 +31,7 @@ const Login: React.FC = () => {
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate('/');
+            navigate('/lobby');
         }
         if (location.pathname === '/login') setOpenModal(true);
     }, []);
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
         e.preventDefault();
         await login(username, password);
 
-        navigate('/');
+        navigate('/lobby');
         resetForm();
     };
     return (
@@ -64,6 +64,7 @@ const Login: React.FC = () => {
                     dismissible
                     onClose={() => {
                         setOpenModal(false);
+                        resetForm();
                         // navigate('/');
                     }}
                     initialFocus={usernameInputRef}

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { UserData, PlayerStats } from '../../utils/types';
-import {api} from "../../store/useAuthStore"
+import useAxios from '../../utils/useAxios';
 
 interface OptionsDataResult {
     userName: string|null;
@@ -16,7 +16,7 @@ interface OptionsDataResult {
 }
 
 export function useOptionsDataTransformer(): OptionsDataResult {
-   
+    const api = useAxios(); 
 
     // Fetch user properties
     const fetchUserProperties = async (): Promise<UserData> => {

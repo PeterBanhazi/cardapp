@@ -31,8 +31,8 @@ const App: React.FC = () => {
                     <MainDesignWrapper>
                         <Notifications />
 
-                        <Navbar />
                         <MainWrapper>
+                            <Navbar />
                             <Routes>
                                 <Route path="/" element={<Landing />} />
                                 <Route

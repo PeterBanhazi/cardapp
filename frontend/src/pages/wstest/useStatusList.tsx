@@ -6,8 +6,6 @@ const StatusList: React.FC = () => {
     const [messageHistory, setMessageHistory] = useState<string[]>([]);
     const accessToken = useAuthStore().accessToken;
 
-    console.log(accessToken);
-
     // Generate the WebSocket URL with the token as a query parameter
     const socketUrl = accessToken
         ? `ws://localhost:9000/ws/status/?token=${accessToken}`

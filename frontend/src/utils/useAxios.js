@@ -1,44 +1,8 @@
-import axios from 'axios';
-import { getRefreshToken, isAccessTokenExpired, setAuthUser } from './auth';
-import { API_BASE_URL } from './constants';
-import Cookies from 'js-cookie';
-import { useNotifications } from '../components/ui/notifications';
+import { api } from "../store/useAuthStore"
 
 const useAxios = () => {
-    const accessToken = Cookies.get('access_token');
-    const refreshToken = Cookies.get('refresh_token');
-
-    const axiosInstance = axios.create({
-        baseURL: API_BASE_URL,
-        headers: { Authorization: `Bearer ${accessToken}` },
-    });
-
-    axiosInstance.interceptors.request.use(async (req) => {
-        if (!isAccessTokenExpired(accessToken)) return req;
-
-        const response = await getRefreshToken(refreshToken);
-
-        setAuthUser(response.access, response.refresh);
- 
-        req.headers.Authorization = `Bearer ${response.access}`;
-        return req;
-    });
-    axiosInstance.interceptors.response.use(
-        (response) => {
-            return response;
-        },
-        (error) => {
-            const message = error.response?.data?.message || error.message;
-            useNotifications.getState().addNotification({
-              type: 'error',
-              title: 'Error',
-              message,
-            });
-     
-      
-            return Promise.reject(error);
-        });
-    return axiosInstance
+    const apiInstance = api;
+    return apiInstance
 };
 
 export default useAxios;

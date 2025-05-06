@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
+import { API_BASE_URL, REFRESH_TOKEN_KEY, COOKIE_OPTIONS } from '../utils/constants';
 
 // Define types for user data
 interface UserData {
@@ -22,24 +23,19 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean; // track initialization status
   
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  initAuth: () => Promise<void>; // Initialization function to set user on page loads
+  login: (username: string, password: string) => Promise<void>;
   register: (username: string, password: string, password2: string, email: string)  => Promise<void>;
   logout: () => void;
+  checkTokenExpiration: (token: string) => boolean; // Utility function to check token expiration
   refreshToken: () => Promise<boolean>;
 }
 
-const REFRESH_TOKEN_KEY = 'refresh_token';
-const COOKIE_OPTIONS = {
-  expires: 7, // 7 days
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
-  path: '/'
-};
-
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api/',
+  baseURL: API_BASE_URL,
     timeout: 5000, // timeout after 5 seconds
 });
 
@@ -74,8 +70,73 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       isAuthenticated: false,
       isLoading: false,
+      isInitialized: false, // Track if the auth store has been initialized
       error: null,
       
+       // Check if token is expired
+       checkTokenExpiration: (token: string) => {
+        try {
+          const decoded = jwtDecode<DecodedToken>(token);
+          const currentTime = Date.now() / 1000;
+          
+          // Return true if token is expired
+          return decoded.exp < currentTime;
+        } catch (error) {
+          // If token can't be decoded, consider it expired
+          return true;
+        }
+      },
+      
+      // Initialize authentication state on app load
+      initAuth: async () => {
+        set({ isLoading: true, isInitialized: false });
+        
+        try {
+          // Check localStorage for user data
+          const authData = localStorage.getItem('auth-storage');
+          const refreshToken = Cookies.get(REFRESH_TOKEN_KEY);
+          
+          if (!authData || !refreshToken) {
+            // No stored auth data or refresh token
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+          
+          // Parse stored auth data
+          const { state } = JSON.parse(authData);
+          
+          if (!state || !state.user) {
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+          
+          // Try to get a new access token using the refresh token
+          const refreshed = await get().refreshToken();
+          
+          if (refreshed) {
+            // Auth restored successfully
+            set({ 
+              user: state.user,
+              isAuthenticated: true,
+              isLoading: false,
+              isInitialized: true
+            });
+          } else {
+            // Refresh failed, clear the auth state
+            get().logout();
+            set({ isInitialized: true });
+          }
+        } catch (error) {
+          console.error('Auth initialization error:', error);
+          get().logout();
+          set({ 
+            isLoading: false, 
+            isInitialized: true,
+            error: error instanceof Error ? error.message : 'Authentication initialization failed'
+          });
+        }
+      },
+
       login: async (username, password) => {
         set({ isLoading: true, error: null });
         
@@ -94,7 +155,7 @@ export const useAuthStore = create<AuthState>()(
           };
     
           set({ accessToken: accessToken, user });
-          console.log("hey"+user)
+        
           
           // Store refresh token in cookie
           Cookies.set(REFRESH_TOKEN_KEY, refreshToken, COOKIE_OPTIONS);
@@ -119,7 +180,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (username, password, password2, email) => {
-        // Validate passwords match
+        // Validate passwords match (also validated at forms....)
         if (password !==  password2) {
           set({ error: 'Passwords do not match' });
           return;
@@ -137,24 +198,11 @@ export const useAuthStore = create<AuthState>()(
         });
           
           // If the API returns tokens directly after registration (auto-login)
-          ///#!!!!!
-          const { user } = response.data;
-          const accessToken = response.data.access;
           const refreshToken = response.data.refresh;
           // Store refresh token in cookie
           Cookies.set(REFRESH_TOKEN_KEY, refreshToken, COOKIE_OPTIONS);
-          
-          // Store user and access token in memory
-          set({
-            user,
-            accessToken,
-            isAuthenticated: true,
-            isLoading: false
-          });
-          
-          // Set the default Authorization header
-          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          
+          // Log in user to app 
+          await get().login(username, password);
         } catch (error) {
           set({ 
             isLoading: false, 
@@ -163,20 +211,38 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
-        // Remove the refresh token cookie
-        Cookies.remove(REFRESH_TOKEN_KEY);
-        
-        // Clear the auth state
-        set({
-          user: null,
-          accessToken: null,
-          isAuthenticated: false,
-          error: null
-        });
-        
-        // Remove Authorization header
-        delete api.defaults.headers.common['Authorization'];
+      logout: async () => {
+        try {
+          // Optional: Call logout API endpoint if you have one
+          const accessToken = get().accessToken;
+          if (accessToken) {
+            try {
+              await api.post('logout/', {}, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+              });
+            } catch (error) {
+              // Continue with logout even if server-side logout fails
+              console.error('Server logout failed:', error);
+            }
+          }
+        } finally {
+          // Remove the refresh token cookie
+          Cookies.remove(REFRESH_TOKEN_KEY);
+          
+          // Clear localStorage items if needed
+          localStorage.removeItem('auth-storage');
+          
+          // Clear the auth state
+          set({
+            user: null,
+            accessToken: null,
+            isAuthenticated: false,
+            error: null
+          });
+          
+          // Remove Authorization header
+          delete api.defaults.headers.common['Authorization'];
+        }
       },
       
       refreshToken: async () => {
@@ -190,12 +256,12 @@ export const useAuthStore = create<AuthState>()(
         
         try {
           const response = await axios.post(
-            `${api.defaults.baseURL}/token/refresh`,
-            { refreshToken }
+            `${api.defaults.baseURL}token/refresh/`,
+            {  refresh: refreshToken }
           );
           
-          const { accessToken, newRefreshToken } = response.data;
-          
+          const newRefreshToken  = response.data.refresh;
+          const accessToken = response.data.access;
           // Update refresh token in cookie if we got a new one
           if (newRefreshToken) {
             Cookies.set(REFRESH_TOKEN_KEY, newRefreshToken, COOKIE_OPTIONS);
@@ -217,7 +283,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
       // Only persist certain parts of the state (not the access token)
       partialize: (state) => ({
         user: state.user,

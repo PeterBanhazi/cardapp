@@ -13,9 +13,7 @@ const TopList: React.FC = () => {
     const [itemsPerPage] = useState<number>(10);
     const [loading, setLoading] = useState<boolean>(true);
 
-    const loggedInUsername = useAuthStore(
-        (state) => state.allUserData?.username
-    );
+    const loggedInUsername = useAuthStore().user?.username;
 
     useEffect(() => {
         const fetchUsers = async () => {

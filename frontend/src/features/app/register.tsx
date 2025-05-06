@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { register } from '../../utils/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import {
@@ -22,13 +21,14 @@ const Register: React.FC = () => {
     const isLoggedIn = useAuthStore.getState().isAuthenticated;
     const navigate = useNavigate();
     const location = useLocation();
+    const { register, error, isLoading } = useAuthStore();
 
     const [openModal, setOpenModal] = useState(false);
     const usernameInputRef = useRef(null);
 
     useEffect(() => {
         if (isLoggedIn) {
-            navigate('/');
+            navigate('/lobby');
         }
         if (location.pathname === '/register') setOpenModal(true);
     }, []);
@@ -42,11 +42,11 @@ const Register: React.FC = () => {
 
     const handleSubmit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        const { error } = await register(username, password, password2, email);
+        await register(username, password, password2, email);
         if (error) {
             alert(JSON.stringify(error));
         } else {
-            navigate('/');
+            navigate('/lobby');
             resetForm();
         }
     };
