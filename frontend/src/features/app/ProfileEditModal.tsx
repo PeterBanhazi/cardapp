@@ -10,6 +10,7 @@ import {
     ModalHeader,
     ModalBody,
     ThemeProvider,
+    Spinner,
 } from 'flowbite-react';
 import { ProfileData, PasswordChangeData } from '../../utils/types';
 import {
@@ -389,9 +390,20 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                                 disabled={updateProfile.isPending}
                                 color="tennisprimary"
                             >
-                                {updateProfile.isPending
-                                    ? 'Updating...'
-                                    : 'Update Profile'}
+                                {updateProfile.isPending && (
+                                    <Spinner
+                                        aria-label="Spinner for update button"
+                                        size="sm"
+                                        className="fill-orange-500"
+                                    />
+                                )}
+                                <span
+                                    className={`${updateProfile.isPending ? 'pl-2' : ''}`}
+                                >
+                                    {updateProfile.isPending
+                                        ? 'Updating...'
+                                        : 'Update Profile'}
+                                </span>
                             </Button>
                         </form>
 
@@ -516,9 +528,20 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                                 disabled={passwordChangeMutation.isPending}
                                 color="tennisprimary"
                             >
-                                {passwordChangeMutation.isPending
-                                    ? 'Changing...'
-                                    : 'Change Password'}
+                                {passwordChangeMutation.isPending && (
+                                    <Spinner
+                                        aria-label="Spinner for update button"
+                                        size="sm"
+                                        className="fill-orange-500"
+                                    />
+                                )}
+                                <span
+                                    className={`${passwordChangeMutation.isPending ? 'pl-2' : ''}`}
+                                >
+                                    {passwordChangeMutation.isPending
+                                        ? 'Changing...'
+                                        : 'Change Password'}
+                                </span>
                             </Button>
                         </form>
                     </ModalBody>

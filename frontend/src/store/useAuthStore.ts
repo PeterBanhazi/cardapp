@@ -5,6 +5,8 @@ import axios from 'axios';
 import { jwtDecode } from "jwt-decode";
 import { API_BASE_URL, REFRESH_TOKEN_KEY, COOKIE_OPTIONS } from '../utils/constants';
 
+import { useNavigate } from 'react-router-dom';
+
 // Define types for user data
 interface UserData {
   user_id: string |null;
@@ -32,6 +34,8 @@ interface AuthState {
   logout: () => void;
   checkTokenExpiration: (token: string) => boolean; // Utility function to check token expiration
   refreshToken: () => Promise<boolean>;
+  clearError:  () => void
+
 }
 
 const api = axios.create({
@@ -73,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
       isInitialized: false, // Track if the auth store has been initialized
       error: null,
       
+      clearError: () => set({ error: null }),
        // Check if token is expired
        checkTokenExpiration: (token: string) => {
         try {
@@ -170,12 +175,17 @@ export const useAuthStore = create<AuthState>()(
           
           // Set the default Authorization header
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          
+          const navigate = useNavigate();             
+          navigate('/lobby');
         } catch (error) {
+          
           set({ 
             isLoading: false, 
             error: error instanceof Error ? error.message : 'Login failed' 
           });
+          
+
+        
         }
       },
 
@@ -198,12 +208,15 @@ export const useAuthStore = create<AuthState>()(
         });
           
           // If the API returns tokens directly after registration (auto-login)
-          const refreshToken = response.data.refresh;
-          // Store refresh token in cookie
-          Cookies.set(REFRESH_TOKEN_KEY, refreshToken, COOKIE_OPTIONS);
+          // const refreshToken = response.data.refresh;
+          // // Store refresh token in cookie
+          // Cookies.set(REFRESH_TOKEN_KEY, refreshToken, COOKIE_OPTIONS);
           // Log in user to app 
           await get().login(username, password);
+          
         } catch (error) {
+    
+    
           set({ 
             isLoading: false, 
             error: error instanceof Error ? error.message : 'Registration failed' 
@@ -212,6 +225,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
+        set({ isLoading: true, error: null });
         try {
           // Optional: Call logout API endpoint if you have one
           const accessToken = get().accessToken;
@@ -220,12 +234,14 @@ export const useAuthStore = create<AuthState>()(
               await api.post('logout/', {}, {
                 headers: { Authorization: `Bearer ${accessToken}` }
               });
+              
             } catch (error) {
               // Continue with logout even if server-side logout fails
               console.error('Server logout failed:', error);
             }
           }
         } finally {
+     
           // Remove the refresh token cookie
           Cookies.remove(REFRESH_TOKEN_KEY);
           
@@ -237,9 +253,10 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             accessToken: null,
             isAuthenticated: false,
-            error: null
+            error: null,
+            isLoading: false, 
           });
-          
+    
           // Remove Authorization header
           delete api.defaults.headers.common['Authorization'];
         }

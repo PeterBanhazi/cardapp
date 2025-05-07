@@ -7,6 +7,7 @@ import {
     Modal,
     ModalBody,
     ModalHeader,
+    Spinner,
     TextInput,
     ThemeProvider,
 } from 'flowbite-react';
@@ -15,26 +16,31 @@ import { useAuthStore } from '../../store/useAuthStore';
 
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 import { customTheme } from '../../utils/formThemes';
+import { useNotifications } from '../../components/ui/notifications';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    // ### loading and error handling for proper UX
-    const { login, isLoading, error } = useAuthStore();
+    // ### loading(ok) and error handling for proper UX
+    const { login, isLoading, error, clearError, isAuthenticated } =
+        useAuthStore();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const isLoggedIn = useAuthStore.getState().isAuthenticated;
 
     const [openModal, setOpenModal] = useState(false);
 
-    const usernameInputRef = useRef(null);
+    const usernameInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/lobby');
         }
         if (location.pathname === '/login') setOpenModal(true);
-    }, []);
+        if (error && usernameInputRef.current) {
+            usernameInputRef.current.focus();
+        }
+    }, [error]);
 
     const resetForm = () => {
         setUsername('');
@@ -43,11 +49,19 @@ const Login: React.FC = () => {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        await login(username, password);
 
-        navigate('/lobby');
-        resetForm();
+        await login(username, password);
+        if (useAuthStore.getState().isAuthenticated) {
+            navigate('/lobby');
+            resetForm();
+            useNotifications.getState().addNotification({
+                type: 'success',
+                title: 'Info',
+                message: 'You have been successfully logged in!',
+            });
+        }
     };
+
     return (
         <>
             <ModalOpenTriggerButton
@@ -81,6 +95,12 @@ const Login: React.FC = () => {
                                     <div className="mb-1 block">
                                         <Label htmlFor="username">
                                             Your username
+                                            {error && (
+                                                <span className="pl-12 text-red-700">
+                                                    Oops! Something doesn't
+                                                    match...
+                                                </span>
+                                            )}
                                         </Label>
                                     </div>
 
@@ -94,9 +114,10 @@ const Login: React.FC = () => {
                                         required
                                         value={username}
                                         ref={usernameInputRef}
-                                        onChange={(e) =>
-                                            setUsername(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                            setUsername(e.target.value);
+                                            clearError();
+                                        }}
                                     />
                                 </div>
                                 <div>
@@ -112,9 +133,10 @@ const Login: React.FC = () => {
                                         color="tennisprimary"
                                         autoComplete="current-password"
                                         value={password}
-                                        onChange={(e) =>
-                                            setPassword(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                            clearError();
+                                        }}
                                     />
                                 </div>
                                 <div className="flex justify-between py-1.5">
@@ -134,10 +156,24 @@ const Login: React.FC = () => {
                                 <div className="w-full">
                                     <Button
                                         type="submit"
+                                        disabled={isLoading}
                                         color="tennisprimary"
                                         className="mt-2"
                                     >
-                                        Log in to your account
+                                        {isLoading && (
+                                            <Spinner
+                                                aria-label="Spinner for login button"
+                                                size="md"
+                                                className="fill-orange-500"
+                                            />
+                                        )}
+                                        <span
+                                            className={`${isLoading ? 'pl-3' : ''}`}
+                                        >
+                                            {isLoading
+                                                ? 'Logging in ...'
+                                                : 'Log in to your account'}
+                                        </span>
                                     </Button>
                                 </div>
                             </form>
