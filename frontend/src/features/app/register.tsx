@@ -13,7 +13,6 @@ import {
 } from 'flowbite-react';
 import { customTheme } from '../../utils/formThemes';
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
-import { useNotifications } from '../../components/ui/notifications';
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');

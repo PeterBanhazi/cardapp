@@ -14,7 +14,7 @@ export const customTheme = createTheme({
     button: {
         color: {
             tennisprimary:
-                'bg-orange-400 hover:bg-orange-300 text-slate-50 hover:cursor-pointer focus:ring-2 focus:ring-orange-500',
+                'bg-orange-400 hover:bg-orange-300 text-slate-100 hover:cursor-pointer focus:ring-2 focus:ring-orange-200',
             secondary: 'bg-blue-500 hover:bg-blue-600',
         },
     },

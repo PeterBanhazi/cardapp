@@ -1,6 +1,6 @@
 import OptionsRightContainer from './OptionsRightContainer';
 
-import OptionsDnDCardWrapper from './playercards/OptionsDnDCardWrapper';
+import OptionsDnDCardWrapper from './OptionsDnDCardWrapper';
 import { useOptionsDataTransformer } from './useOptionsDataTransformer';
 
 // import { console } from 'inspector';
@@ -30,7 +30,7 @@ function Options() {
         return <span>Error: Something went wrong!</span>;
 
     return (
-        <div className="flex justify-evenly w-full h-[592px] ">
+        <div className="flex justify-evenly w-full h-[600px] ">
             <OptionsDnDCardWrapper
                 userName={userName}
                 playerCards={filteredPlayers}

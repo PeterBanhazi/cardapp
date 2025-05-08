@@ -6,7 +6,7 @@ import ChatLobby from '../../pages/ChatLobby';
 import Rules from '../../pages/Rules';
 import { useDashboardStore } from '../../store/store';
 import Options from '../options/Options';
-import TopList from '../ranks/TopList';
+import TopList from '../ranks/Ranks';
 import { DashboardContainer } from './DashboardContainer';
 
 // import { v4 as uuidv4 } from 'uuid'; // You'll need to install this package

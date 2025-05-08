@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
 import { cn } from '../../lib/utils';
+import { jsx } from 'react/jsx-runtime';
 
 const ScrollContainer: React.FC<{
-    headertext: string;
+    headertext: JSX.Element;
     className?: string;
     children: React.ReactNode;
 }> = ({ children, headertext, className = '' }) => {
@@ -39,7 +40,7 @@ const ScrollContainer: React.FC<{
             </div>
 
             <div
-                className="w-full border border-slate-200/40 scrollbar-container overflow-y-auto flex-1 flex-grow min-h-0
+                className="w-full scrollbar-container overflow-y-auto flex-1 flex-grow min-h-0
                         [&::-webkit-scrollbar]:w-2
                         [&::-webkit-scrollbar]:h-2
                     

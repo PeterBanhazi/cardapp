@@ -23,14 +23,14 @@ import {
 
 import { FaArrowsRotate } from 'react-icons/fa6';
 
-import { PlayerStats } from '../../../utils/types';
+import { PlayerStats } from '../../utils/types';
 
-import DraggablePlayerCard from './DraggablePlayerCard';
+import DraggablePlayerCard from './playercards/DraggablePlayerCard';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../../../utils/useAxios';
-import OptionsLeftContainer from '../OptionsLeftContainer';
-import TennisPlayerCards from './TennisPlayerCards';
+import useAxios from '../../utils/useAxios';
+import OptionsLeftContainer from './OptionsLeftContainer';
+import TennisPlayerCards from './playercards/TennisPlayerCards';
 
 interface PlayerCardsContainerProps {
     userName: string;
@@ -232,7 +232,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                 }}
             >
                 <div className="flex">
-                    <div className="w-[150px] h-[592px] pt-1">
+                    <div className="w-[150px] h-[600px] pt-1">
                         <OptionsLeftContainer
                             currentPlayer={currentPlayer}
                             currentCardId={currentCardId}
@@ -254,7 +254,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                     <div className="w-3.5 2xl:w-8"></div>
                     <div className="w-full h-full">
                         <div
-                            className="w-[418px] h-[604px] sm:w-[200px] md:w-[368px] lg:w-[520px] xl:w-[836px] 2xl:w-[996px]
+                            className="w-[418px] h-[604px] sm:w-[200px] md:w-[364px] lg:w-[540px] xl:w-[848px] 2xl:w-[1010px]
                         scrollbar-container max-h-screen overflow-y-auto
                         [&::-webkit-scrollbar]:w-7
                         [&::-webkit-scrollbar]:h-2
@@ -274,7 +274,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                                 strategy={rectSortingStrategy}
                             >
                                 <div
-                                    className="pt-1 self-center gap-2.5 pl-7 flex"
+                                    className={`pt-1 pb-2 self-center gap-2.5 pl-7 lg:pl-11 xl:pl-9 2xl:pl-10 flex ${items.length < 11 ? '2xl:pl-11 xl:pl-8' : ''}`}
                                     style={{
                                         display: 'grid',
                                         gridTemplateColumns:

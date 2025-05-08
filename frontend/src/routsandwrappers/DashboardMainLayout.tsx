@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import GameWrapper from '../pages/GameWrapper';
 import Rules from '../pages/Rules';
-import TopList from '../features/ranks/TopList';
+import TopList from '../features/ranks/Ranks';
 import Landing from '../pages/Landing';
 import ChatLobby from '../pages/ChatLobby';
 

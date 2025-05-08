@@ -18,7 +18,7 @@ import { Notifications } from './components/ui/notifications';
 import Landing from './pages/Landing';
 import Login from './features/app/login';
 import Logout from './features/app/logout';
-import TopList from './features/ranks/TopList';
+import TopList from './features/ranks/Ranks';
 import PrivateRoute from './routsandwrappers/PrivateRoute';
 
 const queryClient = new QueryClient();
