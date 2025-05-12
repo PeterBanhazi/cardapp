@@ -11,6 +11,7 @@ const StatusList: React.FC = () => {
         ? `ws://localhost:9000/ws/status/?token=${accessToken}`
         : null;
 
+    console.log(accessToken);
     const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
         // Only connect when we have a valid token
         shouldReconnect: (closeEvent) => {

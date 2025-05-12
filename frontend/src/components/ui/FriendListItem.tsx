@@ -62,7 +62,7 @@ const FriendListItem: React.FC<{
             {isDropdownOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute left-2 mt-2 w-35 bg-white rounded-md shadow-lg z-10 border"
+                    className="absolute left-5 mt-2 w-26 bg-white rounded-md z-10 border"
                 >
                     <div className="py-1">
                         {friendship.status === 'PENDING' && (
@@ -149,13 +149,10 @@ const FriendListItem: React.FC<{
             <div
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 ref={buttonRef}
-                className={`relative
-                      
-                
+                className={`relative                  
                 text-slate-900               
                 font-semibold 
-                text-sm
-                border
+                text-sm                
                 rounded-md
                 transition-all 
                 duration-300
@@ -169,16 +166,18 @@ const FriendListItem: React.FC<{
                 }
                
                 border-slate-400/50
-                active:translate-y-0.5
-                overflow-hidden
+                active:translate-y-[2px]
+                
                 `}
             >
                 <span
                     className="
                 absolute 
-                inset-0 
-                border-1
+                inset-0
                
+                ring-1
+                
+                ring-slate-800
                 bg-gradient-to-b 
                 from-white/30 
                 to-transparent
@@ -186,8 +185,7 @@ const FriendListItem: React.FC<{
                 cursor-pointer
                 "
                 />
-                <div className="px-1 mr-1 overflow-hidden">
-                    {' '}
+                <div className="pl-1 mr-0.5 overflow-hidden">
                     {friendship.friend_username}
                 </div>
             </div>

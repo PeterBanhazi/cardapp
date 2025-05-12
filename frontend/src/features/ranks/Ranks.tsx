@@ -37,7 +37,6 @@ const Ranks: React.FC = () => {
                 itemsPerPage
         );
         if (getUserPageIndex > -1) {
-            console.log(getUserPageIndex);
             setCurrentPage(getUserPageIndex);
         }
     }, [users]);
@@ -84,8 +83,10 @@ const Ranks: React.FC = () => {
                                                     1 +
                                                     currentPage * itemsPerPage}
                                             </div>
-                                            <div className="bg-neutral-300/70 min-h-full min-w-10 rounded-b-full pb-1 ring-1 font-bold text-slate-600 ring-blue-200 place-content-center px-3">
-                                                {user.rankpoints}
+                                            <div className="bg-neutral-300/60 h-5 min-w-10  rounded-b-md ring-1 font-bold text-slate-600 ring-blue-200 px-3">
+                                                <div className="relative -top-0.5">
+                                                    {user.rankpoints}
+                                                </div>
                                             </div>
                                             <div className="min-w-8"></div>
                                         </div>
