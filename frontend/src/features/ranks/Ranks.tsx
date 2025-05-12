@@ -105,6 +105,7 @@ const Ranks: React.FC = () => {
                             onClick={handlePrevPage}
                             disabled={currentPage === 0}
                             color="tennisprimary"
+                            className="ring-1 ring-slate-300"
                         >
                             Previous
                         </Button>
@@ -115,26 +116,10 @@ const Ranks: React.FC = () => {
                             onClick={handleNextPage}
                             disabled={currentPage === totalPages - 1}
                             color="tennisprimary"
+                            className="ring-1 ring-slate-300"
                         >
                             Next
                         </Button>
-                        {/* <button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 0}
-                            className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Previous
-                        </button>
-                        <span>
-                            Page {currentPage + 1} of {totalPages}
-                        </span>
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages - 1}
-                            className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Next
-                        </button> */}
                     </div>
                 </>
             )}

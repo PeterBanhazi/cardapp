@@ -9,6 +9,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { RiCrosshair2Line } from 'react-icons/ri';
 import TennisBallToggle from '../../components/ui/TennisBallToggle';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
+import ScrollContainer from '../../components/ui/ScrollContainer';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
@@ -119,29 +120,34 @@ const OptionsLeftContainer: React.FC<{
                                 )}
                             </div>
                         </div>
-                        <div className="mt-5 justify-self-center">
-                            <button
-                                className="hover:ring-1 ring-1 hover:cursor-pointer drop-shadow-[0_0_3px_rgba(1,1,1,0.5)] shadow-[inset_0px_0px_8px_-4px_rgba(0,_0,_0,_0.9)] text-md font-semibold ring-current rounded-xl px-1"
-                                style={{
-                                    backgroundColor: `#84cc16`,
-                                }}
-                                onClick={() => setIsCreateOpen(true)}
-                            >
-                                <div
-                                    className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
+                        <ScrollContainer
+                            className="mt-5 h-[143px]"
+                            headertext={<div>Card Actions</div>}
+                        >
+                            <div className="mt-2 justify-self-center">
+                                <button
+                                    className="hover:ring-1 ring-1 hover:cursor-pointer drop-shadow-[0_0_3px_rgba(1,1,1,0.5)] shadow-[inset_0px_0px_8px_-4px_rgba(0,_0,_0,_0.9)] text-md font-semibold ring-current rounded-xl px-0.5"
                                     style={{
-                                        color: `#292524`,
+                                        backgroundColor: `#84cc16`,
                                     }}
+                                    onClick={() => setIsCreateOpen(true)}
                                 >
-                                    Create new player
-                                </div>
-                            </button>
-                            {isCreateOpen && (
-                                <TennisPlayerCreator
-                                    onClose={() => setIsCreateOpen(false)}
-                                />
-                            )}
-                        </div>
+                                    <div
+                                        className="-translate-y-[1px] hover:drop-shadow-[0_0_6px_rgba(255,255,255,1)]"
+                                        style={{
+                                            color: `#292524`,
+                                        }}
+                                    >
+                                        Create new player
+                                    </div>
+                                </button>
+                                {isCreateOpen && (
+                                    <TennisPlayerCreator
+                                        onClose={() => setIsCreateOpen(false)}
+                                    />
+                                )}
+                            </div>
+                        </ScrollContainer>
                     </div>
                 </div>
             </div>
