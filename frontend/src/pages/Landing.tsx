@@ -18,7 +18,7 @@ const Landing = () => {
                     className="relative bg-cover bg-center"
                     style={{
                         backgroundImage:
-                            'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url("src/assets/bg/shadow-tennis-racket-with-ball_min.jpg")',
+                            'linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url("src/assets/bg/shadow-tennis-racket-with-ball_min.webp")',
                     }}
                 >
                     <div className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8 flex items-center h-full">
@@ -77,7 +77,7 @@ const Landing = () => {
 
                                 <div className="relative h-64 rounded-lg overflow-hidden shadow-lg mb-8">
                                     <img
-                                        src="src/assets/bg/alin-gavriliuc-_Ye-KqV3BNA-unsplash_min.jpg"
+                                        src="src/assets/bg/alin-gavriliuc-_Ye-KqV3BNA-unsplash_min.webp"
                                         alt="Tennis match in action"
                                         className="w-full h-full object-cover"
                                     />
@@ -106,7 +106,7 @@ const Landing = () => {
                             <div>
                                 <div className="relative h-64 rounded-lg overflow-hidden shadow-lg mb-8">
                                     <img
-                                        src="src/assets/bg/shep-mcallister-J1j3cImjmgE-unsplash_min.jpg"
+                                        src="src/assets/bg/shep-mcallister-J1j3cImjmgE-unsplash_min.webp"
                                         alt="Tennis app features"
                                         className="w-full h-full object-cover"
                                     />

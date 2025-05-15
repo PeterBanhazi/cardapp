@@ -5,7 +5,7 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
         <div
             className="w-screen h-screen bg-no-repeat bg-cover min-h-screen"
             style={{
-                backgroundImage: `url(./src/assets/bg/todor-dimov-XCTigZX4v9U-unsplash.jpg`,
+                backgroundImage: `url(./src/assets/bg/todor-dimov-XCTigZX4v9U-unsplash.webp`,
             }}
         >
             <div
