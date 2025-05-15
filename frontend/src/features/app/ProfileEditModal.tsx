@@ -464,7 +464,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                                 <TextInput
                                     id="newPassword"
                                     type="password"
-                                    autoComplete="new-password"
+                                    autoComplete="off"
                                     value={passwordData.new_password}
                                     onChange={(e) =>
                                         setPasswordData((prev) => ({
@@ -495,7 +495,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                                 <TextInput
                                     id="confirmPassword"
                                     type="password"
-                                    autoComplete="new-password"
+                                    autoComplete="off"
                                     value={passwordData.confirm_new_password}
                                     onChange={(e) =>
                                         setPasswordData((prev) => ({

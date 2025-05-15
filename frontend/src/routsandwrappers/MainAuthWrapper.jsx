@@ -3,17 +3,12 @@ import { useAuthStore } from '../store/useAuthStore';
 
 const MainWrapper = ({ children }) => {
     const { initAuth, isInitialized, isLoading } = useAuthStore();
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        const handler = async () => {
-            setLoading(true);
-            initAuth();
-            setLoading(false);
-        };
-        handler();
-    }, []);
 
-    return <>{loading ? null : children}</>;
+    useEffect(() => {
+        initAuth();
+    }, [initAuth]);
+
+    return <>{!isInitialized ? null : children}</>;
 };
 
 export default MainWrapper;

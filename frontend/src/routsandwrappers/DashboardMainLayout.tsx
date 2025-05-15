@@ -7,7 +7,7 @@ import ChatLobby from '../pages/ChatLobby';
 
 import Options from '../features/options/Options';
 import DashboardManager from '../features/dashboard/DashboardManager';
-// import PrivateRoute from './PrivateRoute';
+import PrivateRoute from './PrivateRoute';
 // import MainWrapper from './MainAuthWrapper';
 
 const DashboardMainLayout = () => {
@@ -19,7 +19,14 @@ const DashboardMainLayout = () => {
                     <Route path="/lobby" element={<ChatLobby />} />
                     <Route path="/matches" element={<GameWrapper />} />
                     <Route path="/ranks" element={<TopList />} />
-                    <Route path="/options" element={<Options />} />
+                    <Route
+                        path="/options"
+                        element={
+                            <PrivateRoute>
+                                <Options />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route path="/rules" element={<Rules />} />
                 </Routes>
             </DashboardManager>

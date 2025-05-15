@@ -40,7 +40,7 @@ const Login: React.FC = () => {
         if (error && usernameInputRef.current) {
             usernameInputRef.current.focus();
         }
-    }, [error]);
+    }, [error, isLoggedIn, location]);
 
     const resetForm = () => {
         setUsername('');
@@ -83,10 +83,8 @@ const Login: React.FC = () => {
                     }}
                     initialFocus={usernameInputRef}
                 >
-                    <ModalHeader>
-                        <h3 className="text-xl font-medium text-gray-900 pl-4">
-                            Sign in to your account
-                        </h3>
+                    <ModalHeader className="text-xl font-medium text-gray-900 pl-4">
+                        Sign in to your account
                     </ModalHeader>
                     <ModalBody>
                         <div className="space-y-6">

@@ -34,7 +34,7 @@ const Register: React.FC = () => {
         if (error && usernameInputRef.current) {
             usernameInputRef.current.focus();
         }
-    }, [error, navigate]);
+    }, [error, navigate, location]);
 
     const resetForm = () => {
         setUsername('');
@@ -60,6 +60,7 @@ const Register: React.FC = () => {
                 <ThemeProvider theme={customTheme}>
                     <Modal
                         id="register-modal"
+                        title="Login field"
                         show={openModal}
                         size="md"
                         popup
@@ -72,12 +73,9 @@ const Register: React.FC = () => {
                         }}
                         initialFocus={usernameInputRef}
                     >
-                        <ModalHeader>
-                            <h3 className="text-xl font-medium text-gray-900 pl-4">
-                                Sign up to our platform
-                            </h3>
+                        <ModalHeader className="text-xl font-medium text-gray-900 pl-4">
+                            Sign up to our platform
                         </ModalHeader>
-
                         <ModalBody>
                             <div className="space-y-6">
                                 <form onSubmit={handleSubmit}>

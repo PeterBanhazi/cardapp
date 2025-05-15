@@ -175,8 +175,8 @@ export const useAuthStore = create<AuthState>()(
           
           // Set the default Authorization header
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-          const navigate = useNavigate();             
-          navigate('/lobby');
+          // const navigate = useNavigate();             
+          // navigate('/lobby');
         } catch (error) {
           
           set({ 
