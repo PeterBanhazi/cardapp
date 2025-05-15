@@ -126,7 +126,7 @@ const OptionsLeftContainer: React.FC<{
                         >
                             <div className="mt-2 justify-self-center">
                                 <button
-                                    className="hover:ring-1 ring-1 hover:cursor-pointer drop-shadow-[0_0_3px_rgba(1,1,1,0.5)] shadow-[inset_0px_0px_8px_-4px_rgba(0,_0,_0,_0.9)] text-md font-semibold ring-current rounded-xl px-0.5"
+                                    className="hover:ring-1 ring-1 hover:cursor-pointer shadow-[inset_0px_0px_8px_-6px_rgba(0,_0,_0,_0.9)] text-md font-semibold ring-current rounded-sm px-0.5"
                                     style={{
                                         backgroundColor: `#84cc16`,
                                     }}

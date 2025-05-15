@@ -73,58 +73,94 @@ const BottomFooter = () => {
                         </div>
 
                         {/* Links Column */}
-                        <div className="px-6 ">
-                            <h3 className="text-xl font-semibold mb-2">
-                                Links
-                            </h3>
-                            <nav>
-                                <ul className="space-y-0">
+                        <div className="flex justify-evenly">
+                            <div className="">
+                                <h3 className="text-xl font-semibold mb-2">
+                                    Links
+                                </h3>
+                                <nav>
+                                    <ul className="space-y-0">
+                                        <li>
+                                            <a
+                                                href="#"
+                                                className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+                                            >
+                                                <Home size={16} /> Home
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+                                            >
+                                                <Users size={16} /> Lobby
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+                                            >
+                                                <Trophy size={16} /> Ranks
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+                                            >
+                                                <Settings size={16} /> Options
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href="#"
+                                                className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
+                                            >
+                                                <Book size={16} /> Rules
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-semibold mb-2">
+                                    Legal
+                                </h3>
+                                <ul className="space-y-1">
                                     <li>
+                                        {' '}
                                         <a
                                             href="#"
-                                            className="flex items-center gap-2 text-gray-900 hover:text-black transition-colors"
+                                            className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
                                         >
-                                            <Home size={16} /> Home
+                                            Terms of Service
                                         </a>
                                     </li>
                                     <li>
+                                        {' '}
                                         <a
                                             href="#"
-                                            className="flex items-center gap-2 text-gray-900 hover:text-black transition-colors"
+                                            className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
                                         >
-                                            <Users size={16} /> Lobby
+                                            Privacy Policy
                                         </a>
                                     </li>
                                     <li>
+                                        {' '}
                                         <a
                                             href="#"
-                                            className="flex items-center gap-2 text-gray-900 hover:text-black transition-colors"
+                                            className="flex items-center gap-2 text-gray-900 hover:text-gray-700 transition-colors"
                                         >
-                                            <Trophy size={16} /> Ranks
+                                            Cookie Policy
                                         </a>
                                     </li>
-                                    <li>
-                                        <a
-                                            href="#"
-                                            className="flex items-center gap-2 text-gray-900 hover:text-black transition-colors"
-                                        >
-                                            <Settings size={16} /> Options
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="#"
-                                            className="flex items-center gap-2 text-gray-900 hover:text-black transition-colors"
-                                        >
-                                            <Book size={16} /> Rules
-                                        </a>
-                                    </li>
+                                    <li></li>
                                 </ul>
-                            </nav>
+                            </div>
                         </div>
-
                         {/* Newsletter Column */}
-                        <div>
+                        <div className="max-w-11/12">
                             <h3 className="text-xl font-semibold mb-2">
                                 Newsletter
                             </h3>
@@ -144,7 +180,7 @@ const BottomFooter = () => {
                                 </div>
                             </form>
 
-                            <div className="flex justify-between px-10">
+                            <div className="flex justify-between px-8">
                                 <a
                                     href="#"
                                     className="text-gray-900 hover:text-black transition-colors"
