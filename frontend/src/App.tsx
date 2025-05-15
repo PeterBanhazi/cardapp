@@ -22,6 +22,7 @@ import TopList from './features/ranks/Ranks';
 import PrivateRoute from './routsandwrappers/PrivateRoute';
 import Options from './features/options/Options';
 import ChatLobby from './pages/ChatLobby';
+import DashboardManager from './features/dashboard/DashboardManager';
 
 const queryClient = new QueryClient();
 
@@ -41,7 +42,9 @@ const App: React.FC = () => {
                                     path="/options"
                                     element={
                                         <PrivateRoute>
-                                            <Options />
+                                            <DashboardManager>
+                                                <Options />
+                                            </DashboardManager>
                                         </PrivateRoute>
                                     }
                                 />
@@ -49,7 +52,9 @@ const App: React.FC = () => {
                                     path="/lobby"
                                     element={
                                         <PrivateRoute>
-                                            <ChatLobby />
+                                            <DashboardManager>
+                                                <ChatLobby />
+                                            </DashboardManager>
                                         </PrivateRoute>
                                     }
                                 />
