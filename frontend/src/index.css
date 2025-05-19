@@ -11,7 +11,7 @@
         --radius: 0.5rem;
     }
 }
-
+/* 
 .chat-app {
     display: flex;
     flex-direction: column;
@@ -172,7 +172,7 @@
     background-color: #e4e6eb;
     color: #bcc0c4;
     cursor: not-allowed;
-}
+} */
 
 /* 
 :root {

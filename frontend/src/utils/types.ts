@@ -6,6 +6,11 @@ export interface ProfileData {
   avatar_image?: string;
   birthday: string | null;
 }
+export interface WSMessage {
+  type: string;
+  payload: any;
+}
+
 
 export interface PasswordChangeData {
   old_password: string;

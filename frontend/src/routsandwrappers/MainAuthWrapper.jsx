@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 
-const MainWrapper = ({ children }) => {
+const MainAuthWrapper = ({ children }) => {
     const { initAuth, isInitialized, isLoading } = useAuthStore();
 
     useEffect(() => {
@@ -11,4 +11,4 @@ const MainWrapper = ({ children }) => {
     return <>{!isInitialized ? null : children}</>;
 };
 
-export default MainWrapper;
+export default MainAuthWrapper;
