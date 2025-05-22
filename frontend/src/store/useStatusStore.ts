@@ -13,18 +13,21 @@ interface StatusState {
   friendsStatus: Record<string, FriendStatus>;
   statusSocketUrl: string | null;
   isConnected: boolean;
+  friendStatusList: any;
   
   // Actions
   connect: () => void;
   disconnect: () => void;
   updateFriendStatus: (username: string, isOnline: boolean) => void;
   initializeFriendsStatus: (statuses: FriendStatus[]) => void;
+   
 }
 
 export const useStatusStore = create<StatusState>((set, get) => ({
   friendsStatus: {},
   statusSocketUrl: null,
   isConnected: false,
+  friendStatusList: {},
   
   connect: () => {
     const accessToken = useAuthStore.getState().accessToken;
@@ -51,7 +54,8 @@ export const useStatusStore = create<StatusState>((set, get) => ({
       }
     }));
   },
-  
+ 
+    
   initializeFriendsStatus: (statuses) => {
     const statusMap: Record<string, FriendStatus> = {};
     statuses.forEach(status => {
@@ -68,7 +72,7 @@ export const useStatusStore = create<StatusState>((set, get) => ({
 
 // WebSocket hook that needs to be used in a component
 export const useStatusWebSocket = () => {
-  const { statusSocketUrl, updateFriendStatus, initializeFriendsStatus } = useStatusStore();
+  const { statusSocketUrl } = useStatusStore();
   const { lastJsonMessage } = useWebSocket(statusSocketUrl || null, {
     onOpen: () => {
       useStatusStore.setState({ isConnected: true });
@@ -80,17 +84,18 @@ export const useStatusWebSocket = () => {
     reconnectAttempts: 10,
     reconnectInterval: 3000
   });
-  
+  console.log(statusSocketUrl)
   // Handle incoming WebSocket messages
   if (lastJsonMessage) {
     const data = lastJsonMessage as any;
-    
-    if (data.type === 'status') {
-      updateFriendStatus(
-        data.user,
-        data.status === 'online'
-      );
-    }
+    console.log(data)
+    useStatusStore.setState({ friendStatusList: data});
+    // if (data.type === 'status') {
+    //   updateFriendStatus(
+    //     data.user,
+    //     data.status === 'online'
+    //   );
+    // }
   }
   
   return { connected: useStatusStore((state) => state.isConnected) };

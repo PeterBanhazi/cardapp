@@ -1,11 +1,12 @@
 import React from 'react';
 
-import ChatLayout from '../chatapp/components/chat/ChatLayout';
-import Cookies from 'js-cookie';
-import { USERS } from '../chatapp/db/dummy';
-import StatusList from './wstest/useStatusList';
-import ChatApp from './wstest/ChatApp';
+// import ChatLayout from '../chatapp/components/chat/ChatLayout';
+// import Cookies from 'js-cookie';
+// import { USERS } from '../chatapp/db/dummy';
+// import StatusList from './wstest/useStatusList';
+// import ChatApp from './wstest/ChatApp';
 import WsStatusTest from './wstest/WsStatusTest';
+import ChatWindow from './wstest/ChatWindow';
 
 const ChatLobby = () => {
     // const layout = Cookies.get('react-resizable-panels:layout');
@@ -13,7 +14,7 @@ const ChatLobby = () => {
     return (
         <div className="z-10 border rounded-lg max-w-full w-full h-[60vh] text-sm lg:flex">
             {/* <StatusList /> */}
-            <WsStatusTest />
+            <ChatWindow />
             {/* <ChatLayout defaultLayout={defaultLayout} users={USERS} /> */}
         </div>
     );
