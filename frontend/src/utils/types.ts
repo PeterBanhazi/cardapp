@@ -8,8 +8,12 @@ export interface ProfileData {
 }
 export interface WSMessage {
   type: string;
-  payload: any;
+  user: string;
+  status: string;
+  payload?: any;
 }
+
+
 
 
 export interface PasswordChangeData {

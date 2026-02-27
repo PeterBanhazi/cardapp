@@ -38,7 +38,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
         
         ###
-        await self.send(text_data=f"Hello, {self.username}!")
+        # await self.send(text_data=json.dumps({
+        #     'type': 'message',
+        #     'message': 'Connected',
+        #     'sender': {self.username},            
+        # }))
         # Update user status
         await self.update_user_status(True)
         
@@ -150,6 +154,179 @@ class ChatConsumer(AsyncWebsocketConsumer):
             defaults={'is_online': is_online, 'last_activity': timezone.now()}
         )
 
+## ---------------------system
+class SystemConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope['user']
+        if not self.user.is_authenticated:
+            await self.close()
+            return
+        print(self.user)        
+        self.system_group_name = f"system_{self.user}"
+        
+        # Join group for system messages 
+        await self.channel_layer.group_add(
+            self.system_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+        
+        # Update user status
+        await self.update_user_status(True)
+        
+        print("connect ok!")
+        print(self.system_group_name)
+        
+        # Broadcast online status to frontend via WS0
+        await self.channel_layer.group_send(
+            self.system_group_name,
+            {
+                'type': 'system_message',
+                'event': 'logged in',
+                'sender': self.user.username,
+                'status': 'online'
+            }
+        )
+        
+        # Get friends online status and send actual state of friends who has 'accepted' relation
+        # and broadcast to client via WS to initialise online user array at frontend
+        friends = await self.get_friends()
+        for friend in friends:
+            status = await self.get_user_status(friend)
+            await self.send(text_data=json.dumps({
+                'type': 'system_message',
+                'user': friend,
+                'sender': friend,
+                'event': 'system login event',
+                'status': 'online' if status else 'offline'
+            }))
+    
+        
+        # Broadcast online status to all friend's system cannel who has accepted relation        
+        for friend in friends:                    
+            await self.channel_layer.group_send(
+            f"system_{friend}",{                
+                'type': 'system_message',
+                'user': friend,
+                'sender': self.user.username,
+                'event': 'system log_in event',
+                'status': 'online'
+                }
+            )
+    
+    async def disconnect(self, close_code):
+        if not hasattr(self, 'system_group_name'):
+            return                
+
+        # Broadcast offline status to all users
+        friends = await self.get_friends()
+        for friend in friends:                     
+            await self.channel_layer.group_send(
+            f"system_{friend}",{                
+                'type': 'system_message',
+                'user': friend,
+                'sender': self.user.username,
+                'event': 'system log_out event',
+                'status': 'offline'
+                }
+            )
+        
+        # Update user status
+        await self.update_user_status(False)
+        
+        # Leave status group
+        await self.channel_layer.group_discard(
+            self.system_group_name,
+            self.channel_name
+        )    
+  
+    async def receive(self, text_data):
+        # Handle heartbeat or other status events
+        
+        data = json.loads(text_data)
+        self.user = self.scope['user']
+        
+        
+        self.userto = data.get('user')
+        self.system_group_name = f"system_{self.userto}"
+        print("incoming sysreq")
+        print(self.userto)
+        print(self.system_group_name)
+        
+        
+        if data.get('type') == 'system_message' and data.get('event') == 'chat_request':           
+            await self.channel_layer.group_send(                        
+            self.system_group_name,
+            {
+                'type': 'system_message',
+                'user': data.get('user'),
+                'sender': data.get('sender'),
+                'event': data.get('event'),
+                'status': data.get('status'),
+            }
+            )
+            print("request arrived")
+            
+        # send message to self system message channel on accepted     
+        if data.get('type') == 'system_message' and data.get('status') == 'accepted': 
+            system_self_group_name = f"system_{self.user}"        
+            await self.channel_layer.group_send(                        
+            system_self_group_name,
+            {
+                'type': 'system_message',
+                'user': data.get('sender'),
+                'sender': self.userto,
+                'event': data.get('event'),
+                'status': data.get('status'),
+            }
+            )
+            
+      
+        if data.get('type') == 'heartbeat':
+            await self.update_user_status(True)
+
+    
+    async def system_message(self, event):
+        # Send status update to WebSocket
+        self.user = self.scope['user']
+        await self.send(text_data=json.dumps({
+            'type': 'system_message',
+            'user': self.user.username,
+            'sender': event['sender'],
+            'event': event['event'],
+            'status': event['status']
+        }))
+    
+    @database_sync_to_async
+    def update_user_status(self, is_online):
+        UserStatus.objects.update_or_create(
+            user=self.user,
+            defaults={'is_online': is_online, 'last_activity': timezone.now()}
+        )
+    
+    @database_sync_to_async
+    def get_friends(self):
+        # Get all accepted friends
+        friend_relations = Friendship.objects.filter(
+            username=self.user,
+            status='ACCEPTED'
+        )
+        print([relation.friend.username for relation in friend_relations])
+        return [relation.friend.username for relation in friend_relations]
+    
+    @database_sync_to_async
+    def get_user_status(self, username):
+        try:
+            user = User.objects.get(username=username)
+            status = UserStatus.objects.get(user=user)
+            
+            # Check if the user is considered online based on the timeout
+            if status.is_online and (timezone.now() - status.last_activity).total_seconds() < settings.USER_ONLINE_TIMEOUT:
+                return True
+            return False
+        except (User.DoesNotExist, UserStatus.DoesNotExist):
+            return False
 
 class StatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -177,7 +354,7 @@ class StatusConsumer(AsyncWebsocketConsumer):
             self.status_group_name,
             {
                 'type': 'user_status',
-                'user': self.username,
+                'sender': self.username,
                 'status': 'online'
             }
         )
@@ -189,6 +366,7 @@ class StatusConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({
                 'type': 'status',
                 'user': friend,
+                'sender': friend,
                 'status': 'online' if status else 'offline'
             }))
     
@@ -211,21 +389,53 @@ class StatusConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'user_status',
                 'user': self.username,
+                'sender': self.username,
                 'status': 'offline'
             }
         )
-    
+  
     async def receive(self, text_data):
         # Handle heartbeat or other status events
+        
         data = json.loads(text_data)
+        self.user = self.scope['user']
+        
+        
+        self.userto = data.get('user')
+        self.status_channel_name= f"status_{self.user.username}_{self.userto}"
+        
+        
+        if data.get('type') == 'request':           
+            await self.channel_layer.group_send(                        
+            self.status_group_name,
+            {
+                'type': 'user_status',
+                'user': data.get('user'),
+                'sender': self.user.username,
+                'status': data.get('status'),
+            }
+            )
+            print("request arrived")
+            print(f"group: {self.status_group_name}")
+            print(f"channel: {self.status_channel_name}")
+            send_test= text_data=json.dumps({
+            'type': 'request',
+            'user': data.get('user'),
+            'sender': self.user.username,
+            'status': data.get('status'),
+            })
+            print(send_test)
         if data.get('type') == 'heartbeat':
             await self.update_user_status(True)
+
     
     async def user_status(self, event):
         # Send status update to WebSocket
+        self.user = self.scope['user']
         await self.send(text_data=json.dumps({
             'type': 'status',
-            'user': event['user'],
+            'user': self.user.username,
+            'sender': event['sender'],
             'status': event['status']
         }))
     
@@ -243,6 +453,7 @@ class StatusConsumer(AsyncWebsocketConsumer):
             username=self.user,
             status='ACCEPTED'
         )
+        print([relation.friend.username for relation in friend_relations])
         return [relation.friend.username for relation in friend_relations]
     
     @database_sync_to_async

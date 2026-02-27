@@ -1,36 +1,53 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useWebSocketState } from '../../store/wsHooks';
-import useWebSocketChat from './useWebSocketChat';
+// ChatWindow.tsx
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+
+import useWebSocketChat from './useWebSocketChat'; // We'll create this custom hook
+import { useAuthStore } from '../../store/useAuthStore';
+import { useWebSocketStore } from '../../store/useWebsocketStore';
+import { useWebSocketSender } from '../../store/wsHooks';
 
 interface Friend {
     user: string;
-    status: 'online' | 'offline';
-}
-
-interface ChatMessage {
-    type: 'message';
-    message: string;
-    sender: string;
-    timestamp: string;
+    status: 'online' | 'offline' | 'sent' | 'closed';
 }
 
 const ChatWindow: React.FC = () => {
     // Main WebSocket connection for friends list
-    const { isConnected, messages } = useWebSocketState();
+    const { isConnected, messages } = useWebSocketStore();
+    const { sendJsonMessage: sendRequestMessage } = useWebSocketSender();
+    const { lastMessage } = useWebSocketStore();
+    // Get logged in user to filter out from friends list
+    const user = useAuthStore.getState().user;
+    const loggedInUsername = user?.username;
 
-    // Get friends list from messages
-    const friends = messages
-        .filter(
-            (msg): msg is { type: 'status'; user: string; status: string } =>
-                msg.type === 'status' && 'user' in msg && 'status' in msg
-        )
-        .map((msg) => ({
-            user: msg.user,
-            status: msg.status as 'online' | 'offline',
-        }));
+    // Process friends list with dynamic status updates and filter out logged-in user
+    const friends = useMemo(() => {
+        // Create a map to store the latest status for each user
+        const userStatusMap = new Map<string, 'online' | 'offline'>();
+
+        // Process all status messages to get the latest status for each user
+
+        messages
+            .filter(
+                (
+                    msg
+                ): msg is { type: 'status'; user: string; status: string } =>
+                    (msg.type === 'status' && msg.status === 'online') ||
+                    (msg.status === 'offline' && 'user' in msg)
+            )
+            .forEach((msg) => {
+                userStatusMap.set(msg.user, msg.status as 'online' | 'offline');
+            });
+
+        // Convert map to array and filter out logged-in user
+        return Array.from(userStatusMap.entries())
+            .filter(([username]) => username !== loggedInUsername)
+            .map(([user, status]) => ({ user, status }));
+    }, [messages, loggedInUsername]);
 
     // State for active chat
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
+    const [chatRequest, setChatRequest] = useState<string[]>([]);
     const [inputMessage, setInputMessage] = useState('');
     const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -45,8 +62,45 @@ const ChatWindow: React.FC = () => {
     const handleFriendClick = (friend: Friend) => {
         if (friend.status === 'online') {
             setActiveFriend(friend.user);
+            sendRequestMessage('request', loggedInUsername!, 'sent');
         }
     };
+
+    // Close active chat if the active friend goes offline
+    useEffect(() => {
+        if (activeFriend) {
+            const activeFriendData = friends.find(
+                (f) => f.user === activeFriend
+            );
+            if (activeFriendData?.status === 'offline') {
+                setActiveFriend(null);
+            }
+        }
+    }, [friends, activeFriend]);
+
+    useEffect(() => {
+        if (lastMessage && lastMessage.status === 'sent') {
+            const chatRequestData = friends.find(
+                (f) => f.user === lastMessage.user
+            );
+            if (chatRequestData) {
+                setChatRequest((prev) => [...prev, chatRequestData.user]);
+            }
+        }
+        if (
+            lastMessage?.status === 'closed' ||
+            lastMessage?.status === 'offline'
+        ) {
+            const chatRequestData = friends.find(
+                (f) => f.user === lastMessage!.user
+            );
+            if (chatRequestData) {
+                setChatRequest((prev) =>
+                    prev.filter((u) => u !== chatRequestData.user)
+                );
+            }
+        }
+    }, [lastMessage]);
 
     // Handle sending a message
     const handleSendMessage = (e: React.FormEvent) => {
@@ -63,19 +117,39 @@ const ChatWindow: React.FC = () => {
         }
     };
 
+    const handleTestButton = () => {
+        sendRequestMessage('request', loggedInUsername!, 'sent');
+        console.log('happy');
+    };
+
     // Scroll to bottom when new messages arrive
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chatMessages]);
 
     return (
-        <div className="flex h-[400px] w-[520px]  rounded-lg overflow-hidden shadow-lg border border-gray-200">
+        <div className="flex h-[480px] w-[500px] rounded-lg overflow-hidden shadow-lg border border-gray-200">
             {/* Friends List - Left Side */}
-            <div className="w-1/4 bg-gray-50 border-r border-gray-200 flex flex-col">
+            <div className="w-2/4 bg-gray-50 border-r border-gray-200 flex flex-col">
                 <div className="p-4 border-b border-gray-200 bg-white">
                     <h2 className="text-lg font-semibold text-gray-700">
                         Friends
                     </h2>
+                    <div>
+                        <button
+                            className="text-white bg-blue-400 dark:bg-blue-500 cursor-pointer font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            onClick={handleTestButton}
+                        >
+                            testMe
+                        </button>
+                    </div>
+                    {lastMessage ? (
+                        <span>
+                            {lastMessage.user} {lastMessage.status}
+                        </span>
+                    ) : (
+                        ''
+                    )}
                     <p className="text-sm text-gray-500">
                         {isConnected ? 'Connected' : 'Connecting...'}
                     </p>
@@ -84,7 +158,9 @@ const ChatWindow: React.FC = () => {
                 <div className="overflow-y-auto flex-grow">
                     {friends.length === 0 ? (
                         <p className="text-gray-500 text-sm p-4">
-                            No friends available
+                            {loggedInUsername
+                                ? 'No friends available'
+                                : 'Loading friends...'}
                         </p>
                     ) : (
                         <ul>
@@ -102,9 +178,15 @@ const ChatWindow: React.FC = () => {
                                         className={`w-3 h-3 rounded-full mr-3 
                       ${friend.status === 'online' ? 'bg-green-500' : 'bg-gray-400'}`}
                                     />
+
                                     <span className="font-medium">
                                         {friend.user}
                                     </span>
+                                    {chatRequest.includes(friend.user) && (
+                                        <span className="ml-auto text-xs text-red-600">
+                                            Requested
+                                        </span>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -113,6 +195,7 @@ const ChatWindow: React.FC = () => {
             </div>
 
             {/* Chat Area - Right Side */}
+
             <div className="w-3/4 flex flex-col bg-white">
                 {activeFriend ? (
                     <>

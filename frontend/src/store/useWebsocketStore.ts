@@ -2,11 +2,7 @@ import { create } from 'zustand';
 
 
 // Define the message type - extend this based on your application needs
-interface WSMessage {
-  type: string;
-  payload: any;
-}
-
+import { WSMessage } from '../utils/types';
 // Define the WebSocket store state
 interface WebSocketState {
   // Connection status

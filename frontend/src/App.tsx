@@ -20,6 +20,7 @@ import DashboardManager from './features/dashboard/DashboardManager';
 import GameWrapper from './pages/GameWrapper';
 import Rules from './pages/Rules';
 import { WebSocketProvider } from './routsandwrappers/WebSocketProvider';
+import { ChatProvider } from './routsandwrappers/ChatProvider';
 
 const queryClient = new QueryClient();
 
@@ -33,74 +34,78 @@ const App: React.FC = () => {
 
                         <MainAuthWrapper>
                             <WebSocketProvider>
-                                <Navbar />
-                                <Routes>
-                                    <Route path="/" element={<Landing />} />
-                                    <Route
-                                        path="/options"
-                                        element={
-                                            <PrivateRoute>
+                                <ChatProvider>
+                                    <Navbar />
+                                    <Routes>
+                                        <Route path="/" element={<Landing />} />
+                                        <Route
+                                            path="/options"
+                                            element={
+                                                <PrivateRoute>
+                                                    <DashboardManager>
+                                                        <Options />
+                                                    </DashboardManager>
+                                                </PrivateRoute>
+                                            }
+                                        />
+                                        <Route
+                                            path="/lobby"
+                                            element={
+                                                <PrivateRoute>
+                                                    <DashboardManager>
+                                                        <ChatLobby />
+                                                    </DashboardManager>
+                                                </PrivateRoute>
+                                            }
+                                        />{' '}
+                                        <Route
+                                            path="/lobby"
+                                            element={
+                                                <PrivateRoute>
+                                                    <DashboardManager>
+                                                        <ChatLobby />
+                                                    </DashboardManager>
+                                                </PrivateRoute>
+                                            }
+                                        />
+                                        <Route
+                                            path="/matches"
+                                            element={
                                                 <DashboardManager>
-                                                    <Options />
+                                                    <GameWrapper />
                                                 </DashboardManager>
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/lobby"
-                                        element={
-                                            <PrivateRoute>
+                                            }
+                                        />
+                                        <Route
+                                            path="/ranks"
+                                            element={
                                                 <DashboardManager>
-                                                    <ChatLobby />
+                                                    <TopList />
                                                 </DashboardManager>
-                                            </PrivateRoute>
-                                        }
-                                    />{' '}
-                                    <Route
-                                        path="/lobby"
-                                        element={
-                                            <PrivateRoute>
+                                            }
+                                        />
+                                        <Route
+                                            path="/rules"
+                                            element={
                                                 <DashboardManager>
-                                                    <ChatLobby />
+                                                    <Rules />
                                                 </DashboardManager>
-                                            </PrivateRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/matches"
-                                        element={
-                                            <DashboardManager>
-                                                <GameWrapper />
-                                            </DashboardManager>
-                                        }
-                                    />
-                                    <Route
-                                        path="/ranks"
-                                        element={
-                                            <DashboardManager>
-                                                <TopList />
-                                            </DashboardManager>
-                                        }
-                                    />
-                                    <Route
-                                        path="/rules"
-                                        element={
-                                            <DashboardManager>
-                                                <Rules />
-                                            </DashboardManager>
-                                        }
-                                    />
-                                    <Route path="*" element={<Landing />} />
-                                    {/* <Route path="/login" element={<Login />} />
+                                            }
+                                        />
+                                        <Route path="*" element={<Landing />} />
+                                        {/* <Route path="/login" element={<Login />} />
                                 <Route
                                     path="/register"
                                     element={<Register />}
                                 /> */}
-                                    <Route
-                                        path="/logout"
-                                        element={<Logout isVisible={false} />}
-                                    />
-                                </Routes>
+                                        <Route
+                                            path="/logout"
+                                            element={
+                                                <Logout isVisible={false} />
+                                            }
+                                        />
+                                    </Routes>
+                                </ChatProvider>
                             </WebSocketProvider>
                         </MainAuthWrapper>
                         <BottomFooter />

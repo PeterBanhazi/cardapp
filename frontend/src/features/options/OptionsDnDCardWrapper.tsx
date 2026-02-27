@@ -67,7 +67,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                // Only start dragging after moving 8px
+                // Only start dragging after moving 6px
                 distance: 6,
             },
         }),

@@ -62,7 +62,9 @@ export const useWebSocketConnection = (url: string, options: any = {}) => {
     if (wsLastMessage?.data) {
       try {
         const parsedMessage: WSMessage = JSON.parse(wsLastMessage.data);
-        
+        if (parsedMessage.status === 'request') {
+          console.log(parsedMessage)
+        }
         useWebSocketStore.setState(state => ({
           messages: [...state.messages, parsedMessage],
           lastMessage: parsedMessage
@@ -73,7 +75,9 @@ export const useWebSocketConnection = (url: string, options: any = {}) => {
         // Handle non-JSON messages
         const textMessage: WSMessage = {
           type: 'text',
-          payload: wsLastMessage.data
+          user: 'JSONerror',
+          status: 'JSONerror',
+          payload: wsLastMessage.data,
         };
         
         useWebSocketStore.setState(state => ({
@@ -89,13 +93,13 @@ export const useWebSocketConnection = (url: string, options: any = {}) => {
 export const useWebSocketSender = () => {
   const { sendMessage, isConnected } = useWebSocketStore();
   
-  const sendJsonMessage = useCallback((type: string, payload: any) => {
+  const sendJsonMessage = useCallback((type: string, user:string, status:string,  payload?: any) => {
     if (!isConnected) {
       console.warn('Cannot send message: WebSocket not connected');
       return false;
     }
     
-    sendMessage({ type, payload });
+    sendMessage({ type,user,status,payload });
     return true;
   }, [sendMessage, isConnected]);
   

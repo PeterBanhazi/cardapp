@@ -1,225 +1,320 @@
+import React, { useEffect} from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
+import { WS_BASE_URL } from '../utils/constants';
 import { useAuthStore } from './useAuthStore';
-import { api } from './useAuthStore';
-import useWebSocket from 'react-use-websocket';
-import { API_BASE_URL } from '../utils/constants';
 
+// Types
 interface ChatMessage {
-  id?: number;
-  sender: string;
-  receiver?: string;
-  content: string;
-  timestamp: string;
-  isRead: boolean;
+    type: string;
+    message: string;
+    sender: string;
+    timestamp: string;
+}
+
+interface ChatConnection {
+    friendUser: string;
+    isConnected: boolean;
+    sendMessage: ((message: string) => void) | null;
+    messages: ChatMessage[];
+    unreadCount: number;
 }
 
 interface ChatState {
-  messages: Record<string, ChatMessage[]>;
-  activeChat: string | null;
-  chatSocketUrl: string | null;
-  isTyping: Record<string, boolean>;
-  unreadCounts: Record<string, number>;
-  
-  // Actions
-  setActiveChat: (username: string | null) => void;
-  sendMessage: (content: string) => void;
-  receiveMessage: (message: ChatMessage) => void;
-  loadChatHistory: (username: string) => Promise<void>;
-  markMessagesAsRead: (username: string) => Promise<void>;
-  updateTypingStatus: (username: string, isTyping: boolean) => void;
-  connectToChat: (username: string) => void;
-  disconnectFromChat: () => void;
+    chatConnections: Record<string, ChatConnection>;
+    activeChatUser: string | null;
+    maxConnections: number;
+    
+    openChat: (friendUser: string) => void;
+    closeChat: (friendUser: string) => void;
+    setActiveChatUser: (friendUser: string | null) => void;
+    setChatConnection: (friendUser: string, connection: Partial<ChatConnection>) => void;
+    addMessage: (friendUser: string, message: ChatMessage) => void;
+    markMessagesAsRead: (friendUser: string) => void;
+    sendChatMessage: (friendUser: string, message: string) => void;
+    clearAllChats: () => void;
+    getUnreadCount: (friendUser: string) => number;
+    loadMessagesFromStorage: (friendUser: string) => ChatMessage[];
+    saveMessagesToStorage: (friendUser: string, messages: ChatMessage[]) => void;
+    removeMessagesFromStorage: (friendUser: string) => void;
+    clearAllStoredMessages: () => void;
 }
 
+// Storage utilities
+const CHAT_STORAGE_PREFIX = 'chat_messages_';
+
+const getStorageKey = (friendUser: string) => `${CHAT_STORAGE_PREFIX}${friendUser}`;
+
+const loadMessagesFromLocalStorage = (friendUser: string): ChatMessage[] => {
+    try {
+        const stored = localStorage.getItem(getStorageKey(friendUser));
+        return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+        console.error('Error loading messages from storage:', error);
+        return [];
+    }
+};
+
+const saveMessagesToLocalStorage = (friendUser: string, messages: ChatMessage[]) => {
+    try {
+        localStorage.setItem(getStorageKey(friendUser), JSON.stringify(messages));
+    } catch (error) {
+        console.error('Error saving messages to storage:', error);
+    }
+};
+
+const removeMessagesFromLocalStorage = (friendUser: string) => {
+    try {
+        localStorage.removeItem(getStorageKey(friendUser));
+    } catch (error) {
+        console.error('Error removing messages from storage:', error);
+    }
+};
+
+const clearAllStoredMessages = () => {
+    try {
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith(CHAT_STORAGE_PREFIX)) {
+                localStorage.removeItem(key);
+            }
+        });
+    } catch (error) {
+        console.error('Error clearing all stored messages:', error);
+    }
+};
+
+// Enhanced Chat Store
 export const useChatStore = create<ChatState>((set, get) => ({
-  messages: {},
-  activeChat: null,
-  chatSocketUrl: null,
-  isTyping: {},
-  unreadCounts: {},
-  
-  setActiveChat: (username) => {
-    set({ activeChat: username });
+    chatConnections: {},
+    activeChatUser: null,
+    maxConnections: 10,
     
-    if (username) {
-      // Connect to the chat WebSocket for this user
-      get().connectToChat(username);
-      
-      // Load chat history if not already loaded
-      if (!get().messages[username]) {
-        get().loadChatHistory(username);
-      }
-      
-      // Mark messages as read
-      get().markMessagesAsRead(username);
-    } else {
-      get().disconnectFromChat();
-    }
-  },
-  
-  sendMessage: (content) => {
-    const activeChat = get().activeChat;
-    if (!activeChat || !content.trim()) return;
+    loadMessagesFromStorage: (friendUser: string) => {
+        return loadMessagesFromLocalStorage(friendUser);
+    },
     
-    const currentUser = useAuthStore.getState().user?.username;
-    if (!currentUser) return;
+    saveMessagesToStorage: (friendUser: string, messages: ChatMessage[]) => {
+        saveMessagesToLocalStorage(friendUser, messages);
+    },
     
-    // Create a new message object
-    const newMessage: ChatMessage = {
-      sender: currentUser,
-      content,
-      timestamp: new Date().toISOString(),
-      isRead: false
-    };
+    removeMessagesFromStorage: (friendUser: string) => {
+        removeMessagesFromLocalStorage(friendUser);
+    },
     
-    // Add message to local state
-    set((state) => ({
-      messages: {
-        ...state.messages,
-        [activeChat]: [
-          ...(state.messages[activeChat] || []),
-          newMessage
-        ]
-      }
-    }));
+    clearAllStoredMessages: () => {
+        clearAllStoredMessages();
+    },
     
-    // The WebSocket component will handle the actual sending of the message
-  },
-  
-  receiveMessage: (message) => {
-    const otherUser = message.sender === useAuthStore.getState().user?.username
-      ? message.receiver
-      : message.sender;
-      
-    if (!otherUser) return;
-    
-    // Add message to chat history
-    set((state) => {
-      const isActive = state.activeChat === otherUser;
-      const currentMessages = state.messages[otherUser] || [];
-      const unreadCount = isActive ? 0 : (state.unreadCounts[otherUser] || 0) + 1;
-      
-      return {
-        messages: {
-          ...state.messages,
-          [otherUser]: [...currentMessages, message]
-        },
-        unreadCounts: {
-          ...state.unreadCounts,
-          [otherUser]: unreadCount
+    openChat: (friendUser: string) => {
+        const { chatConnections, maxConnections } = get();
+        
+        // Check if already exists
+        if (chatConnections[friendUser]) {
+            set({ activeChatUser: friendUser });
+            get().markMessagesAsRead(friendUser);
+            return;
         }
-      };
-    });
-    
-    // Mark as read if this is the active chat
-    if (get().activeChat === otherUser) {
-      get().markMessagesAsRead(otherUser);
-    }
-  },
-  
-  loadChatHistory: async (username) => {
-    try {
-      const response = await api.get(`chat/messages/?friend=${username}`);
-      set((state) => ({
-        messages: {
-          ...state.messages,
-          [username]: response.data
+        
+        // Check max connections
+        const activeConnections = Object.keys(chatConnections).length;
+        if (activeConnections >= maxConnections) {
+            console.warn('Maximum chat connections reached');
+            return;
         }
-      }));
-    } catch (error) {
-      console.error('Failed to load chat history:', error);
-    }
-  },
-  
-  markMessagesAsRead: async (username) => {
-    try {
-      // First find the friend's user ID
-      const friendId = await api.get(`users/id/${username}/`).then(res => res.data.id);
-      await api.get(`chat/messages/read/${friendId}/`);
-      
-      set((state) => ({
-        unreadCounts: {
-          ...state.unreadCounts,
-          [username]: 0
-        }
-      }));
-    } catch (error) {
-      console.error('Failed to mark messages as read:', error);
-    }
-  },
-  
-  updateTypingStatus: (username, isTyping) => {
-    set((state) => ({
-      isTyping: {
-        ...state.isTyping,
-        [username]: isTyping
-      }
-    }));
-  },
-  
-  connectToChat: (username) => {
-    const accessToken = useAuthStore.getState().accessToken;
-    if (!accessToken) return;
+        
+        // Load messages from localStorage
+        const storedMessages = loadMessagesFromLocalStorage(friendUser);
+        
+        set((state) => ({
+            chatConnections: {
+                ...state.chatConnections,
+                [friendUser]: {
+                    friendUser,
+                    isConnected: false,
+                    sendMessage: null,
+                    messages: storedMessages,
+                    unreadCount: 0,
+                },
+            },
+            activeChatUser: friendUser,
+        }));
+    },
     
-    const socketUrl = `ws://localhost:9000/ws/status/?token=${accessToken}`;
-    set({ chatSocketUrl: socketUrl });
-  },
-  
-  disconnectFromChat: () => {
-    set({ chatSocketUrl: null });
-  }
+    closeChat: (friendUser: string) => {
+        set((state) => {
+            const newConnections = { ...state.chatConnections };
+            delete newConnections[friendUser];
+            
+            // Remove messages from localStorage when chat is closed
+            removeMessagesFromLocalStorage(friendUser);
+            
+            return {
+                chatConnections: newConnections,
+                activeChatUser: state.activeChatUser === friendUser ? null : state.activeChatUser,
+            };
+        });
+    },
+    
+    setActiveChatUser: (friendUser: string | null) => {
+        set({ activeChatUser: friendUser });
+        if (friendUser) {
+            get().markMessagesAsRead(friendUser);
+        }
+    },
+    
+    setChatConnection: (friendUser: string, connection: Partial<ChatConnection>) => {
+        set((state) => ({
+            chatConnections: {
+                ...state.chatConnections,
+                [friendUser]: {
+                    ...state.chatConnections[friendUser],
+                    ...connection,
+                },
+            },
+        }));
+    },
+    
+    addMessage: (friendUser: string, message: ChatMessage) => {
+        set((state) => {
+            const currentConnection = state.chatConnections[friendUser];
+            if (!currentConnection) return state;
+            
+            const newMessages = [...currentConnection.messages, message];
+            const isActiveChat = state.activeChatUser === friendUser;
+            const unreadCount = isActiveChat ? 0 : currentConnection.unreadCount + 1;
+            
+            // Save to localStorage
+            saveMessagesToLocalStorage(friendUser, newMessages);
+            
+            return {
+                chatConnections: {
+                    ...state.chatConnections,
+                    [friendUser]: {
+                        ...currentConnection,
+                        messages: newMessages,
+                        unreadCount,
+                    },
+                },
+            };
+        });
+    },
+    
+    markMessagesAsRead: (friendUser: string) => {
+        set((state) => {
+            const currentConnection = state.chatConnections[friendUser];
+            if (!currentConnection) return state;
+            
+            return {
+                chatConnections: {
+                    ...state.chatConnections,
+                    [friendUser]: {
+                        ...currentConnection,
+                        unreadCount: 0,
+                    },
+                },
+            };
+        });
+    },
+    
+    sendChatMessage: (friendUser: string, message: string) => {
+        const { chatConnections } = get();
+        const connection = chatConnections[friendUser];
+        
+        if (connection?.sendMessage && connection.isConnected) {
+            const chatMessage = {
+                type: "message",
+                message: message,
+                sender: "me",
+                timestamp: new Date().toISOString(),
+            };
+            
+            connection.sendMessage(JSON.stringify(chatMessage));
+            
+            // Add to local messages
+            get().addMessage(friendUser, chatMessage);
+        }
+    },
+    
+    clearAllChats: () => {
+        // Clear all stored messages when clearing all chats
+        clearAllStoredMessages();
+        
+        set({
+            chatConnections: {},
+            activeChatUser: null,
+        });
+    },
+    
+    getUnreadCount: (friendUser: string) => {
+        const { chatConnections } = get();
+        return chatConnections[friendUser]?.unreadCount || 0;
+    },
 }));
 
-// WebSocket hook that needs to be used in a component
-export const useChatWebSocket = () => {
-  const { chatSocketUrl, receiveMessage, updateTypingStatus } = useChatStore();
-  const currentUser = useAuthStore((state) => state.user?.username);
-  const activeChat = useChatStore((state) => state.activeChat);
-  
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(chatSocketUrl || null, {
-    shouldReconnect: () => true,
-    reconnectAttempts: 5,
-    reconnectInterval: 3000
-  });
-  
-  // Handle incoming WebSocket messages
-  if (lastJsonMessage) {
-    const data = lastJsonMessage as any;
+// Individual WebSocket Manager for each friend
+export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendUser }) => {
+    const { setChatConnection, addMessage } = useChatStore();
+    const accessToken = useAuthStore().accessToken;
+    const wsUrl = friendUser ? `${WS_BASE_URL}ws/chat/${friendUser}/?token=${accessToken}` : null;
     
-    if (data.type === 'message') {
-      receiveMessage({
-        sender: data.sender,
-        content: data.message,
-        timestamp: data.timestamp,
-        isRead: data.sender === currentUser
-      });
-    } else if (data.type === 'typing') {
-      if (data.user !== currentUser) {
-        updateTypingStatus(data.user, data.is_typing);
-      }
-    }
-  }
-  
-  // Function to send message via WebSocket
-  const sendMessage = (content: string) => {
-    if (!activeChat || !content.trim()) return;
-    
-    sendJsonMessage({
-      type: 'message',
-      message: content
-    });
-    
-    // Also update local state via the store function
-    useChatStore.getState().sendMessage(content);
-  };
-  
-  // Function to update typing status
-  const sendTypingStatus = (isTyping: boolean) => {
-    sendJsonMessage({
-      type: 'typing',
-      is_typing: isTyping
-    });
-  };
-  
-  return { sendMessage, sendTypingStatus };
+    const { lastMessage, readyState, sendMessage } = useWebSocket(
+        wsUrl,
+        {
+            onOpen: () => {
+                console.log(`Chat WebSocket opened for ${friendUser}`);
+                setChatConnection(friendUser, { isConnected: true });
+                
+                const chatMessage = {
+                    type: "message",
+                    message: `${useAuthStore.getState().user?.username} has joined the chat...`,
+                    sender: useAuthStore.getState().user?.username!,
+                    timestamp: new Date().toISOString(),
+                };
+                
+                sendMessage(JSON.stringify(chatMessage));
+            },
+            onClose: () => {
+                console.log(`Chat WebSocket closed for ${friendUser}`);
+                setChatConnection(friendUser, { isConnected: false, sendMessage: null });
+            },
+            onError: (error) => {
+                console.error(`Chat WebSocket error for ${friendUser}:`, error);
+                setChatConnection(friendUser, { isConnected: false });
+            },
+            shouldReconnect: () => true,
+            reconnectInterval: 3000,
+        }
+    );
+
+    // Set the sendMessage function
+    useEffect(() => {
+        if (readyState === ReadyState.OPEN) {
+            setChatConnection(friendUser, { sendMessage });
+        } else {
+            setChatConnection(friendUser, { sendMessage: null });
+        }
+    }, [readyState, sendMessage, friendUser, setChatConnection]);
+
+    // Handle connection state
+    useEffect(() => {
+        setChatConnection(friendUser, { isConnected: readyState === ReadyState.OPEN });
+    }, [readyState, friendUser, setChatConnection]);
+
+    // Handle incoming messages
+    useEffect(() => {
+        if (lastMessage !== null) {
+            try {
+                const message: ChatMessage = JSON.parse(lastMessage.data);
+                if (message.type === 'message') {
+                    addMessage(friendUser, message);
+                }
+            } catch (error) {
+                console.error('Error parsing chat message:', error);
+            }
+        }
+    }, [lastMessage, friendUser, addMessage]);
+
+    return null;
 };
+
