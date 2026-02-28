@@ -1,8 +1,8 @@
 import React from 'react';
 
-import ChatLayout from '../chatapp/components/chat/ChatLayout';
+import ChatLayout from '../features/lobbychat/components/chat/ChatLayout';
 import Cookies from 'js-cookie';
-import { USERS } from '../chatapp/db/dummy';
+import { USERS } from '../features/lobbychat/db/dummy';
 // import StatusList from './wstest/useStatusList';
 // import ChatApp from './wstest/ChatApp';
 import WsStatusTest from './wstest/WsStatusTest';

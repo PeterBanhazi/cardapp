@@ -8,7 +8,7 @@ import {
 } from './ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
-import { cn } from '../../lib/utils';
+import { cn } from '../../../lib/utils';
 import { LogOut } from 'lucide-react';
 import useSound from 'use-sound';
 import { usePreferences } from '../store/usePreferences';
