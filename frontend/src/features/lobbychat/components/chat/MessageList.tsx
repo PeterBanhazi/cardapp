@@ -19,12 +19,15 @@ const MessageList = () => {
         family_name: 'legjobb',
         picture: '/avatars/user4.png',
     };
+
     const isUserLoading = false;
     const isMessagesLoading = false;
     //end of added byme
 
     // useKindeBrowserClient();
+
     const { selectedUser } = useSelectedUser();
+
     const messageContainerRef = useRef<HTMLDivElement>(null);
 
     // const { data: messages, isLoading: isMessagesLoading } = useQuery({

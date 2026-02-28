@@ -1,26 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-    Image as ImageIcon,
-    Loader,
-    SendHorizontal,
-    ThumbsUp,
-} from 'lucide-react';
+import { Loader, SendHorizontal, ThumbsUp } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import EmojiPicker from './EmojiPicker';
 import { usePreferences } from '../../store/usePreferences';
 import useSound from 'use-sound';
-// import { useMutation } from '@tanstack/react-query';
-// import { sendMessageAction } from '@/actions/message.actions';
-import { useSelectedUser } from '../../store/useSelectedUser';
-// import {messages, } form "../../db/dummy";
+
+import { useChatStore } from '../../../../store/useChatStore';
 
 function ChatBottomBar() {
-    const [message, setMessage] = useState('');
+    const [messageInput, setMessageInput] = useState('');
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    const { selectedUser } = useSelectedUser();
     const { soundEnabled } = usePreferences();
+
+    const { activeChatUser, sendChatMessage } = useChatStore();
 
     const [playSound1] = useSound('/sounds/keystroke1.mp3');
     const [playSound2] = useSound('/sounds/keystroke2.mp3');
@@ -36,26 +30,12 @@ function ChatBottomBar() {
     };
 
     const [isPending, sendingMessage] = useState(false);
-    const sendMessage = (uzike: {
-        content: string;
-        messageType: string;
-        receiverId: string;
-    }) => {
-        console.log(uzike);
-        sendingMessage(true);
-    };
-    // const { mutate: sendMessage, isPending } = useMutation({
-    //     mutationFn: sendMessageAction,
-    // });
 
     const handleSendMessage = () => {
-        if (!message.trim()) return;
-        sendMessage({
-            content: message,
-            messageType: 'text',
-            receiverId: selectedUser?.id!,
-        });
-        setMessage('');
+        if (messageInput.trim() && activeChatUser) {
+            sendChatMessage(activeChatUser, messageInput.trim());
+            setMessageInput('');
+        }
 
         textAreaRef.current?.focus();
     };
@@ -67,20 +47,12 @@ function ChatBottomBar() {
         }
         if (e.key === 'Enter' && e.shiftKey) {
             e.preventDefault();
-            setMessage(message + '\n');
+            setMessageInput(messageInput + '\n');
         }
     };
 
     return (
         <div className="p-2 flex justify-between w-full items-center gap-2">
-            {!message.trim() && (
-                <ImageIcon
-                    size={20}
-                    // onClick={() => open()}
-                    className="cursor-pointer text-muted-foreground"
-                />
-            )}
-
             <AnimatePresence>
                 <motion.div
                     layout
@@ -102,10 +74,10 @@ function ChatBottomBar() {
                         rows={1}
                         className="w-full border rounded-full flex items-center h-9 resize-none overflow-hidden
 						bg-background min-h-0"
-                        value={message}
+                        value={messageInput}
                         onKeyDown={handleKeyDown}
                         onChange={(e) => {
-                            setMessage(e.target.value);
+                            setMessageInput(e.target.value);
 
                             playRandomKeyStrokeSound();
                         }}
@@ -114,7 +86,7 @@ function ChatBottomBar() {
                     <div className="absolute right-2 bottom-0.5">
                         <EmojiPicker
                             onChange={(emoji) => {
-                                setMessage(message + emoji);
+                                setMessageInput(messageInput + emoji);
                                 if (textAreaRef.current) {
                                     textAreaRef.current.focus();
                                 }
@@ -123,7 +95,7 @@ function ChatBottomBar() {
                     </div>
                 </motion.div>
 
-                {message.trim() ? (
+                {messageInput.trim() ? (
                     <Button
                         className="h-9 w-9 dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white shrink-0"
                         variant={'ghost'}
@@ -146,11 +118,7 @@ function ChatBottomBar() {
                                 size={20}
                                 className="text-muted-foreground"
                                 onClick={() => {
-                                    sendMessage({
-                                        content: '👍',
-                                        messageType: 'text',
-                                        receiverId: selectedUser?.id!,
-                                    });
+                                    handleSendMessage;
                                 }}
                             />
                         )}

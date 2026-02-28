@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import React from 'react';
 import { cn } from '../../lib/utils';
 import Sidebar from '../SideBar';
 import { User } from '../../db/dummy';
@@ -10,6 +9,8 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from '../ui/resizable';
+import { useFriendsStore } from '../../../../store/useFriendsStore';
+import { FriendsList } from '../../../../pages/wsFriendStatus/wsFriendStatus';
 
 interface ChatLayoutProps {
     defaultLayout: number[] | undefined;
@@ -67,7 +68,8 @@ const ChatLayout = ({ defaultLayout = [320, 480], users }: ChatLayoutProps) => {
                         'min-w-[80px] transition-all duration-300 ease-in-out'
                 )}
             >
-                <Sidebar isCollapsed={isCollapsed} users={users} />
+                {/* <Sidebar isCollapsed={isCollapsed} users={users} /> */}
+                <FriendsList />
             </ResizablePanel>
 
             <ResizableHandle withHandle />
