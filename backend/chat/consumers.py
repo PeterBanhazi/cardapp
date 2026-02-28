@@ -1,3 +1,4 @@
+# Heartbeat fronted implementation needed 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -5,7 +6,7 @@ from django.contrib.auth.models import User
 from .models import Message, UserStatus
 from api.models import Friendship  # Updated import path
 from django.utils import timezone
-from asgiref.sync import sync_to_async
+# from asgiref.sync import sync_to_async
 from django.conf import settings
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -282,9 +283,9 @@ class SystemConsumer(AsyncWebsocketConsumer):
             }
             )
             
-      
-        if data.get('type') == 'heartbeat':
-            await self.update_user_status(True)
+        # Frontend implementation needed  
+        # if data.get('type') == 'heartbeat':
+        #     await self.update_user_status(True)
 
     
     async def system_message(self, event):
@@ -328,143 +329,3 @@ class SystemConsumer(AsyncWebsocketConsumer):
         except (User.DoesNotExist, UserStatus.DoesNotExist):
             return False
 
-class StatusConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user = self.scope['user']
-        if not self.user.is_authenticated:
-            await self.close()
-            return
-        
-        self.username = self.user.username
-        self.status_group_name = 'user_status'
-        
-        # Join status group
-        await self.channel_layer.group_add(
-            self.status_group_name,
-            self.channel_name
-        )
-        
-        await self.accept()
-        
-        # Update user status
-        await self.update_user_status(True)
-        
-        # Broadcast online status to all users
-        await self.channel_layer.group_send(
-            self.status_group_name,
-            {
-                'type': 'user_status',
-                'sender': self.username,
-                'status': 'online'
-            }
-        )
-        
-        # Get friends online status
-        friends = await self.get_friends()
-        for friend in friends:
-            status = await self.get_user_status(friend)
-            await self.send(text_data=json.dumps({
-                'type': 'status',
-                'user': friend,
-                'sender': friend,
-                'status': 'online' if status else 'offline'
-            }))
-    
-    async def disconnect(self, close_code):
-        if not hasattr(self, 'status_group_name'):
-            return
-            
-        # Leave status group
-        await self.channel_layer.group_discard(
-            self.status_group_name,
-            self.channel_name
-        )
-        
-        # Update user status
-        await self.update_user_status(False)
-        
-        # Broadcast offline status to all users
-        await self.channel_layer.group_send(
-            self.status_group_name,
-            {
-                'type': 'user_status',
-                'user': self.username,
-                'sender': self.username,
-                'status': 'offline'
-            }
-        )
-  
-    async def receive(self, text_data):
-        # Handle heartbeat or other status events
-        
-        data = json.loads(text_data)
-        self.user = self.scope['user']
-        
-        
-        self.userto = data.get('user')
-        self.status_channel_name= f"status_{self.user.username}_{self.userto}"
-        
-        
-        if data.get('type') == 'request':           
-            await self.channel_layer.group_send(                        
-            self.status_group_name,
-            {
-                'type': 'user_status',
-                'user': data.get('user'),
-                'sender': self.user.username,
-                'status': data.get('status'),
-            }
-            )
-            print("request arrived")
-            print(f"group: {self.status_group_name}")
-            print(f"channel: {self.status_channel_name}")
-            send_test= text_data=json.dumps({
-            'type': 'request',
-            'user': data.get('user'),
-            'sender': self.user.username,
-            'status': data.get('status'),
-            })
-            print(send_test)
-        if data.get('type') == 'heartbeat':
-            await self.update_user_status(True)
-
-    
-    async def user_status(self, event):
-        # Send status update to WebSocket
-        self.user = self.scope['user']
-        await self.send(text_data=json.dumps({
-            'type': 'status',
-            'user': self.user.username,
-            'sender': event['sender'],
-            'status': event['status']
-        }))
-    
-    @database_sync_to_async
-    def update_user_status(self, is_online):
-        UserStatus.objects.update_or_create(
-            user=self.user,
-            defaults={'is_online': is_online, 'last_activity': timezone.now()}
-        )
-    
-    @database_sync_to_async
-    def get_friends(self):
-        # Get all accepted friends
-        friend_relations = Friendship.objects.filter(
-            username=self.user,
-            status='ACCEPTED'
-        )
-        print([relation.friend.username for relation in friend_relations])
-        return [relation.friend.username for relation in friend_relations]
-    
-    @database_sync_to_async
-    def get_user_status(self, username):
-        try:
-            user = User.objects.get(username=username)
-            status = UserStatus.objects.get(user=user)
-            
-            # Check if the user is considered online based on the timeout
-            if status.is_online and (timezone.now() - status.last_activity).total_seconds() < settings.USER_ONLINE_TIMEOUT:
-                return True
-            return False
-        except (User.DoesNotExist, UserStatus.DoesNotExist):
-            return False
