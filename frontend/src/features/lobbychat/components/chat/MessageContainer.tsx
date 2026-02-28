@@ -3,7 +3,7 @@ import ChatTopBar from './ChatTopBar';
 import MessageList from './MessageList';
 import ChatBottomBar from './ChatBottomBar';
 import { useSelectedUser } from '../../store/useSelectedUser';
-import ChatWindow from '../../../../pages/wsFriendStatus/ChatWindow';
+
 const MessageContainer = () => {
     const { setSelectedUser } = useSelectedUser();
     useEffect(() => {
@@ -20,8 +20,7 @@ const MessageContainer = () => {
             <ChatTopBar />
 
             <div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
-                {/* <MessageList /> */}
-                <ChatWindow />
+                <MessageList />
                 <ChatBottomBar />
             </div>
         </div>

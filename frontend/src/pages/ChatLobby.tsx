@@ -23,15 +23,15 @@ const ChatLobby = () => {
         <div className="z-10 border rounded-lg max-w-full w-full h-[880px] text-sm lg:flex-row">
             {/* <ChatWebSocketManager friendUser={activeChatUser} /> */}
             <div className="max-h-[400px] w-full lg:flex">
-                <ChatWindow />
+                {/* <ChatWindow />
                 <FriendsList />
-                <DebugPanel />
+                <DebugPanel /> */}
             </div>
             {/* <ConnectionStatus /> */}
 
             {/* <StatusList /> */}
             {/* <ChatWindow /> */}
-            <div className="h-[500px]">
+            <div className="h-[700px]">
                 <ChatLayout defaultLayout={defaultLayout} users={USERS} />
             </div>
         </div>

@@ -225,14 +225,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
             const chatMessage = {
                 type: "message",
                 message: message,
-                sender: "me",
+                sender: useAuthStore.getState().user?.username!,
                 timestamp: new Date().toISOString(),
             };
             
             connection.sendMessage(JSON.stringify(chatMessage));
             
             // Add to local messages
-            get().addMessage(friendUser, chatMessage);
+            // get().addMessage(friendUser, chatMessage);
         }
     },
     

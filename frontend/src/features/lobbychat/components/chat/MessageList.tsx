@@ -5,46 +5,42 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef } from 'react';
 import { messages, USERS } from '../../db/dummy';
 import { useSelectedUser } from '../../store/useSelectedUser';
-// import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
-// import { useQuery } from "@tanstack/react-query";
-import { getMessages } from '../../actions/message.actions';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
+import { useChatStore } from '../../../../store/useChatStore';
+import { useAuthStore } from '../../../../store/useAuthStore';
 
 const MessageList = () => {
     // added by me
-    const currentUser = {
-        id: 'randId',
-        email: 'kamu@reg.hz',
-        given_name: 'Peter',
-        family_name: 'legjobb',
-        picture: '/avatars/user4.png',
-    };
+    // const currentUser = {
+    //     id: 'randId',
+    //     email: 'kamu@reg.hz',
+    //     given_name: 'Peter',
+    //     family_name: 'legjobb',
+    //     picture: '/avatars/user4.png',
+    // };
+
+    const { activeChatUser, chatConnections, markMessagesAsRead } =
+        useChatStore();
+    const loggedInUsername = useAuthStore.getState().user?.username;
+    const activeChat = activeChatUser ? chatConnections[activeChatUser] : null;
+
+    useEffect(() => {
+        if (activeChatUser) {
+            markMessagesAsRead(activeChatUser);
+        }
+    }, [activeChatUser, markMessagesAsRead]);
 
     const isUserLoading = false;
     const isMessagesLoading = false;
-    //end of added byme
-
-    // useKindeBrowserClient();
-
-    const { selectedUser } = useSelectedUser();
 
     const messageContainerRef = useRef<HTMLDivElement>(null);
 
-    // const { data: messages, isLoading: isMessagesLoading } = useQuery({
-    //   queryKey: ["messages", selectedUser?.id],
-    //   queryFn: async () => {
-    //     if (selectedUser && currentUser) {
-    //       return await getMessages(selectedUser?.id, currentUser?.id);
-    //     }
-    //   },
-    //   enabled: !!selectedUser && !!currentUser && !isUserLoading,
-    // });
     useEffect(() => {
         if (messageContainerRef.current) {
             messageContainerRef.current.scrollTop =
                 messageContainerRef.current.scrollHeight;
         }
-    }, [messages]);
+    }, [activeChat]);
 
     return (
         <div
@@ -53,8 +49,9 @@ const MessageList = () => {
         >
             {/* This component ensure that an animation is applied when items are added to or removed from the list */}
             <AnimatePresence>
-                {!isMessagesLoading &&
-                    messages?.map((message, index) => (
+                {activeChat &&
+                    !isMessagesLoading &&
+                    activeChat.messages.map((message, index) => (
                         <motion.div
                             key={index}
                             layout
@@ -67,7 +64,9 @@ const MessageList = () => {
                                     type: 'spring',
                                     bounce: 0.3,
                                     duration:
-                                        messages.indexOf(message) * 0.05 + 0.2,
+                                        activeChat.messages.indexOf(message) *
+                                            0.05 +
+                                        0.2,
                                 },
                             }}
                             style={{
@@ -76,40 +75,30 @@ const MessageList = () => {
                             }}
                             className={cn(
                                 'flex flex-col gap-2 p-4 whitespace-pre-wrap',
-                                message.senderId === currentUser?.id
+                                message.sender === loggedInUsername
                                     ? 'items-end'
                                     : 'items-start'
                             )}
                         >
                             <div className="flex gap-3 items-center">
-                                {message.senderId === selectedUser?.id && (
+                                {message.sender === activeChatUser && (
                                     <Avatar className="flex justify-center items-center">
                                         <AvatarImage
-                                            src={selectedUser?.image}
+                                            src="/avatars/user4.png"
                                             alt="User Image"
                                             className="border-2 border-white rounded-full"
                                         />
                                     </Avatar>
                                 )}
-                                {message.messageType === 'text' ? (
-                                    <span className="bg-accent p-3 rounded-md max-w-xs">
-                                        {message.content}
-                                    </span>
-                                ) : (
-                                    <img
-                                        src={message.content}
-                                        alt="Message Image"
-                                        className="border p-2 rounded h-40 md:h-52 object-cover"
-                                    />
-                                )}
 
-                                {message.senderId === currentUser?.id && (
+                                <span className="bg-accent p-3 rounded-md max-w-xs">
+                                    {message.message}
+                                </span>
+
+                                {message.sender === loggedInUsername && (
                                     <Avatar className="flex justify-center items-center">
                                         <AvatarImage
-                                            src={
-                                                currentUser?.picture ||
-                                                '/user-placeholder.png'
-                                            }
+                                            src={'/user-placeholder.png'}
                                             alt="User Image"
                                             className="border-2 border-white rounded-full"
                                         />
