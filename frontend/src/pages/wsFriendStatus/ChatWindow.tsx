@@ -86,7 +86,7 @@ const ChatWindow: React.FC = () => {
             )}
 
             {/* Chat Header */}
-            <ChatWebSocketManager friendUser={activeChatUser} />
+            {/* <ChatWebSocketManager friendUser={activeChatUser} /> */}
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                     <div
