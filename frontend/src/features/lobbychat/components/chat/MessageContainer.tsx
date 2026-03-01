@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import ChatTopBar from './ChatTopBar';
 import MessageList from './MessageList';
 import ChatBottomBar from './ChatBottomBar';
-import { useSelectedUser } from '../../store/useSelectedUser';
+import { useChatStore } from '../../../../store/useChatStore';
 
 const MessageContainer = () => {
-    const { setSelectedUser } = useSelectedUser();
+    const { activeChatUser, setActiveChatUser } = useChatStore();
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setSelectedUser(null);
+            if (e.key === 'Escape') setActiveChatUser(null);
         };
 
         document.addEventListener('keydown', handleEscape);
 
         return () => document.removeEventListener('keydown', handleEscape);
-    }, [setSelectedUser]);
+    }, [activeChatUser]);
     return (
         <div className="flex flex-col justify-between w-full h-full">
             <ChatTopBar />

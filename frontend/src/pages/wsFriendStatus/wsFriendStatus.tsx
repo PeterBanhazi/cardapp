@@ -36,8 +36,13 @@ export const RequestButton: React.FC<{
     status: Friend['status'];
 }> = ({ friendUser, status }) => {
     const { sendChatRequest, isConnected } = useFriendsStore();
+    const { activeChatUser, setActiveChatUser } = useChatStore();
 
     const handleSendRequest = () => {
+        if (status === 'accepted') {
+            setActiveChatUser(friendUser);
+            return;
+        }
         sendChatRequest(friendUser);
     };
 
@@ -51,7 +56,7 @@ export const RequestButton: React.FC<{
                 };
             case 'offline':
                 return {
-                    text: 'Chat',
+                    text: 'Offline',
                     styles: 'bg-gray-300 text-gray-500 cursor-not-allowed',
                     disabled: true,
                 };
@@ -65,7 +70,7 @@ export const RequestButton: React.FC<{
                 return {
                     text: 'Accepted',
                     styles: 'bg-green-400 text-yellow-800 cursor-not-allowed',
-                    disabled: true,
+                    disabled: false,
                 };
             case 'closed':
                 return {

@@ -14,10 +14,9 @@ import { FriendsList } from '../../../../pages/wsFriendStatus/wsFriendStatus';
 
 interface ChatLayoutProps {
     defaultLayout: number[] | undefined;
-    users: User[];
 }
 
-const ChatLayout = ({ defaultLayout = [320, 480], users }: ChatLayoutProps) => {
+const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const { selectedUser } = useSelectedUser();
@@ -68,8 +67,7 @@ const ChatLayout = ({ defaultLayout = [320, 480], users }: ChatLayoutProps) => {
                         'min-w-[80px] transition-all duration-300 ease-in-out'
                 )}
             >
-                {/* <Sidebar isCollapsed={isCollapsed} users={users} /> */}
-                <FriendsList />
+                <Sidebar isCollapsed={isCollapsed} />
             </ResizablePanel>
 
             <ResizableHandle withHandle />

@@ -32,7 +32,7 @@ const ChatLobby = () => {
             {/* <StatusList /> */}
             {/* <ChatWindow /> */}
             <div className="h-[700px]">
-                <ChatLayout defaultLayout={defaultLayout} users={USERS} />
+                <ChatLayout defaultLayout={defaultLayout} />
             </div>
         </div>
     );

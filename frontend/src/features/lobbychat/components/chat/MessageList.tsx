@@ -1,24 +1,12 @@
 import { Avatar, AvatarImage } from '../ui/avatar';
-import { Info, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useRef } from 'react';
-import { messages, USERS } from '../../db/dummy';
-import { useSelectedUser } from '../../store/useSelectedUser';
+import { useEffect, useRef } from 'react';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
 import { useChatStore } from '../../../../store/useChatStore';
 import { useAuthStore } from '../../../../store/useAuthStore';
 
 const MessageList = () => {
-    // added by me
-    // const currentUser = {
-    //     id: 'randId',
-    //     email: 'kamu@reg.hz',
-    //     given_name: 'Peter',
-    //     family_name: 'legjobb',
-    //     picture: '/avatars/user4.png',
-    // };
-
     const { activeChatUser, chatConnections, markMessagesAsRead } =
         useChatStore();
     const loggedInUsername = useAuthStore.getState().user?.username;
