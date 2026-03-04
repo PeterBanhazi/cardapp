@@ -5,10 +5,12 @@ import { useEffect, useRef } from 'react';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
 import { useChatStore } from '../../../../store/useChatStore';
 import { useAuthStore } from '../../../../store/useAuthStore';
+import { useSelectedUser } from '../../store/useSelectedUser';
 
 const MessageList = () => {
     const { activeChatUser, chatConnections, markMessagesAsRead } =
         useChatStore();
+    const { selectedUser } = useSelectedUser();
     const loggedInUsername = useAuthStore.getState().user?.username;
     const activeChat = activeChatUser ? chatConnections[activeChatUser] : null;
 
@@ -38,6 +40,7 @@ const MessageList = () => {
             {/* This component ensure that an animation is applied when items are added to or removed from the list */}
             <AnimatePresence>
                 {activeChat &&
+                    activeChat?.friendUser === selectedUser?.user &&
                     !isMessagesLoading &&
                     activeChat.messages.map((message, index) => (
                         <motion.div

@@ -34,6 +34,7 @@ interface Friend {
 const Sidebar = ({ isCollapsed }: SidebarProps) => {
     const [playClickSound] = useSound('/sounds/mouse-click.mp3');
     const { soundEnabled } = usePreferences();
+    const { setSelectedUser, selectedUser } = useSelectedUser();
 
     const { friends, isConnected, acceptChatRequest } = useFriendsStore();
     const { openChat, getUnreadCount } = useChatStore();
@@ -77,20 +78,10 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     };
 
     return (
-        <div className="group relative flex flex-col h-full gap-4 p-2 data-[collapsed=true]:p-2  max-h-full overflow-auto bg-background">
-            <div className="flex justify-between p-2 items-center">
+        <div className="group relative flex flex-col h-full gap-1 p-1 data-[collapsed=true]:p-2  max-h-full overflow-auto bg-background">
+            <div className="flex justify-between p-1 items-center">
                 <div className="flex gap-2 items-center text-2xl">
-                    <p className="font-medium">Friends</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <div
-                        className={`w-2 h-2 rounded-full ${
-                            isConnected ? 'bg-green-500' : 'bg-red-500'
-                        }`}
-                    />
-                    <span className="text-sm text-gray-800">
-                        {isConnected ? 'Connected' : 'Disconnected'}
-                    </span>
+                    <p className="font-semibold text-slate-800">Friends</p>
                 </div>
             </div>
             {friendsList.length === 0 ? (
@@ -98,7 +89,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                     {isConnected ? 'No friends online' : 'Connecting...'}
                 </div>
             ) : (
-                <ScrollArea className="gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+                <ScrollArea className="gap-2 px-2 group-[[data - collapsed= true]]:justify-center group-[[data-collapsed=true]]:px-2">
                     {friendsList.map((friend, idx) =>
                         isCollapsed ? (
                             <TooltipProvider key={idx}>
@@ -109,13 +100,21 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                 soundEnabled &&
                                                     playClickSound();
                                                 handleFriendClick(friend);
+                                                setSelectedUser(friend);
                                             }}
                                         >
                                             <Avatar className="my-3 flex justify-center items-center">
                                                 <AvatarImage
                                                     src={'/avatars/user4.png'}
                                                     alt="User Image"
-                                                    className="border-2 border-white rounded-full w-10 h-10"
+                                                    className={cn(
+                                                        'flex justify-center items-center border-2 border-white rounded-full w-10 h-10',
+                                                        friend.status ===
+                                                            'online' &&
+                                                            friend.status ===
+                                                                'online' &&
+                                                            'border-3 border-green-400'
+                                                    )}
                                                 />
                                                 <AvatarFallback>
                                                     {friend.user}
@@ -138,41 +137,43 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                             <Button
                                 key={idx}
                                 variant={'grey'}
-                                size="xl"
+                                size="lg"
                                 className={cn(
-                                    'w-full justify-start gap-4 my-1',
+                                    'w-[240px] px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
                                     activeChatUser === friend.user &&
-                                        'bg-muted text-white hover:bg-muted hover:text-white shrink'
+                                        'bg-slate-50/50  hover:bg-muted hover:text-white shrink'
                                 )}
                                 onClick={() => {
                                     soundEnabled && playClickSound();
                                     handleFriendClick(friend);
+                                    setSelectedUser(friend);
                                 }}
                             >
-                                <Avatar className="flex justify-center items-center">
+                                <Avatar
+                                    className={cn(
+                                        'flex justify-center p-0.5 items-center',
+                                        friend.status === 'online' &&
+                                            'ring-2 ring-green-400 ring-inset'
+                                    )}
+                                >
                                     <AvatarImage
-                                        src={'/avatars/user4.png'}
+                                        src={'/avatars/user3.png'}
                                         alt={'User image'}
-                                        className="w-10 h-10"
                                     />
                                     <AvatarFallback>
                                         {friend.user}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="flex flex-col text-lg max-w-28">
-                                    <span>
+                                <div className="flex flex-col  text-lg w-48 ">
+                                    <span className="text-left">
                                         {friend.user}
-                                        <StatusBadge status={friend.status} />
+
                                         {getUnreadCount(friend.user) > 0 && (
                                             <span className="ml-1 bg-red-500 text-white text-xs px-1 rounded-full">
                                                 {getUnreadCount(friend.user)}
                                             </span>
                                         )}
                                     </span>
-                                    <RequestButton
-                                        friendUser={friend.user}
-                                        status={friend.status}
-                                    />
                                 </div>
                             </Button>
                         )
@@ -192,6 +193,13 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                             />
                         </Avatar>
                         <p className="font-bold text-lg">{loggedInUsername}</p>
+                        <div className="flex items-center space-x-2">
+                            <div
+                                className={`w-2 h-2 rounded-full ${
+                                    isConnected ? 'bg-green-500' : 'bg-red-500'
+                                }`}
+                            />
+                        </div>
                     </div>
                 )}
                 <div className="flex">

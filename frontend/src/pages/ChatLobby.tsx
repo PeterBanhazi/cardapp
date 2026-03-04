@@ -20,7 +20,7 @@ const ChatLobby = () => {
     const defaultLayout = layout ? JSON.parse(layout) : undefined;
 
     return (
-        <div className="z-10 border rounded-lg max-w-full w-full h-[880px] text-sm lg:flex-row">
+        <div className="z-10 rounded-lg max-w-full w-full h-[500px] text-sm lg:flex-row">
             {/* <ChatWebSocketManager friendUser={activeChatUser} /> */}
             <div className="max-h-[400px] w-full lg:flex">
                 {/* <ChatWindow />
@@ -31,7 +31,7 @@ const ChatLobby = () => {
 
             {/* <StatusList /> */}
             {/* <ChatWindow /> */}
-            <div className="h-[700px]">
+            <div className="h-[500px]">
                 <ChatLayout defaultLayout={defaultLayout} />
             </div>
         </div>

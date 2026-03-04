@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 import Sidebar from '../SideBar';
-import { User } from '../../db/dummy';
-import { useSelectedUser } from '../../store/useSelectedUser';
 import MessageContainer from './MessageContainer';
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from '../ui/resizable';
-import { useFriendsStore } from '../../../../store/useFriendsStore';
-import { FriendsList } from '../../../../pages/wsFriendStatus/wsFriendStatus';
+
+import { useChatStore } from '../../../../store/useChatStore';
 
 interface ChatLayoutProps {
     defaultLayout: number[] | undefined;
@@ -19,7 +17,7 @@ interface ChatLayoutProps {
 const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const { selectedUser } = useSelectedUser();
+    const { activeChatUser } = useChatStore();
 
     useEffect(() => {
         const checkScreenWidth = () => {
@@ -41,7 +39,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
     return (
         <ResizablePanelGroup
             direction="horizontal"
-            className="h-full items-stretch bg-background rounded-lg"
+            className="h-full items-stretch bg-slate-200/20 rounded-md border border-blue-200 shadow-md"
             onLayout={(sizes: number[]) => {
                 document.cookie = `react-resizable-panels:layout=${JSON.stringify(
                     sizes
@@ -50,10 +48,10 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
         >
             <ResizablePanel
                 defaultSize={defaultLayout[0]}
-                collapsedSize={8}
+                collapsedSize={10}
                 collapsible={true}
-                minSize={isMobile ? 0 : 24}
-                maxSize={isMobile ? 8 : 30}
+                minSize={isMobile ? 0 : 14}
+                maxSize={isMobile ? 18 : 38}
                 onCollapse={() => {
                     setIsCollapsed(true);
                     document.cookie = `react-resizable-panels:collapsed=true;`;
@@ -64,7 +62,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
                 }}
                 className={cn(
                     isCollapsed &&
-                        'min-w-[80px] transition-all duration-300 ease-in-out'
+                        'min-w-[92px] transition-all duration-300 ease-in-out'
                 )}
             >
                 <Sidebar isCollapsed={isCollapsed} />
@@ -75,7 +73,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
             <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
                 <MessageContainer />
 
-                {!selectedUser && (
+                {!activeChatUser && (
                     <div className="flex justify-center items-center h-full w-full px-10">
                         <div className="flex flex-col justify-center items-center gap-4">
                             <img
@@ -89,7 +87,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
                         </div>
                     </div>
                 )}
-                {selectedUser && <MessageContainer />}
+                {activeChatUser && <MessageContainer />}
             </ResizablePanel>
         </ResizablePanelGroup>
     );
