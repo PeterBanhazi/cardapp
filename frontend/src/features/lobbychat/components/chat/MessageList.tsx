@@ -3,8 +3,8 @@ import { cn } from '../../lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
-import { useChatStore } from '../../../../store/useChatStore';
-import { useAuthStore } from '../../../../store/useAuthStore';
+import { useChatStore } from '../../../../core/store/useChatStore';
+import { useAuthStore } from '../../../../core/store/useAuthStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
 
 const MessageList = () => {

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../../utils/useAxios';
+import useAxios from '../../core/utils/useAxios';
 
 export function useCurrentPlayerMutation() {
     const queryClient = useQueryClient();

@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import Home from '../layouts/home';
-import { useDashboardStore, DashboardItem } from '../store/store';
+import Home from './Home';
+import {
+    useDashboardStore,
+    DashboardItem,
+} from '../core/store/useDashboardStore';
 
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);

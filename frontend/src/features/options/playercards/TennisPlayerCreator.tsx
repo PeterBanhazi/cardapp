@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import useAxios from '../../../utils/useAxios';
+import useAxios from '../../../core/utils/useAxios';
 import { X, RefreshCcw } from 'lucide-react';
-import { useAuthStore } from '../../../store/useAuthStore'; // Adjust import path as needed
-import { PlayerStats } from '../../../utils/types';
+import { useAuthStore } from '../../../core/store/useAuthStore'; // Adjust import path as needed
+import { PlayerStats } from '../../../shared/types/types';
 // Import player avatars
 import djokovic from '../../../assets/djokovic_head.png';
 import alcaraz from '../../../assets/alcaraz_head.png';

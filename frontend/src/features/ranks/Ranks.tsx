@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import useAxios from '../../utils/useAxios';
-import { useAuthStore } from '../../store/useAuthStore';
+import useAxios from '../../core/utils/useAxios';
+import { useAuthStore } from '../../core/store/useAuthStore';
 import { Button, ThemeProvider } from 'flowbite-react';
-import { customTheme } from '../../utils/formThemes';
-import ScrollContainer from '../../components/ui/ScrollContainer';
+import { customTheme } from '../../shared/formThemes';
+import ScrollContainer from '../../shared/components/ui/ScrollContainer';
 interface User {
     username: string;
     rankpoints: number;

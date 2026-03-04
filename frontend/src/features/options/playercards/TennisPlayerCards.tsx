@@ -6,8 +6,8 @@ import { FaStar } from 'react-icons/fa6';
 import { RotatingLines } from 'react-loader-spinner';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PlayerStats } from '../../../utils/types';
-import useAxios from '../../../utils/useAxios';
+import { PlayerStats } from '../../../shared/types/types';
+import useAxios from '../../../core/utils/useAxios';
 import { useCurrentPlayerMutation } from '../useCurrentPlayerMutation';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 

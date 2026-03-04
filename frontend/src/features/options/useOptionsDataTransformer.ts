@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { UserData, PlayerStats } from '../../utils/types';
-import useAxios from '../../utils/useAxios';
+import { UserData, PlayerStats } from '../../shared/types/types';
+import useAxios from '../../core/utils/useAxios';
 
 interface OptionsDataResult {
     userName: string|null;

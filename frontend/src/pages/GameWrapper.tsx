@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import axios from '../utils/axios';
+import useAxios from '../core/utils/useAxios';
 import GamePlayerCardRight from '../features/matches/GamePlayerCardRight';
 import GamePlayerCardLeft from '../features/matches/GamePlayerCardLeft';
 import TennisBallScene from '../features/matches/TennisBallScene';
-import { UserData, PlayerStats } from '../utils/types';
+import { UserData, PlayerStats } from '../shared/types/types';
 
 interface PlayerAbilities {
     serve: number;
@@ -34,7 +34,7 @@ const GameWrapper: React.FC = () => {
             try {
                 setIsLoading(true);
                 const response =
-                    await axios.get<PlayerStats[]>('/get/playerlist/');
+                    await useAxios().get<PlayerStats[]>('/get/playerlist/');
                 setPlayers(response.data);
                 setIsLoading(false);
             } catch (err) {

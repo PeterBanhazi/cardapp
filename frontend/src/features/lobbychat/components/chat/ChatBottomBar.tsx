@@ -7,7 +7,7 @@ import EmojiPicker from './EmojiPicker';
 import { usePreferences } from '../../store/usePreferences';
 import useSound from 'use-sound';
 
-import { useChatStore } from '../../../../store/useChatStore';
+import { useChatStore } from '../../../../core/store/useChatStore';
 
 function ChatBottomBar() {
     const [messageInput, setMessageInput] = useState('');

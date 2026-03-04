@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PlayerStats } from '../utils/types';
-import TennisPlayerCards from '../components/ui/TennisPlayerCards';
+import TennisPlayerCards from '../shared/components/ui/TennisPlayerCards';
 import { PlayerCardsContainer } from './PlayerCardsContainer';
 import { allowedNodeEnvironmentFlags } from 'process';
 

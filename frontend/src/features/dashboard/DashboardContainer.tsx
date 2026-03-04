@@ -10,7 +10,10 @@ import {
 } from 'lucide-react';
 
 import { useNavigate } from 'react-router-dom';
-import { DashboardStatus, useDashboardStore } from '../../store/store';
+import {
+    DashboardStatus,
+    useDashboardStore,
+} from '../../core/store/useDashboardStore';
 interface DashboardContainerProps {
     id: string;
     title: string;

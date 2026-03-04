@@ -15,13 +15,13 @@ import { usePreferences } from '../store/usePreferences';
 import { useSelectedUser } from '../store/useSelectedUser';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useFriendsStore } from '../../../store/useFriendsStore';
-import { useChatStore } from '../../../store/useChatStore';
-import { useAuthStore } from '../../../store/useAuthStore';
+import { useFriendsStore } from '../../../core/store/useFriendsStore';
+import { useChatStore } from '../../../core/store/useChatStore';
+import { useAuthStore } from '../../../core/store/useAuthStore';
 import {
     RequestButton,
     StatusBadge,
-} from '../../../pages/wsFriendStatus/wsFriendStatus';
+} from '../../../core/wsFriendStatus/wsFriendStatus';
 interface SidebarProps {
     isCollapsed: boolean;
 }

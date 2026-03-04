@@ -1,6 +1,6 @@
 import React from 'react';
 import { PlayerStats } from '../utils/types';
-import TennisPlayerCards from '../components/ui/TennisPlayerCards';
+import TennisPlayerCards from '../shared/components/ui/TennisPlayerCards';
 
 const PlayerCardDisplay: React.FC<{
     item: PlayerStats;

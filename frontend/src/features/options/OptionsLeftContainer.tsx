@@ -1,15 +1,15 @@
 import React, { ReactNode, useState } from 'react';
-import { PlayerStats } from '../../utils/types';
+import { PlayerStats } from '../../shared/types/types';
 
 import TennisPlayerCreator from './playercards/TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../../utils/useAxios';
+import useAxios from '../../core/utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
 
 import { RiCrosshair2Line } from 'react-icons/ri';
-import TennisBallToggle from '../../components/ui/TennisBallToggle';
+import TennisBallToggle from '../../shared/components/ui/TennisBallToggle';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
-import ScrollContainer from '../../components/ui/ScrollContainer';
+import ScrollContainer from '../../shared/components/ui/ScrollContainer';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];

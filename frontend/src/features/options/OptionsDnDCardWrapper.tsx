@@ -23,12 +23,12 @@ import {
 
 import { FaArrowsRotate } from 'react-icons/fa6';
 
-import { PlayerStats } from '../../utils/types';
+import { PlayerStats } from '../../shared/types/types';
 
 import DraggablePlayerCard from './playercards/DraggablePlayerCard';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxios from '../../utils/useAxios';
+import useAxios from '../../core/utils/useAxios';
 import OptionsLeftContainer from './OptionsLeftContainer';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
 

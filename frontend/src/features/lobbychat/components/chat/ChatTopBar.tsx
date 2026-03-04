@@ -1,9 +1,9 @@
 import { Avatar, AvatarImage } from '../ui/avatar';
 import { Info, X } from 'lucide-react';
 import PreferencesTab from '../PreferencesTab';
-import { useChatStore } from '../../../../store/useChatStore';
+import { useChatStore } from '../../../../core/store/useChatStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
-import { RequestButton } from '../../../../pages/wsFriendStatus/wsFriendStatus';
+import { RequestButton } from '../../../../core/wsFriendStatus/wsFriendStatus';
 
 const ChatTopBar = () => {
     const { selectedUser, setSelectedUser } = useSelectedUser();

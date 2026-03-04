@@ -6,14 +6,14 @@ import { USERS } from '../features/lobbychat/db/dummy';
 // import StatusList from './wstest/useStatusList';
 // import ChatApp from './wstest/ChatApp';
 import WsStatusTest from './wstest/WsStatusTest';
-import ChatWindow from './wsFriendStatus/ChatWindow';
-import { WebSocketStatusManager } from '../store/useFriendsStore';
+import ChatWindow from '../core/wsFriendStatus/ChatWindow';
+import { WebSocketStatusManager } from '../core/store/useFriendsStore';
 import {
     ConnectionStatus,
     FriendsList,
     DebugPanel,
-} from './wsFriendStatus/wsFriendStatus';
-import { useChatStore, ChatWebSocketManager } from '../store/useChatStore';
+} from '../core/wsFriendStatus/wsFriendStatus';
+import { useChatStore, ChatWebSocketManager } from '../core/store/useChatStore';
 
 const ChatLobby = () => {
     const layout = Cookies.get('react-resizable-panels:layout');

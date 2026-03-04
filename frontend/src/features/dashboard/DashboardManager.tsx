@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import GameWrapper from '../../pages/GameWrapper';
 import ChatLobby from '../../pages/ChatLobby';
 import Rules from '../../pages/Rules';
-import { useDashboardStore } from '../../store/store';
+import { useDashboardStore } from '../../core/store/useDashboardStore';
 import Options from '../options/Options';
 import TopList from '../ranks/Ranks';
 import { DashboardContainer } from './DashboardContainer';
