@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-    ChatWebSocketManager,
-    useChatStore,
-} from '../../core/store/useChatStore';
+import { useChatStore } from '../../core/store/useChatStore';
 import { useAuthStore } from '../../core/store/useAuthStore';
 
 const ChatWindow: React.FC = () => {

@@ -1,4 +1,3 @@
-import { User } from '../db/dummy';
 import { ScrollArea } from './ui/scroll-area';
 import {
     Tooltip,
@@ -18,10 +17,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useFriendsStore } from '../../../core/store/useFriendsStore';
 import { useChatStore } from '../../../core/store/useChatStore';
 import { useAuthStore } from '../../../core/store/useAuthStore';
-import {
-    RequestButton,
-    StatusBadge,
-} from '../../../core/wsFriendStatus/wsFriendStatus';
 interface SidebarProps {
     isCollapsed: boolean;
 }

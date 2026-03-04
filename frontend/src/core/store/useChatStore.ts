@@ -231,7 +231,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             
             connection.sendMessage(JSON.stringify(chatMessage));
             
-            // Add to local messages if you want to improve ux and
+            // Add to local messages for optimistic update if you want to improve ux and
             // mess around message id sync, the message is saved either way
             
             // get().addMessage(friendUser, chatMessage);
