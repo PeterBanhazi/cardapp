@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { cn } from '../../../../lib/utils';
+import { cn } from '@/lib/utils';
 import Sidebar from '../SideBar';
 import MessageContainer from './MessageContainer';
 import {

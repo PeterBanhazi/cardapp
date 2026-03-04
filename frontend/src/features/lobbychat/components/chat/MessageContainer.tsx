@@ -16,10 +16,10 @@ const MessageContainer = () => {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [activeChatUser]);
     return (
-        <div className="flex flex-col justify-between w-full h-full">
+        <div className="flex flex-col justify-between w-full bg-blue-300  h-full">
             <ChatTopBar />
 
-            <div className="w-full overflow-y-auto overflow-x-hidden h-full flex flex-col">
+            <div className="w-full overflow-y-auto overflow-x-hidden h-full flex bg-red-200 flex-col">
                 <MessageList />
                 <ChatBottomBar />
             </div>

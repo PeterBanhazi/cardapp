@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
-import { PlayerStats } from '../../../shared/types/types';
+import { PlayerStats } from '@/shared/types/types';
 import { CSS } from '@dnd-kit/utilities';
 import TennisPlayerCards from './TennisPlayerCards';
 

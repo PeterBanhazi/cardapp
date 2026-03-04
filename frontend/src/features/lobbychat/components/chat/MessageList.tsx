@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage } from '../ui/avatar';
-import { cn } from '../../../../lib//utils';
+import { cn } from '@/lib//utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
