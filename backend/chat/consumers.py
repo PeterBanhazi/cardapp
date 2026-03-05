@@ -103,12 +103,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def chat_message(self, event):
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({
+        text_data=json.dumps({
             'type': 'message',
             'message': event['message'],
             'sender': event['sender'],
             'timestamp': event['timestamp']
-        }))
+        })
+        print(text_data)
+        await self.send(text_data)
     
     async def typing_status(self, event):
         # Send typing status to WebSocket
@@ -268,7 +270,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             }
             )
             print("request arrived")
-            
+        
+
         # send message to self system message channel on accepted     
         if data.get('type') == 'system_message' and data.get('status') == 'accepted': 
             system_self_group_name = f"system_{self.user}"        
