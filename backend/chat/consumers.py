@@ -1,4 +1,5 @@
-# Heartbeat fronted implementation needed 
+#TODO: Heartbeat fronted implementation needed 
+#TODO: redis user presence feature
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
@@ -187,7 +188,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'system_message',
                 'event': 'logged in',
-                'sender': self.user.username,
+                'user_to': 'system',
+                'user_from': self.user.username,
                 'status': 'online'
             }
         )
@@ -198,9 +200,9 @@ class SystemConsumer(AsyncWebsocketConsumer):
         for friend in friends:
             status = await self.get_user_status(friend)
             await self.send(text_data=json.dumps({
-                'type': 'system_message',
-                'user': friend,
-                'sender': friend,
+                'type': 'system_message',                
+                'user_from': friend,
+                'user_to': self.user.username,
                 'event': 'system login event',
                 'status': 'online' if status else 'offline'
             }))
@@ -211,8 +213,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
             f"system_{friend}",{                
                 'type': 'system_message',
-                'user': friend,
-                'sender': self.user.username,
+                'user_to': friend,
+                'user_from': self.user.username,
                 'event': 'system log_in event',
                 'status': 'online'
                 }
@@ -228,8 +230,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
             f"system_{friend}",{                
                 'type': 'system_message',
-                'user': friend,
-                'sender': self.user.username,
+                'user_to': friend,
+                'user_from': self.user.username,
                 'event': 'system log_out event',
                 'status': 'offline'
                 }
@@ -248,59 +250,202 @@ class SystemConsumer(AsyncWebsocketConsumer):
         # Handle heartbeat or other status events
         
         data = json.loads(text_data)
-        self.user = self.scope['user']
+        
+        self.user = self.scope['user']        
+    
+       
         
         
-        self.userto = data.get('user')
-        self.system_group_name = f"system_{self.userto}"
-        print("incoming sysreq")
-        print(self.userto)
-        print(self.system_group_name)
+        action = data.get("action")
+
+        handler = getattr(self, f"handle_{action}", None)
+
+        if handler:
+            await handler(data)
+
+        
+        # self.userto = data.get('user')
+        # self.system_group_name = f"system_{self.userto}"
+        # print("incoming sysreq")
+        # print(self.userto)
+        # print(self.system_group_name)
         
         
-        if data.get('type') == 'system_message' and data.get('event') == 'chat_request':           
-            await self.channel_layer.group_send(                        
-            self.system_group_name,
-            {
-                'type': 'system_message',
-                'user': data.get('user'),
-                'sender': data.get('sender'),
-                'event': data.get('event'),
-                'status': data.get('status'),
-            }
-            )
-            print("request arrived")
+        # if data.get('type') == 'system_message' and data.get('event') == 'chat_request':           
+        #     await self.channel_layer.group_send(                        
+        #     self.system_group_name,
+        #     {
+        #         'type': 'system_message',
+        #         'user_from': data.get('user'),
+        #         'sender': data.get('sender'),
+        #         'event': data.get('event'),
+        #         'status': data.get('status'),
+        #     }
+        #     )
+        #     print("request arrived")
         
 
         # send message to self system message channel on accepted     
-        if data.get('type') == 'system_message' and data.get('status') == 'accepted': 
-            system_self_group_name = f"system_{self.user}"        
-            await self.channel_layer.group_send(                        
-            system_self_group_name,
-            {
-                'type': 'system_message',
-                'user': data.get('sender'),
-                'sender': self.userto,
-                'event': data.get('event'),
-                'status': data.get('status'),
-            }
-            )
+        
+        # if data.get('type') == 'system_message' and data.get('status') == 'accepted': 
+        #     system_self_group_name = f"system_{self.user}"        
+        #     await self.channel_layer.group_send(                        
+        #     system_self_group_name,
+        #     {
+        #         'type': 'system_message',
+        #         'user': data.get('sender'),
+        #         'sender': self.userto,
+        #         'event': data.get('event'),
+        #         'status': data.get('status'),
+        #     }
+        #     )
             
         # Frontend implementation needed  
         # if data.get('type') == 'heartbeat':
         #     await self.update_user_status(True)
 
+    async def handle_chat_request(self, data):
+        print("test: "+self.user.username)
+        friend = data["user_to"]
+
+        await self.channel_layer.group_send(
+            f"system_{friend}",
+            {
+                "type": "system_message",
+                "event": "chat_request_received",
+                "user_from": self.user.username,
+                "user_to": friend,
+                "status": "pending"
+            }
+        )
+
+        await self.channel_layer.group_send(
+            f"system_{self.user}",
+            {
+                "type": "system_message",
+                "event": "chat_request_sent",
+                "user_from": self.user.username,
+                "user_to": friend,
+                "status": "pending"
+            }
+        )
+
     
+    async def handle_accept_chat(self, data):
+
+        friend = data["user_from"]
+
+        await self.channel_layer.group_send(
+            f"system_{friend}",
+            {
+                "type": "system_message",
+                "event": "chat_request_accepted",
+                "user_from": friend,
+                "user_to": self.user.username,
+                "status": "active"
+            }
+        )
+
+        await self.channel_layer.group_send(
+            f"system_{self.user}",
+            {
+                "type": "system_message",
+                "event": "chat_request_accepted",
+                "user_from": friend,
+                "user_to": self.user.username,
+                "status": "active"
+            }
+        )
+    
+    async def handle_reject_chat(self, data):
+
+        friend = data["user_from"]
+
+        await self.channel_layer.group_send(
+            f"system_{friend}",
+            {
+                "type": "system_message",
+                "event": "chat_request_rejected",
+                "user_from": friend,
+                "user_to": self.user.username,
+                "status": "rejected"
+            }
+        )
+        
+        await self.channel_layer.group_send(
+            f"system_{self.user}",
+            {
+                "type": "system_message",
+                "event": "chat_request_rejected",
+                "user_from": friend,
+                "user_to": self.user.username,
+                "status": "rejected"
+            }
+        )
+        
+    async def handle_cancel_chat(self, data):
+
+        friend = data["user_to"]
+
+        await self.channel_layer.group_send(
+            f"system_{friend}",
+            {
+                "type": "system_message",
+                "event": "chat_request_cancelled",
+                "user_from": self.user.username,
+                "user_to": friend,
+                "status": "cancelled"
+            }
+        )
+    
+    async def handle_close_chat(self, data):
+
+        friend = data["user_from"]
+
+        await self.channel_layer.group_send(
+            f"system_{friend}",
+            {
+                "type": "system_message",
+                "event": "chat_closed",
+                "user_from": data["user_from"],
+                "user_to": friend,
+                "status": "closed"
+            }
+        )
+
+        await self.channel_layer.group_send(
+            f"system_{self.user}",
+            {
+                "type": "system_message",
+                "event": "chat_closed",
+                "user_from": data["user_from"],
+                "user_to": self.user.username,
+                "status": "closed"
+            }
+        )
+        
     async def system_message(self, event):
-        # Send status update to WebSocket
-        self.user = self.scope['user']
-        await self.send(text_data=json.dumps({
-            'type': 'system_message',
-            'user': self.user.username,
-            'sender': event['sender'],
-            'event': event['event'],
-            'status': event['status']
-        }))
+        text_data=json.dumps({            
+            "type": "system_message",
+            "event": event["event"],
+            "user_from": event["user_from"],
+            "user_to": event["user_to"],
+            "status": event["status"]
+        })
+        print(text_data)
+
+        await self.send(text_data)
+    
+    # async def system_message(self, event):
+    #     # Send status update to WebSocket
+    #     self.user = self.scope['user']
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'system_message',
+    #         'user': self.user.username,
+    #         'sender': event['sender'],
+    #         'event': event['event'],
+    #         'status': event['status']
+    #     }))
     
     @database_sync_to_async
     def update_user_status(self, is_online):
