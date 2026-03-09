@@ -182,18 +182,6 @@ class SystemConsumer(AsyncWebsocketConsumer):
         print("connect ok!")
         print(self.system_group_name)
         
-        # Broadcast online status to frontend via WS0
-        await self.channel_layer.group_send(
-            self.system_group_name,
-            {
-                'type': 'system_message',
-                'event': 'logged in',
-                'user_to': 'system',
-                'user_from': self.user.username,
-                'status': 'online'
-            }
-        )
-        
         # Get friends online status and send actual state of friends who has 'accepted' relation
         # and broadcast to client via WS to initialise online user array at frontend
         friends = await self.get_friends()
@@ -203,7 +191,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
                 'type': 'system_message',                
                 'user_from': friend,
                 'user_to': self.user.username,
-                'event': 'system login event',
+                'event': 'system log_in event',
                 'status': 'online' if status else 'offline'
             }))
     
@@ -305,7 +293,6 @@ class SystemConsumer(AsyncWebsocketConsumer):
         #     await self.update_user_status(True)
 
     async def handle_chat_request(self, data):
-        print("test: "+self.user.username)
         friend = data["user_to"]
 
         await self.channel_layer.group_send(
@@ -313,8 +300,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_request_received",
-                "user_from": self.user.username,
-                "user_to": friend,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "pending"
             }
         )
@@ -324,8 +311,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_request_sent",
-                "user_from": self.user.username,
-                "user_to": friend,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "pending"
             }
         )
@@ -333,15 +320,15 @@ class SystemConsumer(AsyncWebsocketConsumer):
     
     async def handle_accept_chat(self, data):
 
-        friend = data["user_from"]
+        friend = data["user_to"]
 
         await self.channel_layer.group_send(
             f"system_{friend}",
             {
                 "type": "system_message",
                 "event": "chat_request_accepted",
-                "user_from": friend,
-                "user_to": self.user.username,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "active"
             }
         )
@@ -351,23 +338,23 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_request_accepted",
-                "user_from": friend,
-                "user_to": self.user.username,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "active"
             }
         )
     
     async def handle_reject_chat(self, data):
 
-        friend = data["user_from"]
+        friend = data["user_to"]
 
         await self.channel_layer.group_send(
             f"system_{friend}",
             {
                 "type": "system_message",
                 "event": "chat_request_rejected",
-                "user_from": friend,
-                "user_to": self.user.username,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "rejected"
             }
         )
@@ -377,8 +364,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_request_rejected",
-                "user_from": friend,
-                "user_to": self.user.username,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "rejected"
             }
         )
@@ -392,23 +379,33 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_request_cancelled",
-                "user_from": self.user.username,
-                "user_to": friend,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "cancelled"
+            }
+        )
+        await self.channel_layer.group_send(
+            f"system_{self.user}",
+            {
+                "type": "system_message",
+                "event": "chat_request_cancelled",
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
+                "status": "rejected"
             }
         )
     
     async def handle_close_chat(self, data):
 
-        friend = data["user_from"]
+        friend = data["user_to"]
 
         await self.channel_layer.group_send(
             f"system_{friend}",
             {
                 "type": "system_message",
                 "event": "chat_closed",
-                "user_from": data["user_from"],
-                "user_to": friend,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "closed"
             }
         )
@@ -418,8 +415,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             {
                 "type": "system_message",
                 "event": "chat_closed",
-                "user_from": data["user_from"],
-                "user_to": self.user.username,
+                "user_from": data['user_from'],
+                "user_to": data['user_to'],
                 "status": "closed"
             }
         )
