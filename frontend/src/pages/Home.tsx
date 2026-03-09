@@ -9,8 +9,7 @@ import ProfileEditModal from '../features/auth/ProfileEditModal';
 import Login from '../features/auth/login';
 
 const Home: React.FC = () => {
-    const user = useAuthStore.getState().user;
-    const loggedInUsername = user?.username;
+    const loggedInUsername = useAuthStore((state) => state.user?.username);
 
     return (
         <div>

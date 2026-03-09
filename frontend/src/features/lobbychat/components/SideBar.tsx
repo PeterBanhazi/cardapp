@@ -17,13 +17,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { useFriendsStore } from '../../../core/store/useFriendsStore';
 import { useChatStore } from '../../../core/store/useChatStore';
 import { useAuthStore } from '../../../core/store/useAuthStore';
+import { Friend } from '@/shared/types/friend';
 interface SidebarProps {
     isCollapsed: boolean;
-}
-
-interface Friend {
-    user: string;
-    status: 'online' | 'offline' | 'request' | 'closed' | 'accepted';
 }
 
 const Sidebar = ({ isCollapsed }: SidebarProps) => {
@@ -31,44 +27,99 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     const { soundEnabled } = usePreferences();
     const { setSelectedUser, selectedUser } = useSelectedUser();
 
-    const { friends, isConnected, acceptChatRequest } = useFriendsStore();
+    const { friends, isConnected, sendAcceptChatRequest } = useFriendsStore();
     const { openChat, getUnreadCount } = useChatStore();
     const { activeChatUser, setActiveChatUser } = useChatStore();
-    const loggedInUsername = useAuthStore.getState().user?.username;
-    const friendsLista = Object.values(friends);
+    const loggedInUsername = useAuthStore((state) => state.user?.username);
 
+    const statusPriority: Record<Friend['status'], number> = {
+        active: 0,
+        pending: 1,
+        rejected: 2,
+        cancelled: 3,
+        online: 4,
+        closed: 5,
+        offline: 6,
+    };
     const friendsList = useMemo(() => {
-        // Create a map to store the latest status for each user
-        const userStatusMap = new Map<
-            string,
-            'request' | 'accepted' | 'online' | 'closed' | 'offline'
-        >();
-        // Process all status messages to get the latest status for each user
+        const userStatusMap = new Map<string, Friend['status']>();
 
-        friendsLista.forEach((friend) => {
-            userStatusMap.set(
-                friend.user,
-                friend.status as 'online' | 'offline'
-            );
+        Object.values(friends).forEach((friend) => {
+            userStatusMap.set(friend.user, friend.status);
         });
 
-        // Convert map to array and filter out logged-in user
         return Array.from(userStatusMap.entries())
             .filter(([username]) => username !== loggedInUsername)
-            .map(([user, status]) => ({ user, status }));
+            .map(([user, status]) => ({ user, status }))
+            .sort(
+                (a, b) => statusPriority[a.status] - statusPriority[b.status]
+            );
     }, [friends, loggedInUsername]);
 
-    const handleFriendClick = (friend: Friend) => {
-        if (friend.status === 'request') {
-            console.log(friend.user);
-            // Accept the chat request
-            openChat(friend.user);
-            acceptChatRequest(friend.user);
-        } else if (friend.status === 'accepted' || friend.status === 'online') {
-            // Open existing chat
-            openChat(friend.user);
-            setActiveChatUser(friend.user);
-            console.log('autoopen: ' + friend.user);
+    const handleSideBarFriendClick = (friend: Friend) => {
+        // if (friend.status === 'pending') {
+        // Accept the chat request
+        setSelectedUser(friend);
+        // sendAcceptChatRequest(friend.user);
+        // }
+        //      else if
+        // (friend.status === 'active' || friend.status === 'online') {
+        //         // Open existing chat
+        //         setSelectedUser(friend);
+        //         // setActiveChatUser(friend.user);
+        //     }
+    };
+
+    const getAvatarRingConfig = (ringStatus: Friend['status']) => {
+        switch (ringStatus) {
+            case 'online':
+                return {
+                    text: 'Chat',
+                    styles: 'ring-2 ring-blue-500 ring-inset',
+                    disabled: false,
+                };
+            case 'offline':
+                return {
+                    text: 'Offline',
+                    styles: '',
+                    disabled: true,
+                };
+            case 'pending':
+                return {
+                    text: 'Pending',
+                    styles: 'ring-2 ring-yellow-500 ring-inset',
+                    disabled: false,
+                };
+            case 'active':
+                return {
+                    text: 'Active',
+                    styles: 'ring-2 ring-green-400 ring-inset',
+                    disabled: true,
+                };
+            case 'closed':
+                return {
+                    text: 'Reconnect',
+                    styles: 'ring-3 ring-grey-300 ring-inset',
+                    disabled: false,
+                };
+            case 'rejected':
+                return {
+                    text: 'Rejected',
+                    styles: 'ring-2 ring-red-400 ring-inset',
+                    disabled: true,
+                };
+            case 'cancelled':
+                return {
+                    text: 'Cancelled',
+                    styles: 'ring-2 ring-red-300 ring-inset',
+                    disabled: false,
+                };
+            default:
+                return {
+                    text: 'Chat',
+                    styles: 'ring-2 ring-blue-400 ring-inset',
+                    disabled: true,
+                };
         }
     };
 
@@ -94,30 +145,25 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                             onClick={() => {
                                                 soundEnabled &&
                                                     playClickSound();
-                                                handleFriendClick(friend);
+                                                handleSideBarFriendClick(
+                                                    friend
+                                                );
                                                 setSelectedUser(friend);
                                             }}
                                         >
                                             <Avatar className="my-3 flex justify-center items-center">
                                                 <AvatarImage
-                                                    src={'/avatars/user4.png'}
+                                                    src={'/avatars/user3.png'}
                                                     alt="User Image"
                                                     className={cn(
-                                                        'flex justify-center items-center border-2 border-white rounded-full w-10 h-10',
-                                                        friend.status ===
-                                                            'online' &&
-                                                            friend.status ===
-                                                                'online' &&
-                                                            'border-3 border-green-400'
+                                                        `flex justify-center items-center p-0.5  border-white rounded-full w-10 h-10`,
+                                                        `${getAvatarRingConfig(friend.status).styles}`
                                                     )}
                                                 />
                                                 <AvatarFallback>
                                                     {friend.user}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            <span className="sr-only">
-                                                {friend.user}
-                                            </span>
                                         </div>
                                     </TooltipTrigger>
                                     <TooltipContent
@@ -140,15 +186,14 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 )}
                                 onClick={() => {
                                     soundEnabled && playClickSound();
-                                    handleFriendClick(friend);
+                                    handleSideBarFriendClick(friend);
                                     setSelectedUser(friend);
                                 }}
                             >
                                 <Avatar
                                     className={cn(
-                                        'flex justify-center p-0.5 items-center',
-                                        friend.status === 'online' &&
-                                            'ring-2 ring-green-400 ring-inset'
+                                        `flex justify-center p-0.5 items-center`,
+                                        `${getAvatarRingConfig(friend.status).styles}`
                                     )}
                                 >
                                     <AvatarImage
@@ -162,6 +207,8 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 <div className="flex flex-col  text-lg w-48 ">
                                     <span className="text-left">
                                         {friend.user}
+                                        {':'}
+                                        {friend.status}
 
                                         {getUnreadCount(friend.user) > 0 && (
                                             <span className="ml-1 bg-red-500 text-white text-xs px-1 rounded-full">

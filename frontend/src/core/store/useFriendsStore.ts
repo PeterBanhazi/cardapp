@@ -7,18 +7,15 @@ import { devtools } from 'zustand/middleware'
 import { useAuthStore } from './useAuthStore';
 import { useChatStore } from './useChatStore';
 
-// Types
-interface Friend {
-  user: string;
-  status: 'online' | 'offline' | 'request' | 'closed' | 'accepted';
-}
+import {Friend} from "@/shared/types/friend"
 
 interface StatusMessage {
     type: 'system_message';
-    user: string;
-    sender: string;
+    user_to: string;
+    user_from: string;
     event: string;
-    status: 'online' | 'offline' | 'request' | 'closed' | 'accepted';
+    action?: string;
+    status: Friend["status"]
 }
 
 
@@ -31,7 +28,10 @@ interface FriendsState {
     setConnected: (connected: boolean) => void;
     setSendMessage: (sendFn: ((message: string) => void) | null) => void;
     sendChatRequest: (user: string) => void;
-    acceptChatRequest: (user: string) => void;
+    sendClosedChat:(user: string) => void;
+    sendAcceptChatRequest: (user: string) => void;
+    sendRejectChatRequest: (user: string) => void;
+    sendCancelledChat: (user: string) => void;
     resetFriends: () => void;
 }
 
@@ -51,10 +51,10 @@ export const useFriendsStore = create<FriendsState>()(devtools(((set, get) => ({
       'setFriendStatus',);
     
     // Auto-open chat when request is accepted
-    if (status === 'accepted') {
-      const chatStore = useChatStore.getState();
-      chatStore.openChat(user);
-    }
+    // if (status === 'pending') {
+    //   const chatStore = useChatStore.getState();
+    //   chatStore.openChat(user);
+    // }
   },
   setConnected: (connected: boolean) =>
     set({ isConnected: connected }),
@@ -65,10 +65,10 @@ export const useFriendsStore = create<FriendsState>()(devtools(((set, get) => ({
     if (sendMessage && isConnected) {
       const message = JSON.stringify({
         type: "system_message",
-        user: user,
-        sender: useAuthStore.getState().user?.username,
-        event: "chat_request",
-        status: "request"
+        user_to: user,
+        user_from: useAuthStore.getState().user?.username,
+        action: "chat_request",
+       
       });
       sendMessage(message);
       console.log('Sent chat request:', message);
@@ -76,18 +76,56 @@ export const useFriendsStore = create<FriendsState>()(devtools(((set, get) => ({
       console.warn('Cannot send message: WebSocket not connected or sendMessage not available');
     }
   },
-  acceptChatRequest: (user: string) => {
+  sendAcceptChatRequest: (user: string) => {
     const { sendMessage, isConnected } = get();
     if (sendMessage && isConnected) {
       const message = JSON.stringify({
         type: "system_message",
-        user: user,
-        sender: useAuthStore.getState().user?.username,
-        event: "chat_request",
-        status: "accepted"
+        user_to: user,
+        user_from: useAuthStore.getState().user?.username,
+        action: "accept_chat",        
       });
       sendMessage(message);
       console.log('Accepted chat request:', message);
+    }
+  },
+  sendRejectChatRequest: (user: string) => {
+    const { sendMessage, isConnected } = get();
+    if (sendMessage && isConnected) {
+      const message = JSON.stringify({
+        type: "system_message",
+        user_to: user,
+        user_from: useAuthStore.getState().user?.username,
+        action: "reject_chat",        
+      });
+      sendMessage(message);
+      console.log('Rejected chat:', message);
+    }
+  },
+  sendCancelledChat: (user: string) => {
+    const { sendMessage, isConnected } = get();
+    if (sendMessage && isConnected) {
+      const message = JSON.stringify({
+        type: "system_message",
+        user_to: user,
+        user_from: useAuthStore.getState().user?.username,
+        action: "cancel_chat",        
+      });
+      sendMessage(message);
+      console.log('Cancelled chat request chat:', message);
+    }
+  },
+  sendClosedChat: (user: string) => {
+    const { sendMessage, isConnected } = get();
+    if (sendMessage && isConnected) {
+      const message = JSON.stringify({
+        type: "system_message",
+        user_to: user,
+        user_from: useAuthStore.getState().user?.username,
+        action: "close_chat",        
+      });
+      sendMessage(message);
+      console.log('Closed chat:', message);
     }
   },
   resetFriends: () => set({ friends: {}, isConnected: false, sendMessage: null }),
@@ -134,10 +172,41 @@ export const WebSocketStatusManager = (url: string, options: any = {}) => {
         //      setFriendStatus(message.user, message.status);
         //  }
           
-          if (message.type === 'system_message') {
+        if (['system log_out event', 'system log_in event'].includes(message.event)) {
            
-          setFriendStatus(message.sender, message.status);
+          setFriendStatus(message.user_from, message.status);
         }
+        if (['chat_request_received', 'chat_request_sent'].includes(message.event)) {
+            
+           
+          setFriendStatus(message.user_to, message.status);
+        }
+        if (message.event === 'chat_request_received') {
+          setFriendStatus(message.user_from, message.status);
+        }
+
+        if (message.event === 'chat_request_accepted') {
+           
+          setFriendStatus(message.user_from, message.status);
+          setFriendStatus(message.user_to, message.status);
+        }
+        
+        if (message.event === 'chat_request_rejected') {
+           
+          setFriendStatus(message.user_from, message.status);
+          setFriendStatus(message.user_to, message.status);
+        }
+        if (message.event === 'cancel_chat') {
+           
+          setFriendStatus(message.user_from, message.status);
+          setFriendStatus(message.user_to, message.status);
+        }
+        if (message.event === 'chat_closed') {
+           
+          setFriendStatus(message.user_from, message.status);
+          setFriendStatus(message.user_to, message.status);
+        }
+
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }

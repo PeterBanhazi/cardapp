@@ -1,10 +1,6 @@
-import { User } from "../db/dummy";
 import { create } from "zustand";
+import {Friend} from "@/shared/types/friend"
 
-interface Friend {
-    user: string;
-    status: 'online' | 'offline' | 'request' | 'closed' | 'accepted';
-} 
 
 type SelectedUserState = {
 	selectedUser: Friend | null;

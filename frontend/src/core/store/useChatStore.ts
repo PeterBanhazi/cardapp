@@ -3,7 +3,6 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
 import { WS_BASE_URL } from '../utils/constants';
 import { useAuthStore } from './useAuthStore';
-
 // Types
 interface ChatMessage {
     type: string;
@@ -39,6 +38,9 @@ interface ChatState {
     removeMessagesFromStorage: (friendUser: string) => void;
     clearAllStoredMessages: () => void;
 }
+
+
+
 
 // Storage utilities
 const CHAT_STORAGE_PREFIX = 'chat_messages_';
@@ -143,13 +145,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
     
     closeChat: (friendUser: string) => {
         set((state) => {
+            
             const newConnections = { ...state.chatConnections };
             delete newConnections[friendUser];
             
             // Remove messages from localStorage when chat is closed
             removeMessagesFromLocalStorage(friendUser);
-            
             return {
+                
                 chatConnections: newConnections,
                 activeChatUser: state.activeChatUser === friendUser ? null : state.activeChatUser,
             };

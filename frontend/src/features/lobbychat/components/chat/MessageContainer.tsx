@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import ChatTopBar from './ChatTopBar';
 import MessageList from './MessageList';
 import ChatBottomBar from './ChatBottomBar';
-import { useChatStore } from '../../../../core/store/useChatStore';
+import { useChatStore } from '@/core/store/useChatStore';
 
 const MessageContainer = () => {
     const { activeChatUser, setActiveChatUser } = useChatStore();

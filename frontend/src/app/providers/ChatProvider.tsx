@@ -88,10 +88,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 // Hook to use chat provider context (if needed for future extensions)
-export const useChatProvider = () => {
-    const context = useContext(ChatProviderContext);
-    if (context === undefined) {
-        throw new Error('useChatProvider must be used within a ChatProvider');
-    }
-    return context;
-};
+// export const useChatProvider = () => {
+//     const context = useContext(ChatProviderContext);
+//     if (context === undefined) {
+//         throw new Error('useChatProvider must be used within a ChatProvider');
+//     }
+//     return context;
+// };

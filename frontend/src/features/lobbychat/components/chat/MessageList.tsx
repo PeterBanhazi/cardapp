@@ -11,7 +11,7 @@ const MessageList = () => {
     const { activeChatUser, chatConnections, markMessagesAsRead } =
         useChatStore();
     const { selectedUser } = useSelectedUser();
-    const loggedInUsername = useAuthStore.getState().user?.username;
+    const loggedInUsername = useAuthStore((state) => state.user?.username);
     const activeChat = activeChatUser ? chatConnections[activeChatUser] : null;
 
     useEffect(() => {

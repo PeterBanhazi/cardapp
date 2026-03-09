@@ -3,11 +3,13 @@ import { Info, X } from 'lucide-react';
 import PreferencesTab from '../PreferencesTab';
 import { useChatStore } from '../../../../core/store/useChatStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
-import { RequestButton } from '../../../../core/wsFriendStatus/wsFriendStatus';
-
+import { ChatRequestButton } from '@/features/lobbychat/components/chat/ChatRequestButton';
+import { useFriendsStore } from '@/core/store/useFriendsStore';
 const ChatTopBar = () => {
-    const { selectedUser, setSelectedUser } = useSelectedUser();
-    const { activeChatUser, setActiveChatUser } = useChatStore();
+    const selectedUser = useSelectedUser((state) => state.selectedUser);
+
+    const { sendClosedChat } = useFriendsStore();
+    const { activeChatUser, setActiveChatUser, closeChat } = useChatStore();
     return (
         <div className="w-full h-20 flex p-4 justify-between items-center border-b">
             <div className="flex items-center gap-2">
@@ -21,29 +23,29 @@ const ChatTopBar = () => {
                     </Avatar>
                 )}
                 <span className="font-medium text-2xl">
-                    {selectedUser?.user}
+                    {selectedUser?.user}{' '}
                 </span>
                 {/* <span className="font-medium">{activeChatUser}</span> */}
             </div>
             {selectedUser && (
                 <span className="w-full flex justify-start gap-2 m-2 h-6 bg-red-300">
-                    <RequestButton
-                        friendUser={selectedUser.user}
-                        status={selectedUser.status}
-                    />
-                    <RequestButton
-                        friendUser={selectedUser?.user}
-                        status={selectedUser.status}
-                    />
+                    <ChatRequestButton friendUser={selectedUser.user} />
+                    <ChatRequestButton friendUser={selectedUser?.user} />
                 </span>
             )}
             <div className="flex gap-2">
                 <PreferencesTab />
                 <Info className="text-muted-foreground cursor-pointer hover:text-primary" />
-                <X
-                    className="text-muted-foreground cursor-pointer hover:text-primary"
-                    onClick={() => setActiveChatUser(null)}
-                />
+                {selectedUser && (
+                    <X
+                        className="text-muted-foreground cursor-pointer hover:text-primary"
+                        onClick={() => {
+                            (setActiveChatUser(null),
+                                sendClosedChat(selectedUser.user),
+                                closeChat(selectedUser.user));
+                        }}
+                    />
+                )}
             </div>
         </div>
     );

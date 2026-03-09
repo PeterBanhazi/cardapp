@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
-import { useFriendsStore } from '../store/useFriendsStore';
-import { useAuthStore } from '../store/useAuthStore';
-import { useChatStore } from '../store/useChatStore';
-interface Friend {
-    user: string;
-    status: 'online' | 'offline' | 'request' | 'closed' | 'accepted';
-}
+import { useFriendsStore } from '../../core/store/useFriendsStore';
+import { useAuthStore } from '../../core/store/useAuthStore';
+import { useChatStore } from '../../core/store/useChatStore';
+import { Friend } from '@/shared/types/friend';
+import { useSelectedUser } from '@/features/lobbychat/store/useSelectedUser';
 
 export const StatusBadge: React.FC<{ status: Friend['status'] }> = ({
     status,
@@ -16,12 +14,16 @@ export const StatusBadge: React.FC<{ status: Friend['status'] }> = ({
                 return 'bg-green-500';
             case 'offline':
                 return 'bg-gray-400';
-            case 'request':
-                return 'bg-blue-500';
-            case 'accepted':
+            case 'pending':
+                return 'bg-yellow-500';
+            case 'active':
                 return 'bg-green-100';
             case 'closed':
                 return 'bg-red-500';
+            case 'cancelled':
+                return 'bg-red-200';
+            case 'rejected':
+                return 'bg-red-200';
             default:
                 return 'bg-gray-400';
         }
@@ -37,9 +39,10 @@ export const RequestButton: React.FC<{
 }> = ({ friendUser, status }) => {
     const { sendChatRequest, isConnected } = useFriendsStore();
     const { activeChatUser, setActiveChatUser } = useChatStore();
+    const { selectedUser } = useSelectedUser();
 
     const handleSendRequest = () => {
-        if (status === 'accepted') {
+        if (status === 'pending') {
             setActiveChatUser(friendUser);
             return;
         }
@@ -60,15 +63,15 @@ export const RequestButton: React.FC<{
                     styles: 'bg-gray-300 text-gray-500 cursor-not-allowed',
                     disabled: true,
                 };
-            case 'request':
+            case 'pending':
                 return {
                     text: 'Pending',
                     styles: 'bg-yellow-400 text-yellow-800 cursor-not-allowed',
-                    disabled: true,
+                    disabled: false,
                 };
-            case 'accepted':
+            case 'active':
                 return {
-                    text: 'Accepted',
+                    text: 'Active',
                     styles: 'bg-green-400 text-yellow-800 cursor-not-allowed',
                     disabled: false,
                 };
@@ -77,6 +80,18 @@ export const RequestButton: React.FC<{
                     text: 'Reconnect',
                     styles: 'bg-green-500 hover:bg-green-600 text-white',
                     disabled: false,
+                };
+            case 'rejected':
+                return {
+                    text: 'Rejected',
+                    styles: 'bg-green-500 hover:bg-green-600 text-white',
+                    disabled: true,
+                };
+            case 'cancelled':
+                return {
+                    text: 'Cancelled',
+                    styles: 'bg-green-500 hover:bg-green-600 text-white',
+                    disabled: true,
                 };
             default:
                 return {
@@ -112,7 +127,13 @@ export const FriendsList: React.FC = () => {
         // Create a map to store the latest status for each user
         const userStatusMap = new Map<
             string,
-            'request' | 'accepted' | 'online' | 'closed' | 'offline'
+            | 'pending'
+            | 'active'
+            | 'online'
+            | 'closed'
+            | 'offline'
+            | 'rejected'
+            | 'cancelled'
         >();
 
         // Process all status messages to get the latest status for each user
@@ -131,12 +152,12 @@ export const FriendsList: React.FC = () => {
     }, [friends, loggedInUsername]);
 
     const handleFriendClick = (friend: Friend) => {
-        if (friend.status === 'request') {
+        if (friend.status === 'pending') {
             console.log(friend.user);
             // Accept the chat request
             openChat(friend.user);
             acceptChatRequest(friend.user);
-        } else if (friend.status === 'accepted' || friend.status === 'online') {
+        } else if (friend.status === 'active' || friend.status === 'online') {
             // Open existing chat
             openChat(friend.user);
             console.log('autoopen: ' + friend.user);
@@ -172,8 +193,8 @@ export const FriendsList: React.FC = () => {
                     friendsList.map((friend) => {
                         const unreadCount = getUnreadCount(friend.user);
                         const isClickable =
-                            friend.status === 'request' ||
-                            friend.status === 'accepted' ||
+                            friend.status === 'pending' ||
+                            friend.status === 'active' ||
                             friend.status === 'online';
 
                         return (
