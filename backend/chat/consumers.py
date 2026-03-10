@@ -1,6 +1,8 @@
 #TODO: Heartbeat fronted implementation needed 
 #TODO: redis user presence feature
 import json
+import uuid
+import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
@@ -9,6 +11,7 @@ from api.models import Friendship  # Updated import path
 from django.utils import timezone
 # from asgiref.sync import sync_to_async
 from django.conf import settings
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
