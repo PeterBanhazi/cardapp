@@ -11,6 +11,12 @@ from api.models import Friendship  # Updated import path
 from django.utils import timezone
 # from asgiref.sync import sync_to_async
 from django.conf import settings
+from .redis_presence import (
+    async_add_connection,
+    async_remove_connection,
+    async_is_online,
+    async_refresh_ttl,
+)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -164,93 +170,80 @@ class ChatConsumer(AsyncWebsocketConsumer):
 ## ---------------------system
 class SystemConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user = self.scope['user']
+        self.user = self.scope["user"]
         if not self.user.is_authenticated:
             await self.close()
             return
-        print(self.user)        
-        self.system_group_name = f"system_{self.user}"
-        
-        # Join group for system messages 
-        await self.channel_layer.group_add(
-            self.system_group_name,
-            self.channel_name
-        )
-        
+
+        self.user_id = self.user.id
+        self.socket_id = str(uuid.uuid4())           # unique per tab / device
+        self.system_group_name = f"system_{self.user.username}"
+
+        await self.channel_layer.group_add(self.system_group_name, self.channel_name)
         await self.accept()
+
+        # ── Redis: register this connection ──────────────────────────────
+        connection_count = await async_add_connection(self.user_id, self.socket_id)
+
+        # Only the FIRST connection of a user triggers the "came online" flow.
+        # Extra tabs / devices skip it — they're already online.
+        if connection_count == 1:
+            await self.update_user_status(True)
+            await self.broadcast_online()
         
-        # Update user status
-        await self.update_user_status(True)
-        
-        print("connect ok!")
-        print(self.system_group_name)
-        
-        # Get friends online status and send actual state of friends who has 'accepted' relation
-        # and broadcast to client via WS to initialise online user array at frontend
-        friends = await self.get_friends()
-        for friend in friends:
-            status = await self.get_user_status(friend)
-            await self.send(text_data=json.dumps({
-                'type': 'system_message',                
-                'user_from': friend,
-                'user_to': self.user.username,
-                'event': 'system log_in event',
-                'status': 'online' if status else 'offline'
-            }))
+        # # Get friends online status and send actual state of friends who has 'accepted' relation
+        # # and broadcast to client via WS to initialise online user array at frontend
+        # friends = await self.get_friends()
+        # for friend in friends:
+        #     status = await self.get_user_status(friend)
+        #     await self.send(text_data=json.dumps({
+        #         'type': 'system_message',                
+        #         'user_from': friend,
+        #         'user_to': self.user.username,
+        #         'event': 'system log_in event',
+        #         'status': 'online' if status else 'offline'
+        #     }))
     
         
-        # Broadcast online status to all friend's system cannel who has accepted relation        
-        for friend in friends:                    
-            await self.channel_layer.group_send(
-            f"system_{friend}",{                
-                'type': 'system_message',
-                'user_to': friend,
-                'user_from': self.user.username,
-                'event': 'system log_in event',
-                'status': 'online'
-                }
-            )
+        # ── Send each friend's current status to THIS new tab only ───────
+        friends = await self.get_friends()
+        for friend_username in friends:
+            friend_user_id = await self.get_user_id(friend_username)
+            is_online = await async_is_online(friend_user_id) if friend_user_id else False
+            await self.send(text_data=json.dumps({
+                "type": "system_message",
+                "user_from": friend_username,
+                "user_to": self.user.username,
+                "event": "system log_in event",
+                "status": "online" if is_online else "offline",
+            }))
     
     async def disconnect(self, close_code):
         if not hasattr(self, 'system_group_name'):
             return                
 
-        # Broadcast offline status to all users
-        friends = await self.get_friends()
-        for friend in friends:                     
-            await self.channel_layer.group_send(
-            f"system_{friend}",{                
-                'type': 'system_message',
-                'user_to': friend,
-                'user_from': self.user.username,
-                'event': 'system log_out event',
-                'status': 'offline'
-                }
-            )
-        
-        # Update user status
-        await self.update_user_status(False)
-        
-        # Leave status group
-        await self.channel_layer.group_discard(
-            self.system_group_name,
-            self.channel_name
-        )    
-  
+
+        # ── Redis: unregister this connection ────────────────────────────
+        remaining = await async_remove_connection(self.user_id, self.socket_id)
+
+        # Only broadcast "offline" when the LAST connection closes.
+        # Closing one tab while others are open = still online.
+        if remaining == 0:
+            await self.update_user_status(False)
+            await self.broadcast_offline()
+
+        await self.channel_layer.group_discard(self.system_group_name, self.channel_name)
+
     async def receive(self, text_data):
-        # Handle heartbeat or other status events
-        
         data = json.loads(text_data)
-        
-        self.user = self.scope['user']        
-    
-       
-        
-        
         action = data.get("action")
 
-        handler = getattr(self, f"handle_{action}", None)
+        # Heartbeat keeps the Redis TTL alive so long-lived tabs don't expire
+        if action == "heartbeat":
+            await async_refresh_ttl(self.user_id)
+            return
 
+        handler = getattr(self, f"handle_{action}", None)
         if handler:
             await handler(data)
 
@@ -294,6 +287,35 @@ class SystemConsumer(AsyncWebsocketConsumer):
         # Frontend implementation needed  
         # if data.get('type') == 'heartbeat':
         #     await self.update_user_status(True)
+
+    async def broadcast_online(self):
+        friends = await self.get_friends()
+        for friend in friends:
+            await self.channel_layer.group_send(
+                f"system_{friend}",
+                {
+                    "type": "system_message",
+                    "user_from": self.user.username,
+                    "user_to": friend,
+                    "event": "system log_in event",
+                    "status": "online",
+                },
+            )
+
+    async def broadcast_offline(self):
+        friends = await self.get_friends()
+        for friend in friends:
+            await self.channel_layer.group_send(
+                f"system_{friend}",
+                {
+                    "type": "system_message",
+                    "user_from": self.user.username,
+                    "user_to": friend,
+                    "event": "system log_out event",
+                    "status": "offline",
+                },
+            )
+
 
     async def handle_chat_request(self, data):
         friend = data["user_to"]
@@ -451,29 +473,19 @@ class SystemConsumer(AsyncWebsocketConsumer):
     def update_user_status(self, is_online):
         UserStatus.objects.update_or_create(
             user=self.user,
-            defaults={'is_online': is_online, 'last_activity': timezone.now()}
+            defaults={"is_online": is_online, "last_activity": timezone.now()},
         )
-    
+
     @database_sync_to_async
     def get_friends(self):
-        # Get all accepted friends
-        friend_relations = Friendship.objects.filter(
-            username=self.user,
-            status='ACCEPTED'
+        return list(
+            Friendship.objects.filter(username=self.user, status="ACCEPTED")
+            .values_list("friend__username", flat=True)
         )
-        print([relation.friend.username for relation in friend_relations])
-        return [relation.friend.username for relation in friend_relations]
-    
-    @database_sync_to_async
-    def get_user_status(self, username):
-        try:
-            user = User.objects.get(username=username)
-            status = UserStatus.objects.get(user=user)
-            
-            # Check if the user is considered online based on the timeout
-            if status.is_online and (timezone.now() - status.last_activity).total_seconds() < settings.USER_ONLINE_TIMEOUT:
-                return True
-            return False
-        except (User.DoesNotExist, UserStatus.DoesNotExist):
-            return False
 
+    @database_sync_to_async
+    def get_user_id(self, username):
+        try:
+            return User.objects.get(username=username).id
+        except User.DoesNotExist:
+            return None

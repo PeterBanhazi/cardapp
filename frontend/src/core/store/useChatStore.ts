@@ -288,7 +288,8 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
                 setChatConnection(friendUser, { isConnected: false });
             },
             shouldReconnect: () => true,
-            reconnectInterval: 3000,
+            reconnectAttempts: 10,
+            reconnectInterval: (attempt:number) => Math.min(1000 * 2 ** attempt, 15000),
         }
     );
 

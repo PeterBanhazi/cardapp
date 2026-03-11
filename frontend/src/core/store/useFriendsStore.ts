@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware'
+import {HEARTBEAT_INTERVAL} from '../../core/utils/constants';
 
 
 import { useAuthStore } from './useAuthStore';
@@ -132,20 +133,30 @@ export const useFriendsStore = create<FriendsState>()(devtools(((set, get) => ({
 }))));
 
 
+
+
 export const WebSocketStatusManager = (url: string, options: any = {}) => {
   const { setFriendStatus, setConnected, setSendMessage, resetFriends } = useFriendsStore();
+
+
   
+  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
   const { lastMessage, readyState, sendMessage } = useWebSocket(
     url, // Replace with your actual WebSocket URL
     {
+    shouldReconnect: () => true,
       onOpen: () => {
+        
         console.log('WebSocket connection opened');
         setConnected(true);
+        startHeartbeat(sendMessage);
       },
       onClose: () => {
         console.log('WebSocket connection closed');
+        stopHeartbeat();
         setConnected(false);
         resetFriends();
+   
       },
       onError: (error) => {
         console.error('WebSocket error:', error);
@@ -216,7 +227,32 @@ export const WebSocketStatusManager = (url: string, options: any = {}) => {
   useEffect(() => {
     setConnected(readyState === ReadyState.OPEN);
   }, [readyState, setConnected]);
+function startHeartbeat(sendMessage: any) {
 
+    stopHeartbeat();
+
+    heartbeatRef.current = setInterval(() => {
+
+      sendMessage(JSON.stringify({
+        type: "system_message",
+        action: "heartbeat"
+      }));
+
+    }, HEARTBEAT_INTERVAL);
+
+  }
+
+  function stopHeartbeat() {
+
+    if (heartbeatRef.current) {
+
+      clearInterval(heartbeatRef.current);
+
+      heartbeatRef.current = null;
+
+    }
+
+  }
   return null; // This is a logic-only component
 };
 
