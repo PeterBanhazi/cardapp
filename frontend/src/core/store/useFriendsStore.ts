@@ -143,8 +143,7 @@ export const WebSocketStatusManager = (url: string, options: any = {}) => {
   const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
   const { lastMessage, readyState, sendMessage } = useWebSocket(
     url, // Replace with your actual WebSocket URL
-    {
-    shouldReconnect: () => true,
+    {    
       onOpen: () => {
         
         console.log('WebSocket connection opened');

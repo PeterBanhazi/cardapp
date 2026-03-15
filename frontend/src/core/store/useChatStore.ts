@@ -1,8 +1,10 @@
 import React, { useEffect} from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
-import { WS_BASE_URL } from '../utils/constants';
+import { WS_BASE_URL, WS_CONNECT_OPTIONS } from '../utils/constants';
 import { useAuthStore } from './useAuthStore';
+
+
 // Types
 interface ChatMessage {
     type: string;
@@ -287,9 +289,7 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
                 console.error(`Chat WebSocket error for ${friendUser}:`, error);
                 setChatConnection(friendUser, { isConnected: false });
             },
-            shouldReconnect: () => true,
-            reconnectAttempts: 10,
-            reconnectInterval: (attempt:number) => Math.min(1000 * 2 ** attempt, 15000),
+            ...WS_CONNECT_OPTIONS
         }
     );
 

@@ -191,20 +191,6 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await self.update_user_status(True)
             await self.broadcast_online()
         
-        # # Get friends online status and send actual state of friends who has 'accepted' relation
-        # # and broadcast to client via WS to initialise online user array at frontend
-        # friends = await self.get_friends()
-        # for friend in friends:
-        #     status = await self.get_user_status(friend)
-        #     await self.send(text_data=json.dumps({
-        #         'type': 'system_message',                
-        #         'user_from': friend,
-        #         'user_to': self.user.username,
-        #         'event': 'system log_in event',
-        #         'status': 'online' if status else 'offline'
-        #     }))
-    
-        
         # ── Send each friend's current status to THIS new tab only ───────
         friends = await self.get_friends()
         for friend_username in friends:
@@ -240,53 +226,13 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
         # Heartbeat keeps the Redis TTL alive so long-lived tabs don't expire
         if action == "heartbeat":
+            print("hartbeat: " + str(self.user_id))
             await async_refresh_ttl(self.user_id)
             return
 
         handler = getattr(self, f"handle_{action}", None)
         if handler:
             await handler(data)
-
-        
-        # self.userto = data.get('user')
-        # self.system_group_name = f"system_{self.userto}"
-        # print("incoming sysreq")
-        # print(self.userto)
-        # print(self.system_group_name)
-        
-        
-        # if data.get('type') == 'system_message' and data.get('event') == 'chat_request':           
-        #     await self.channel_layer.group_send(                        
-        #     self.system_group_name,
-        #     {
-        #         'type': 'system_message',
-        #         'user_from': data.get('user'),
-        #         'sender': data.get('sender'),
-        #         'event': data.get('event'),
-        #         'status': data.get('status'),
-        #     }
-        #     )
-        #     print("request arrived")
-        
-
-        # send message to self system message channel on accepted     
-        
-        # if data.get('type') == 'system_message' and data.get('status') == 'accepted': 
-        #     system_self_group_name = f"system_{self.user}"        
-        #     await self.channel_layer.group_send(                        
-        #     system_self_group_name,
-        #     {
-        #         'type': 'system_message',
-        #         'user': data.get('sender'),
-        #         'sender': self.userto,
-        #         'event': data.get('event'),
-        #         'status': data.get('status'),
-        #     }
-        #     )
-            
-        # Frontend implementation needed  
-        # if data.get('type') == 'heartbeat':
-        #     await self.update_user_status(True)
 
     async def broadcast_online(self):
         friends = await self.get_friends()
@@ -456,18 +402,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
         })
         print(text_data)
 
-        await self.send(text_data)
-    
-    # async def system_message(self, event):
-    #     # Send status update to WebSocket
-    #     self.user = self.scope['user']
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'system_message',
-    #         'user': self.user.username,
-    #         'sender': event['sender'],
-    #         'event': event['event'],
-    #         'status': event['status']
-    #     }))
+        await self.send(text_data)    
     
     @database_sync_to_async
     def update_user_status(self, is_online):

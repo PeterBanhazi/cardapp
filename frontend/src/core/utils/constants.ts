@@ -2,6 +2,7 @@ export const API_BASE_URL = 'http://localhost:8000/api/';
 export const WS_BASE_URL = 'ws://localhost:9000/';
 export const HEARTBEAT_INTERVAL = 60000;
 export const WS_CONNECT_OPTIONS = {
+    shouldReconnect: () => true,
     reconnectAttempts: 10,
     reconnectInterval: (attempt:number) =>
     Math.min(1000 * 2 ** attempt, 15000),
