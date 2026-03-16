@@ -2,9 +2,9 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from .models import Message, UserStatus
+from .models import Message
 from api.models import Friendship
-from .serializers import MessageSerializer, UserStatusSerializer
+from .serializers import MessageSerializer
 from django.db import models
 
 
@@ -53,28 +53,6 @@ class MessageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(sender=self.request.user)
 
-@api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-def get_friends_status(request):
-    user = request.user
-    
-    # Get all accepted friends
-    friend_relations = Friendship.objects.filter(
-        username=user,
-        status='ACCEPTED'
-    ).values_list('friend', flat=True)
-    friend_relations2 = Friendship.objects.filter(
-        friend=user,
-        status='ACCEPTED'
-    ).values_list('username', flat=True)
-    
-    all_friend_ids = list(friend_relations) + list(friend_relations2)
-    
-    # Get status for all friends
-    statuses = UserStatus.objects.filter(user__in=all_friend_ids)
-    serializer = UserStatusSerializer(statuses, many=True)
-    
-    return Response(serializer.data)
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])

@@ -5,11 +5,10 @@
 
 import json
 import uuid
-import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
-from .models import Message, UserStatus
+from .models import Message
 from api.models import Friendship  # Updated import path
 from django.utils import timezone
 # from asgiref.sync import sync_to_async
@@ -170,12 +169,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_user_by_username(self, username):
         return User.objects.get(username=username)
     
-    @database_sync_to_async
-    def update_user_status(self, is_online):
-        UserStatus.objects.update_or_create(
-            user=self.user,
-            defaults={'is_online': is_online, 'last_activity': timezone.now()}
-        )
+
 
 ## ---------------------system
 class SystemConsumer(AsyncWebsocketConsumer):
@@ -195,8 +189,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
         # ── Presence ─────────────────────────────────────────────────
         connection_count = await async_add_connection(self.user_id, self.socket_id)
-        if connection_count == 1:
-            await self.update_user_status(True)
+        if connection_count == 1:          
             await self.broadcast_presence("online")
 
         # ── State sync: send THIS tab the full current picture ────────
@@ -212,8 +205,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
         # Only broadcast "offline" when the LAST connection closes.
         # Closing one tab while others are open = still online.
-        if remaining == 0:
-            await self.update_user_status(False)
+        if remaining == 0:           
             await self.broadcast_presence("offline")
 
         await self.channel_layer.group_discard(self.system_group, self.channel_name)
@@ -387,13 +379,6 @@ class SystemConsumer(AsyncWebsocketConsumer):
     # ──────────────────────────────────────────────
     #  DB helpers
     # ──────────────────────────────────────────────
-
-    @database_sync_to_async
-    def update_user_status(self, is_online: bool):
-        UserStatus.objects.update_or_create(
-            user=self.user,
-            defaults={"is_online": is_online, "last_activity": timezone.now()},
-        )
 
     @database_sync_to_async
     def get_friends(self) -> list[str]:

@@ -6,7 +6,6 @@ router = DefaultRouter()
 router.register(r'messages', views.MessageViewSet, basename='message')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('friends/status/', views.get_friends_status, name='friends-status'),
+    path('', include(router.urls)),   
     path('messages/read/<int:friend_id>/', views.mark_messages_read, name='mark-messages-read'),
 ]

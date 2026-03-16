@@ -14,10 +14,3 @@ class Message(models.Model):
     def __str__(self):
         return f"{self.sender.username} to {self.receiver.username}: {self.content[:20]}"
 
-class UserStatus(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='status')
-    is_online = models.BooleanField(default=False)
-    last_activity = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        return f"{self.user.username} - {'Online' if self.is_online else 'Offline'}"

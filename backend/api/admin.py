@@ -10,7 +10,7 @@ admin.site.register(TennisPlayer)
 admin.site.register(Friendship)
 admin.site.register(Profile)
 admin.site.register(Message)
-admin.site.register(UserStatus)
+
 # @admin.register(TennisPlayer)
 # class TennisPlayerAdmin(admin.ModelAdmin):
 #     """
