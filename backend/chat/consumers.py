@@ -1,5 +1,8 @@
-#TODO: Heartbeat fronted implementation needed 
-#TODO: redis user presence feature
+#TODO: Heartbeat fronted implementation needed [ok]
+#TODO: redis user presence feature [added], on system reconnect proper friend status update needed
+#TODO: user persistence debounce needed for better frontend UX 
+#TODO: check if it's valid friendship on each request
+
 import json
 import uuid
 import time
@@ -18,6 +21,13 @@ from .redis_presence import (
     async_refresh_ttl,
 )
 
+from .redis_chat_state import (
+    ACCEPTED, CANCELLED, CLOSED, PENDING, REJECTED,
+    ChatStateError,
+    async_get_pair_request,
+    async_get_user_active_requests,
+    async_transition,
+)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -175,37 +185,25 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        self.user_id = self.user.id
-        self.socket_id = str(uuid.uuid4())           # unique per tab / device
-        self.system_group_name = f"system_{self.user.username}"
+        self.user_id      = self.user.id
+        self.username     = self.user.username
+        self.socket_id    = str(uuid.uuid4())
+        self.system_group = f"system_{self.username}"
 
-        await self.channel_layer.group_add(self.system_group_name, self.channel_name)
+        await self.channel_layer.group_add(self.system_group, self.channel_name)
         await self.accept()
 
-        # ── Redis: register this connection ──────────────────────────────
+        # ── Presence ─────────────────────────────────────────────────
         connection_count = await async_add_connection(self.user_id, self.socket_id)
-
-        # Only the FIRST connection of a user triggers the "came online" flow.
-        # Extra tabs / devices skip it — they're already online.
         if connection_count == 1:
             await self.update_user_status(True)
-            await self.broadcast_online()
-        
-        # ── Send each friend's current status to THIS new tab only ───────
-        friends = await self.get_friends()
-        for friend_username in friends:
-            friend_user_id = await self.get_user_id(friend_username)
-            is_online = await async_is_online(friend_user_id) if friend_user_id else False
-            await self.send(text_data=json.dumps({
-                "type": "system_message",
-                "user_from": friend_username,
-                "user_to": self.user.username,
-                "event": "system log_in event",
-                "status": "online" if is_online else "offline",
-            }))
+            await self.broadcast_presence("online")
+
+        # ── State sync: send THIS tab the full current picture ────────
+        await self.sync_state_to_client()
     
     async def disconnect(self, close_code):
-        if not hasattr(self, 'system_group_name'):
+        if not hasattr(self, 'system_group'):
             return                
 
 
@@ -216,17 +214,19 @@ class SystemConsumer(AsyncWebsocketConsumer):
         # Closing one tab while others are open = still online.
         if remaining == 0:
             await self.update_user_status(False)
-            await self.broadcast_offline()
+            await self.broadcast_presence("offline")
 
-        await self.channel_layer.group_discard(self.system_group_name, self.channel_name)
+        await self.channel_layer.group_discard(self.system_group, self.channel_name)
 
     async def receive(self, text_data):
-        data = json.loads(text_data)
+        try:
+            data = json.loads(text_data)
+        except json.JSONDecodeError:
+            return
+
         action = data.get("action")
 
-        # Heartbeat keeps the Redis TTL alive so long-lived tabs don't expire
         if action == "heartbeat":
-            print("hartbeat: " + str(self.user_id))
             await async_refresh_ttl(self.user_id)
             return
 
@@ -234,192 +234,176 @@ class SystemConsumer(AsyncWebsocketConsumer):
         if handler:
             await handler(data)
 
-    async def broadcast_online(self):
-        friends = await self.get_friends()
-        for friend in friends:
-            await self.channel_layer.group_send(
-                f"system_{friend}",
-                {
-                    "type": "system_message",
-                    "user_from": self.user.username,
-                    "user_to": friend,
-                    "event": "system log_in event",
-                    "status": "online",
-                },
-            )
+    # ──────────────────────────────────────────────
+    #  State sync  (called on every new connect)
+    # ──────────────────────────────────────────────
 
-    async def broadcast_offline(self):
+    async def sync_state_to_client(self):
+        """
+        Push current truth to this tab only:
+          1. Presence status of every accepted friend.
+          2. Any active (pending / accepted) chat requests involving this user.
+        """
         friends = await self.get_friends()
-        for friend in friends:
-            await self.channel_layer.group_send(
-                f"system_{friend}",
-                {
-                    "type": "system_message",
-                    "user_from": self.user.username,
-                    "user_to": friend,
-                    "event": "system log_out event",
-                    "status": "offline",
-                },
-            )
 
+        # 1. Friend presence
+        for friend_username in friends:
+            friend_id = await self.get_user_id(friend_username)
+            is_online = await async_is_online(friend_id) if friend_id else False
+            await self._send({
+                "event": "presence_sync",
+                "payload": {
+                    "username": friend_username,
+                    "status":   "online" if is_online else "offline",
+                },
+            })
+
+        # 2. Active chat requests (pending or accepted)
+        active_reqs = await async_get_user_active_requests(self.username)
+        for req in active_reqs:
+            await self._send({
+                "event":   "chat_request",
+                "payload": req,
+            })
+
+    # ──────────────────────────────────────────────
+    #  Chat-request action handlers
+    # ──────────────────────────────────────────────
 
     async def handle_chat_request(self, data):
-        friend = data["user_to"]
+        """(no state | terminal state) ──► pending"""
+        user_to = data.get("user_to")
+        if not user_to:
+            return
 
-        await self.channel_layer.group_send(
-            f"system_{friend}",
-            {
-                "type": "system_message",
-                "event": "chat_request_received",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "pending"
-            }
-        )
+        try:
+            req = await async_transition(
+                actor         = self.username,
+                target_status = PENDING,
+                user_from     = self.username,
+                user_to       = user_to,
+            )
+        except ChatStateError as e:
+            await self._send({"event": "chat_request_error", "payload": {"detail": str(e)}})
+            return
 
-        await self.channel_layer.group_send(
-            f"system_{self.user}",
-            {
-                "type": "system_message",
-                "event": "chat_request_sent",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "pending"
-            }
-        )
+        await self._broadcast_to_pair(req, "chat_request")
 
-    
     async def handle_accept_chat(self, data):
+        """pending ──► accepted  (only user_to)"""
+        await self._drive_transition(data, ACCEPTED)
 
-        friend = data["user_to"]
-
-        await self.channel_layer.group_send(
-            f"system_{friend}",
-            {
-                "type": "system_message",
-                "event": "chat_request_accepted",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "active"
-            }
-        )
-
-        await self.channel_layer.group_send(
-            f"system_{self.user}",
-            {
-                "type": "system_message",
-                "event": "chat_request_accepted",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "active"
-            }
-        )
-    
     async def handle_reject_chat(self, data):
+        """pending ──► rejected  (only user_to)"""
+        await self._drive_transition(data, REJECTED)
 
-        friend = data["user_to"]
-
-        await self.channel_layer.group_send(
-            f"system_{friend}",
-            {
-                "type": "system_message",
-                "event": "chat_request_rejected",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "rejected"
-            }
-        )
-        
-        await self.channel_layer.group_send(
-            f"system_{self.user}",
-            {
-                "type": "system_message",
-                "event": "chat_request_rejected",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "rejected"
-            }
-        )
-        
     async def handle_cancel_chat(self, data):
+        """pending ──► cancelled  (only user_from)"""
+        await self._drive_transition(data, CANCELLED)
 
-        friend = data["user_to"]
-
-        await self.channel_layer.group_send(
-            f"system_{friend}",
-            {
-                "type": "system_message",
-                "event": "chat_request_cancelled",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "cancelled"
-            }
-        )
-        await self.channel_layer.group_send(
-            f"system_{self.user}",
-            {
-                "type": "system_message",
-                "event": "chat_request_cancelled",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "rejected"
-            }
-        )
-    
     async def handle_close_chat(self, data):
+        """accepted ──► closed  (either party)"""
+        await self._drive_transition(data, CLOSED)
 
-        friend = data["user_to"]
+    # ──────────────────────────────────────────────
+    #  Transition helper
+    # ──────────────────────────────────────────────
 
-        await self.channel_layer.group_send(
-            f"system_{friend}",
-            {
-                "type": "system_message",
-                "event": "chat_closed",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "closed"
-            }
-        )
+    async def _drive_transition(self, data: dict, target_status: str):
+        req_id = data.get("req_id")
+        if not req_id:
+            await self._send({
+                "event":   "chat_request_error",
+                "payload": {"detail": "req_id is required."},
+            })
+            return
 
-        await self.channel_layer.group_send(
-            f"system_{self.user}",
-            {
-                "type": "system_message",
-                "event": "chat_closed",
-                "user_from": data['user_from'],
-                "user_to": data['user_to'],
-                "status": "closed"
-            }
-        )
-        
+        try:
+            req = await async_transition(
+                actor         = self.username,
+                target_status = target_status,
+                req_id        = req_id,
+            )
+        except ChatStateError as e:
+            await self._send({"event": "chat_request_error", "payload": {"detail": str(e)}})
+            return
+
+        await self._broadcast_to_pair(req, "chat_request")
+
+    # ──────────────────────────────────────────────
+    #  Presence helpers
+    # ──────────────────────────────────────────────
+
+    async def broadcast_presence(self, status: str):
+        friends = await self.get_friends()
+        for friend in friends:
+            await self.channel_layer.group_send(
+                f"system_{friend}",
+                {
+                    "type":    "system_message",
+                    "event":   "presence_update",
+                    "payload": {
+                        "username": self.username,
+                        "status":   status,
+                    },
+                },
+            )
+
+    # ──────────────────────────────────────────────
+    #  Broadcast a request state to both participants
+    # ──────────────────────────────────────────────
+
+    async def _broadcast_to_pair(self, req: dict, event: str):
+        for username in (req["user_from"], req["user_to"]):
+            await self.channel_layer.group_send(
+                f"system_{username}",
+                {
+                    "type":    "system_message",
+                    "event":   event,
+                    "payload": req,   # full req dict: req_id, status, timestamps, both users
+                },
+            )
+
+    # ──────────────────────────────────────────────
+    #  Channel-layer inbound handler
+    # ──────────────────────────────────────────────
+
     async def system_message(self, event):
-        text_data=json.dumps({            
-            "type": "system_message",
-            "event": event["event"],
-            "user_from": event["user_from"],
-            "user_to": event["user_to"],
-            "status": event["status"]
+        await self._send({
+            "event":   event["event"],
+            "payload": event["payload"],
         })
-        print(text_data)
 
-        await self.send(text_data)    
-    
+    # ──────────────────────────────────────────────
+    #  WebSocket send envelope
+    # ──────────────────────────────────────────────
+
+    async def _send(self, body: dict):
+        await self.send(text_data=json.dumps({
+            "type": "system_message",
+            **body,
+        }))
+
+    # ──────────────────────────────────────────────
+    #  DB helpers
+    # ──────────────────────────────────────────────
+
     @database_sync_to_async
-    def update_user_status(self, is_online):
+    def update_user_status(self, is_online: bool):
         UserStatus.objects.update_or_create(
             user=self.user,
             defaults={"is_online": is_online, "last_activity": timezone.now()},
         )
 
     @database_sync_to_async
-    def get_friends(self):
+    def get_friends(self) -> list[str]:
         return list(
             Friendship.objects.filter(username=self.user, status="ACCEPTED")
             .values_list("friend__username", flat=True)
         )
 
     @database_sync_to_async
-    def get_user_id(self, username):
+    def get_user_id(self, username: str) -> int | None:
         try:
             return User.objects.get(username=username).id
         except User.DoesNotExist:

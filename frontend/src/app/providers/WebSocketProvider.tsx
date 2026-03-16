@@ -14,7 +14,6 @@ export const WebSocketProvider = ({
     const accessToken = useAuthStore().accessToken;
     const socketUrl = `${WS_BASE_URL}ws/system/?token=${accessToken}`;
 
-    // useWebSocketConnection(socketUrl, WS_CONNECT_OPTIONS);
     WebSocketStatusManager(socketUrl, WS_CONNECT_OPTIONS);
     return <>{children}</>;
 };

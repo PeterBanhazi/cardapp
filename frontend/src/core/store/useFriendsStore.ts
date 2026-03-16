@@ -16,6 +16,11 @@ interface StatusMessage {
     user_from: string;
     event: string;
     action?: string;
+    payload: {
+        "user_from": string,
+        "username": string,
+        "status": Friend["status"]
+    }
     status: Friend["status"]
 }
 
@@ -182,14 +187,14 @@ export const WebSocketStatusManager = (url: string, options: any = {}) => {
         //      setFriendStatus(message.user, message.status);
         //  }
           
-        if (['system log_out event', 'system log_in event'].includes(message.event)) {
+        if (message.event === 'presence_sync') {
            
-          setFriendStatus(message.user_from, message.status);
+          setFriendStatus(message.payload.username  , message.payload.status);
         }
-        if (['chat_request_received', 'chat_request_sent'].includes(message.event)) {
-            
+        if (message.event = 'chat_request') {
+          setFriendStatus(message.payload.user_from  , message.payload.status);
            
-          setFriendStatus(message.user_to, message.status);
+          
         }
         if (message.event === 'chat_request_received') {
           setFriendStatus(message.user_from, message.status);
