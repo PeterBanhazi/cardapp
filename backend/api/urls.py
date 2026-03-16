@@ -14,12 +14,13 @@ from rest_framework_simplejwt.views import (
 )
 
 router = DefaultRouter()
-# router.register(r'post/createplayer', CustomTennisPlayerViewSet, basename='tennis-player')
 
 urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='auth_register'),
+    path('password/', PasswordChangeView.as_view(), name='password-change'),
+    path('profile/', UserProfileView.as_view(), name='user-profile'),
     path('test/', views.testEndPoint, name='test'),
     path('', views.getRoutes),
     path('get/playerlist/', PlayerListView.as_view(), name='player-list'),
@@ -28,7 +29,5 @@ urlpatterns = [
     path('options/', UserPropertiesView.as_view(), name='options'),
     path('ranks/', TopListView.as_view(), name='ranks'),
     path('get/friends/', FriendshipViewSet.as_view(), name='friends'),
-    path('profile/', UserProfileView.as_view(), name='user-profile'),
-    path('passwordchange/', PasswordChangeView.as_view(), name='password-change'),
 ]
 

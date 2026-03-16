@@ -103,7 +103,7 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     ### TODO: only default+ custom = current
     class Meta:
         model = UserProperties
-        fields = ['username','friendships','isonline','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
+        fields = ['username','friendships','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
 
         def update(self, instance, validated_data):
             user = instance.username

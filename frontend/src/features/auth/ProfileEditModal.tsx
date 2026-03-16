@@ -14,9 +14,9 @@ import {
 } from 'flowbite-react';
 import { ProfileData, PasswordChangeData } from '../../shared/types/types';
 import {
-    useProfile,
+    useGetProfile,
     useUpdateProfile,
-    useProfilePasswordChange,
+    useChangeProfilePassword,
 } from '../../core/utils/useDataQuery';
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 import { customTheme } from '../../shared/formThemes';
@@ -26,16 +26,16 @@ import { customTheme } from '../../shared/formThemes';
 
 // Avatar options matching backend
 const AVATAR_OPTIONS = [
-    'avatar1.png',
-    'avatar2.png',
-    'avatar3.png',
-    'avatar4.png',
-    'avatar5.png',
-    'avatar6.png',
-    'avatar7.png',
-    'avatar8.png',
-    'avatar9.png',
-    'avatar10.png',
+    'user1.png',
+    'user3.png',
+    'user2.png',
+    'user4.png',
+    'user5.png',
+    'user6.png',
+    'user7.png',
+    'user8.png',
+    'user9.png',
+    'user10.png',
 ];
 
 // Type definitions
@@ -71,7 +71,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
 
     // Fetch profile data
 
-    const getProfile = useProfile();
+    const getProfile = useGetProfile();
     const initialProfileData = getProfile.data;
 
     useEffect(() => {
@@ -102,7 +102,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
     const updateProfile = useUpdateProfile();
 
     // Password change mutation
-    const passwordChangeMutation = useProfilePasswordChange();
+    const passwordChangeMutation = useChangeProfilePassword();
 
     // Validation functions
     const validateProfileData = (): boolean => {

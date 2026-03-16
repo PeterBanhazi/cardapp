@@ -35,7 +35,7 @@ const parseError = (error: AxiosError): ApiError => {
   };
 };
 
-export const useProfile = (enabled = true) => {
+export const useGetProfile = (enabled = true) => {
   return useQuery<ProfileData, ApiError>({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -50,12 +50,12 @@ export const useProfile = (enabled = true) => {
   });
 };
 
-export const useProfilePasswordChange = () => {
+export const useChangeProfilePassword = () => {
 
   return useMutation<PasswordChangeData, ApiError, PasswordChangeData>({    
     mutationFn: async (changePasswordData) => {
       try {
-        const { data } = await useAxios().post('passwordchange/', changePasswordData);
+        const { data } = await useAxios().post('password/', changePasswordData);
         return data;
       } catch (error) {
         throw parseError(error as AxiosError);

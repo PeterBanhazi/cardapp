@@ -14,7 +14,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-import time
 import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
@@ -88,33 +87,30 @@ class UserPropertiesView(RetrieveUpdateAPIView):
         return user_properties
     
     def update(self, request, *args, **kwargs):
-    # partial=True esetén PATCH kérés, partial=False esetén PUT kérés
+        # partial=True for PATCH, partial=False for PUT 
         partial = kwargs.pop('partial', True)
         print(request.data)
-        # Lekérjük az aktuális termék példányt
-        # instance = self.get_instance()
+  
         instance = self.get_object()
-        # Példa a részleges frissítés működésére
-        print("Eredeti adatok:", instance.username, instance.isonline)
-        time.sleep(2)
-        print("Beérkező adatok:", request.data)
-
-        # Szerializáljuk az adatokat
+    
+        # Serializer
         serializer = self.get_serializer(
             instance,
             data=request.data,
-            partial=partial  # Ha True, akkor csak a megadott mezők frissülnek
+            partial=partial  
         )
-        if 'isonline' in request.data:
-            # Boolean mező módosítása
-            instance.isonline = request.data['isonline']
         
         if 'current_player_id_change' in request.data:
-            # ForeignKey mező módosítása
-            print("probalnam modositani")
+            # ForeignKey modify          
             try:
                 try_current_player = TennisPlayer.objects.get(id=request.data['current_player_id_change'])
+                if try_current_player.creator_username is not None and try_current_player.creator_username != self.request.user:
+                    return Response(
+                        {"error": "Only own players or 1-10 ID allowed."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
                 instance.current_player = try_current_player
+                
             except TennisPlayer.DoesNotExist:
                 return Response(
                     {"error": "Requested player not exists."},
@@ -125,14 +121,14 @@ class UserPropertiesView(RetrieveUpdateAPIView):
             try:
                 favorite_player = TennisPlayer.objects.get(id=request.data['favorite_player_id_change'])
                 
-                # Validáció: Csak az 1-10 ID közötti vagy a user által létrehozott játékos lehet kedvenc
-                if favorite_player.creator_username is not None and favorite_player.creator_username != request.user:
+                # Validation: if its 1-10 ID or user made 
+                if favorite_player.creator_username is not None and favorite_player.creator_username != self.request.user:
                     return Response(
-                        {"error": "Csak az általad létrehozott játékosokat vagy az 1-10 ID közötti alapjátékosokat adhatod hozzá."},
+                        {"error": "Only own players or 1-10 ID allowed."},
                         status=status.HTTP_400_BAD_REQUEST
                     )
                 
-                # Ha már kedvenc → törlés, ha még nem kedvenc → hozzáadás
+                # remove from list or add to list 
                 if request.user.favorite_player_for_profile.filter(id=favorite_player.id).exists():
                     request.user.favorite_player_for_profile.remove(favorite_player)
                 else:
@@ -140,7 +136,7 @@ class UserPropertiesView(RetrieveUpdateAPIView):
 
             except TennisPlayer.DoesNotExist:
                 return Response(
-                    {"error": "A megadott játékos nem létezik."},
+                    {"error": "Requested player not exists."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         serializer.is_valid(raise_exception=True)
@@ -149,7 +145,7 @@ class UserPropertiesView(RetrieveUpdateAPIView):
         return Response(serializer.data)
 
     def perform_update(self, serializer):
-        # Itt lehet további műveleteket végezni mentés előtt
+        # Place for additional functions before update
         serializer.save()
 
         
@@ -213,7 +209,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         """
         Retrieve the profile for the logged-in user
         """
-        time.sleep(2)
+        
         # Ensure user can only access their own profile
         try:
             return self.request.user.profile
@@ -257,5 +253,5 @@ class PasswordChangeView(APIView):
         if serializer.is_valid():
             serializer.save()        
             update_session_auth_hash(request, request.user)
-            return Response({"detail": "Jelszó sikeresen megváltoztatva."}, status=status.HTTP_200_OK)
+            return Response({"detail": "Password changed successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
