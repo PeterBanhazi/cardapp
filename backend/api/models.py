@@ -109,16 +109,16 @@ class Friendship(models.Model):
         ordering = ['-created_at'] 
         
 AVATAR_CHOICES = [
-    ('avatar1.png', 'Avatar 1'),
-    ('avatar2.png', 'Avatar 2'),
-    ('avatar3.png', 'Avatar 3'),
-    ('avatar4.png', 'Avatar 4'),
-    ('avatar5.png', 'Avatar 5'),
-    ('avatar6.png', 'Avatar 6'),
-    ('avatar7.png', 'Avatar 7'),
-    ('avatar8.png', 'Avatar 8'),
-    ('avatar9.png', 'Avatar 9'),
-    ('avatar10.png', 'Avatar 10'),
+    ('user1.png', 'Avatar 1'),
+    ('user2.png', 'Avatar 2'),
+    ('user3.png', 'Avatar 3'),
+    ('user4.png', 'Avatar 4'),
+    ('user5.png', 'Avatar 5'),
+    ('user6.png', 'Avatar 6'),
+    ('user7.png', 'Avatar 7'),
+    ('user8.png', 'Avatar 8'),
+    ('user9.png', 'Avatar 9'),
+    ('user10.png', 'Avatar 10'),
 ]
         
 class Profile(models.Model):

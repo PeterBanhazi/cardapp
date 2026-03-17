@@ -8,11 +8,9 @@ import React, { useEffect } from 'react';
 import { useFriendsStore } from './friendsStore';
 import { ChatActionButton } from './ChatActionButton';
 import { useSystemSocket } from './useSystemSocket';
-import { useOptionsDataTransformer } from '../options/useOptionsDataTransformer';
 import { useAuthStore } from '@/core/store/useAuthStore';
 import { WS_BASE_URL } from '@/core/utils/constants';
-
-const LOCAL_USER = 'alice'; // replace with auth context
+import { useOptionsDataTransformer } from '../options/useOptionsDataTransformer';
 
 export function FriendsList() {
     const LOCAL_USER =
@@ -30,15 +28,7 @@ export function FriendsList() {
     // Populate friends once from your REST endpoint
     useEffect(() => {
         if (data) {
-            const updated = data.friendships.map(
-                ({ friend_username, ...rest }) => ({
-                    ...rest,
-                    username: friend_username,
-                    display_name: friend_username,
-                    status: 'offline',
-                })
-            );
-            initFriends(updated);
+            initFriends(data.friendships);
         }
     }, [initFriends, data]);
 
@@ -48,7 +38,7 @@ export function FriendsList() {
         <ul>
             {Object.values(friends).map((friend) => (
                 <li
-                    key={friend.username}
+                    key={friend.friend_username}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -63,9 +53,9 @@ export function FriendsList() {
                     >
                         {friend.status === 'online' ? '●' : '○'}
                     </span>
-                    <span>{friend.display_name ?? friend.username}</span>
+                    <span>{friend.display_name ?? friend.friend_username}</span>
                     <ChatActionButton
-                        friendUsername={friend.username}
+                        friendUsername={friend.friend_username}
                         localUser={LOCAL_USER}
                         sendAction={sendAction}
                     />

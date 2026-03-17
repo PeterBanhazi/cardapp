@@ -64,7 +64,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #     'sender': {self.username},            
         # }))
         # Update user status
-        await self.update_user_status(True)
+        
         
     async def disconnect(self, close_code):
         # Leave room group

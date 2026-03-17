@@ -17,7 +17,7 @@ import { immer } from "zustand/middleware/immer";
 export type PresenceStatus = "online" | "offline" | "unknown";
 
 export interface Friend {
-  username:   string;
+  friend_username:   string;
   display_name?: string;
   avatar_url?:   string;
   status:     PresenceStatus;
@@ -29,7 +29,7 @@ interface FriendsState {
   loaded:     boolean;
 
   // Called once on mount with the full friends list from REST
-  initFriends: (list: Pick<Friend, "username" | "display_name" | "avatar_url">[]) => void;
+  initFriends: (list: Pick<Friend, "friend_username" >[]) => void;
 
   // Called on WS "presence_sync" event (arrives on every (re)connect)
   syncPresence: (updates: { username: string; status: PresenceStatus }[]) => void;
@@ -53,11 +53,11 @@ export const useFriendsStore = create<FriendsState>()(
       set(state => {
         list.forEach(f => {
           // Preserve existing presence status if we already have the friend
-          const existing = state.friends[f.username];
-          state.friends[f.username] = {
-            username:          f.username,
-            display_name:      f.display_name,
-            avatar_url:        f.avatar_url,
+          const existing = state.friends[f.friend_username];
+          state.friends[f.friend_username] = {
+            friend_username:          f.friend_username,
+            display_name:      f.friend_username,
+            // avatar_url:        f.avatar_url,
             status:            existing?.status ?? "unknown",
             status_updated_at: existing?.status_updated_at ?? 0,
           };

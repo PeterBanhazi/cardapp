@@ -50,7 +50,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
         first_name: '',
         last_name: '',
         description: '',
-        // avatar_image: AVATAR_OPTIONS[0],
+        avatar_image: '',
         birthday: '',
     });
 
@@ -71,8 +71,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
 
     // Fetch profile data
 
-    const getProfile = useGetProfile();
-    const initialProfileData = getProfile.data;
+    const initialProfileData = useGetProfile().data;
 
     useEffect(() => {
         if (initialProfileData) {
@@ -84,6 +83,7 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                 avatar_image: initialProfileData.avatar_image,
                 birthday: initialProfileData.birthday || null,
             });
+            console.log(initialProfileData);
         }
         if (initialProfileData?.birthday) {
             // Convert YYYY-MM-DD string to Date object
@@ -224,9 +224,9 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                 >
                     <ModalHeader className="">
                         Edit Profile (
-                        {getProfile.isLoading
-                            ? 'Loading...'
-                            : profileData.username}
+                        {profileData.username
+                            ? profileData.username
+                            : 'Loading...'}
                         )
                     </ModalHeader>
                     <ModalBody className="max-h-[80vh] overflow-y-auto">
@@ -334,6 +334,10 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                                         <button
                                             key={avatar}
                                             type="button"
+                                            aria-pressed={
+                                                profileData.avatar_image ===
+                                                avatar
+                                            }
                                             onClick={() =>
                                                 setProfileData((prev) => ({
                                                     ...prev,
