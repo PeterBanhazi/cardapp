@@ -32,8 +32,9 @@ def getRoutes(request):
         '/api/get/playerlist',
         '/api/post/add-player/',
         '/api/get/ranks/',
-        '/api/options',
-        '/api/get/friends',
+        '/api/options/',
+        '/api/get/friends/',
+        '/api/friends/'
         
 
     ]
