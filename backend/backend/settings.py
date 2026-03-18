@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'channels',
     'chat',
     'api',
+    "user_relations",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
