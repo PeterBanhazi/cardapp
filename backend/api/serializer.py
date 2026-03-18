@@ -1,12 +1,13 @@
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-
 from .models import TennisPlayer, UserProperties, Friendship, Profile
 from .models import Profile, AVATAR_CHOICES
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 # Default list serializers for friend connections 

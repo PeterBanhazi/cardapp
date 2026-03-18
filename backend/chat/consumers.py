@@ -7,7 +7,8 @@ import json
 import uuid
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from .models import Message
 from api.models import Friendship  # Updated import path
 from django.utils import timezone
@@ -27,6 +28,8 @@ from .redis_chat_state import (
     async_get_user_active_requests,
     async_transition,
 )
+
+User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):

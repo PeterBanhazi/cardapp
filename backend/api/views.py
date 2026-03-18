@@ -7,7 +7,6 @@ from api.serializer import MyTokenObtainPairSerializer, RegisterSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView
-from django.contrib.auth.models import User
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
@@ -19,10 +18,9 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 
 from .models import TennisPlayer,UserProperties, Friendship, Profile
-
-
 from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer, PasswordChangeSerializer
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 @api_view(['GET'])
 def getRoutes(request):

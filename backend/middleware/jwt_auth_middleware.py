@@ -2,12 +2,12 @@ from urllib.parse import parse_qs
 from channels.middleware import BaseMiddleware
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import UntypedToken
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 import jwt
 from django.conf import settings
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 @database_sync_to_async
 def get_user(user_id):
