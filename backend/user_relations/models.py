@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from api.models import TennisPlayer, UserProperties, UserProfile
 
 User = get_user_model()
 

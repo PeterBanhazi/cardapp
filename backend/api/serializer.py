@@ -50,24 +50,7 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
         """
         Custom validation to check total ability points and username
         """
-        # Remove username from data as it's not a model field
-        # username = data.pop('username')
-        
-        # Get user
-
-        
-        # try:
-        #     usernametest= data['username']
-        #     user = User.objects.get(username=username)
-            
-        #     self.get_token(username)
-        #     token['username'] = user.username
-            
-            
-        # except User.DoesNotExist:
-        #     raise serializers.ValidationError("Invalid username")
-
-        # Validate total points
+         # Validate total points
         total_points = sum([
             data['serve'], data['forehand'], data['backhand'], 
             data['volley'], data['stamina'], data['agility']
@@ -76,8 +59,6 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
         if total_points > 550:
             raise serializers.ValidationError("Total ability points cannot exceed 550")
 
-        # Attach user to the validated data
-        # data['username'] = user
         return data
 
     def create(self, validated_data):
@@ -101,7 +82,7 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     current_player_id_change = serializers.PrimaryKeyRelatedField(
         queryset=TennisPlayer.objects.all(), source="current_player", write_only=True
     )
-    ### TODO: only default+ custom = current
+    
     class Meta:
         model = UserProperties
         fields = ['username','friendships','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
@@ -175,7 +156,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for the Profile model with nested user serialization
     """
-    
+    user_id = serializers.IntegerField(source="user.id")
     username = serializers.CharField(source='user.username', read_only=True)
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)
@@ -183,6 +164,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = [
+            'user_id',
             'username', 
             'first_name', 
             'last_name', 
