@@ -17,8 +17,8 @@ import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from .models import TennisPlayer,UserProperties, Friendship, Profile
-from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, ProfileSerializer, PasswordChangeSerializer
+from .models import TennisPlayer,UserProperties, Friendship, UserProfile
+from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, UserProfileSerializer, PasswordChangeSerializer
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -61,12 +61,12 @@ class PlayerListView(APIView):
         return Response(
             serializer.data, status=status.HTTP_200_OK)
         
-class ProfileView(RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
+class UserProfileView(RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
     
     def get_object(self):
-        user_profile = Profile.objects.get(username=self.request.user)
+        user_profile = UserProfile.objects.get(username=self.request.user)
         return user_profile
 class FriendshipViewSet(RetrieveUpdateAPIView):
     serializer_class = FriendshipSerializer
@@ -82,7 +82,7 @@ class UserPropertiesView(RetrieveUpdateAPIView):
 
     def get_object(self):
         """Fetch the UserProperties for the current logged-in user."""
-        user_properties, created = UserProperties.objects.get_or_create(username=self.request.user)
+        user_properties, created = UserProperties.objects.get_or_create(user=self.request.user)
         return user_properties
     
     def update(self, request, *args, **kwargs):
@@ -201,7 +201,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     """
     Retrieve and update user profile
     """
-    serializer_class = ProfileSerializer
+    serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
@@ -211,10 +211,10 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         
         # Ensure user can only access their own profile
         try:
-            return self.request.user.profile
-        except Profile.DoesNotExist:
+            return self.request.user.userprofile
+        except UserProfile.DoesNotExist:
             # Create profile if it doesn't exist
-            return Profile.objects.create(user=self.request.user)
+            return UserProfile.objects.create(user=self.request.user)
 
     def check_object_permissions(self, request, obj):
         """

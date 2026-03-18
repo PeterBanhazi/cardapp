@@ -3,8 +3,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import TennisPlayer, UserProperties, Friendship, Profile
-from .models import Profile, AVATAR_CHOICES
+from .models import TennisPlayer, UserProperties, Friendship, UserProfile
+from .models import AVATAR_CHOICES
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -22,7 +22,7 @@ class FriendshipSerializer(serializers.ModelSerializer):
 #Default list serializers
 class TopListSerializer(serializers.ModelSerializer):
     
-    username = serializers.CharField(source='username.username')
+    username = serializers.CharField(source='user.username')
     class Meta:
         model = UserProperties
         fields = ['username', 'rankpoints']
@@ -92,10 +92,10 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
 
 class UserPropertiesSerializer(serializers.ModelSerializer):
     
-    username = serializers.CharField(source='username.username')
-    friendships = FriendshipSerializer(source='username.friendships', many=True, read_only=True)
-    custom_players = TennisPlayerSerializer(source='username.custom_players', many=True, read_only=True)
-    favorite_players = TennisPlayerSerializer(source='username.favorite_player_for_profile', many=True, read_only=False)
+    username = serializers.CharField(source='user.username')
+    friendships = FriendshipSerializer(source='user.friendships', many=True, read_only=True)
+    custom_players = TennisPlayerSerializer(source='user.custom_players', many=True, read_only=True)
+    favorite_players = TennisPlayerSerializer(source='user.favorite_player_for_profile', many=True, read_only=False)
     favorite_player_id_change = serializers.IntegerField(write_only=True, required=False)
     current_player = TennisPlayerSerializer(read_only=True)
     current_player_id_change = serializers.PrimaryKeyRelatedField(
@@ -171,7 +171,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-class ProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for the Profile model with nested user serialization
     """
@@ -181,7 +181,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.CharField(source='user.last_name', required=False)
     
     class Meta:
-        model = Profile
+        model = UserProfile
         fields = [
             'username', 
             'first_name', 

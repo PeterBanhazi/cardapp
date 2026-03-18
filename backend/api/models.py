@@ -73,7 +73,7 @@ class TennisPlayer(models.Model):
 
 #Users options and details
 class UserProperties(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userproperties')
     isonline = models.BooleanField(blank=True, null=False, default=False)
     current_player = models.ForeignKey(TennisPlayer, on_delete=models.SET_DEFAULT, default=1, related_name='current_player_for_profile')
     rankpoints = models.IntegerField(null=False, blank=True, default=0)
@@ -81,10 +81,10 @@ class UserProperties(models.Model):
 
 
     def __str__(self):
-        return f"{self.rankpoints} (Created by {self.username.username})"
+        return f"{self.rankpoints} (Created by {self.user.username})"
     
     class Meta:
-        ordering = ['-username']  # Optional: default ordering
+        ordering = ['-user']  # Optional: default ordering
         verbose_name_plural = "UserProperties"
 
 
@@ -122,11 +122,11 @@ AVATAR_CHOICES = [
     ('user10.png', 'Avatar 10'),
 ]
         
-class Profile(models.Model):
+class UserProfile(models.Model):
     """
     Extended user profile with additional information
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
     description = models.CharField(max_length=500, blank=True, null=True)
     avatar_image = models.CharField(
         max_length=20, 
@@ -144,7 +144,7 @@ def create_user_profile(sender, instance, created, **kwargs):
     Automatically create a profile when a new user is created
     """
     if created:
-        Profile.objects.create(user=instance)
+        UserProfile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
@@ -152,6 +152,6 @@ def save_user_profile(sender, instance, **kwargs):
     Automatically save the profile when the user is saved
     """
     try:
-        instance.profile.save()
-    except Profile.DoesNotExist:
-        Profile.objects.create(user=instance)
+        instance.userprofile.save()
+    except UserProfile.DoesNotExist:
+        UserProfile.objects.create(user=instance)
