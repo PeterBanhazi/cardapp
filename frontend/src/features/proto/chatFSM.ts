@@ -1,11 +1,15 @@
 /**
  * chatFSM.ts
  * ─────────────────────────────────────────────────────────────
- * Mirrors the backend Redis state machine exactly.
- * The FSM is the ONLY place that decides whether a UI action is legal.
+ * A szerver Redis FSM-jének tükörképe.
+ * Csak arra használjuk, hogy a UI meghatározza:
+ *   1. Melyik gombot kell megjeleníteni
+ *   2. Szabad-e az adott akciót elküldeni
+ *
+ * Optimistic update nincs — a szerver válasza frissíti az állapotot.
  */
 
-// ── Types ──────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 export type ChatStatus =
   | "pending"
@@ -15,86 +19,62 @@ export type ChatStatus =
   | "closed";
 
 export type ChatAction =
-  | "send_request"   // actor = local user (user_from)
-  | "accept"         // actor = local user (user_to)
-  | "reject"         // actor = local user (user_to)
-  | "cancel"         // actor = local user (user_from)
-  | "close";         // actor = either party
+  | "send_request" // bárki kezdeményezhet terminal állapotból
+  | "accept"       // csak user_to
+  | "reject"       // csak user_to
+  | "cancel"       // csak user_from
+  | "close";       // bármelyik fél
 
 export interface ChatRequest {
   req_id:     string;
   user_from:  string;
   user_to:    string;
   status:     ChatStatus;
-  created_at: number;   // unix timestamp (seconds)
+  created_at: number; // unix timestamp (s)
   updated_at: number;
 }
 
-// ── Transition table ────────────────────────────────────────────────────────
-// [currentStatus | null] → allowed target statuses
-const TRANSITIONS: Record<ChatStatus | "none", Partial<Record<ChatAction, ChatStatus>>> = {
+// ── Transition table ──────────────────────────────────────────────────────────
+
+const TRANSITIONS: Record<
+  ChatStatus | "none",
+  Partial<Record<ChatAction, ChatStatus>>
+> = {
   none:      { send_request: "pending" },
   pending:   { accept: "accepted", reject: "rejected", cancel: "cancelled" },
   accepted:  { close: "closed" },
+  // Terminal → bármelyik fél új requestet küldhet
   rejected:  { send_request: "pending" },
   cancelled: { send_request: "pending" },
   closed:    { send_request: "pending" },
 };
 
-// Which role is allowed to fire each action
+// Ki küldhet az adott akciót
 const ACTION_ACTOR: Record<ChatAction, "from" | "to" | "both"> = {
-  send_request: "from",
+  send_request: "both",  // terminal esetén bárki lehet az új user_from
   accept:       "to",
   reject:       "to",
   cancel:       "from",
   close:        "both",
 };
 
-// ── FSM helpers ─────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-/**
- * Returns true if `actor` is allowed to fire `action` on `request`.
- * `localUser` is the username of the currently logged-in user.
- */
+/** Szabad-e a localUser-nek ezt az akciót elküldeni? */
 export function canAct(
-  action:     ChatAction,
-  request:    ChatRequest | null,
-  localUser:  string,
-): boolean {
-  const currentStatus = request?.status ?? "none";
-  const allowed = TRANSITIONS[currentStatus];
-  if (!allowed || !(action in allowed)) return false;
-
-  const actorRule = ACTION_ACTOR[action];
-  if (actorRule === "both") return true;
-  if (!request) return actorRule === "from"; // new request — local user is always "from"
-
-  if (actorRule === "from") return localUser === request.user_from;
-  if (actorRule === "to")   return localUser === request.user_to;
-  return false;
-}
-
-/**
- * Returns every action the local user is currently allowed to fire.
- */
-export function availableActions(
+  action:    ChatAction,
   request:   ChatRequest | null,
   localUser: string,
-): ChatAction[] {
-  const actions: ChatAction[] = [
-    "send_request", "accept", "reject", "cancel", "close",
-  ];
-  return actions.filter(a => canAct(a, request, localUser));
-}
+): boolean {
+  const current = request?.status ?? "none";
+  const allowed = TRANSITIONS[current];
+  if (!allowed || !(action in allowed)) return false;
 
-/**
- * Optimistically applies an action and returns the next status.
- * Used to update local state before the server confirms.
- */
-export function applyOptimistic(
-  action:  ChatAction,
-  request: ChatRequest | null,
-): ChatStatus | null {
-  const currentStatus = request?.status ?? "none";
-  return TRANSITIONS[currentStatus]?.[action] ?? null;
+  const rule = ACTION_ACTOR[action];
+  if (rule === "both") return true;
+  if (!request)        return true; // nincs még request → a localUser lesz user_from
+
+  if (rule === "from") return localUser === request.user_from;
+  if (rule === "to")   return localUser === request.user_to;
+  return false;
 }

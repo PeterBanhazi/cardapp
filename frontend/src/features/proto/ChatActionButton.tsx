@@ -1,22 +1,29 @@
 /**
  * ChatActionButton.tsx
  * ─────────────────────────────────────────────────────────────
- * FSM-driven chat action button.
+ * FSM-alapú gomb. Nincs optimistic update.
  *
- * Design: dark-mode monospace / industrial (unchanged).
- * Colour language:
- *   teal    = positive / initiate
- *   amber   = in-progress / warning
- *   red     = destructive / end
- *   slate   = terminal / neutral
- *   ghost   = offline / unavailable
+ * Logika:
+ *   • A szerver állapota (chatRequestsStore) a forrás
+ *   • Terminal állapotokban (rejected/cancelled/closed) a gomb
+ *     lokálisan dismissálható → idle "Start Chat" nézet
+ *   • Ha közben a szerver új állapotot küld → dismiss felülíródik,
+ *     az új szerver-állapot jelenik meg azonnal
+ *   • A dismiss NEM küld WS üzenetet
+ *
+ * Szín:
+ *   teal  = pozitív / indít
+ *   amber = folyamatban / figyelmeztetés
+ *   red   = destruktív
+ *   slate = terminal / semleges
+ *   ghost = offline / inaktív
  */
 
-import React, { useCallback } from "react";
-import { useChatRequestsStore, TERMINAL_STATES } from "./chatRequestsStore";
-import { useFriendsStore }                        from "./friendsStore";
-import { useSystemSocket }                        from "./useSystemSocket";
-import { canAct, type ChatRequest, type ChatAction } from "./chatFSM";
+import React, { useCallback, useEffect, useState } from "react";
+import { useChatRequestsStore, TERMINAL_STATUSES } from "./chatRequestsStore";
+import { useFriendsStore }                          from "./friendsStore";
+import { useSystemSocket }                          from "./useSystemSocket";
+import { canAct, type ChatAction, type ChatRequest } from "./chatFSM";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -27,49 +34,31 @@ interface ChatActionButtonProps {
   className?:     string;
 }
 
-// ── State → visual config ─────────────────────────────────────────────────────
+type Variant = "teal" | "amber" | "red" | "slate" | "ghost";
 
 type ButtonConfig = {
-  label:      string;
-  sublabel?:  string;
-  action:     ChatAction | "dismiss" | null;
-  variant:    "teal" | "amber" | "red" | "slate" | "ghost";
-  disabled?:  boolean;
-  pulse?:     boolean;
+  label:        string;
+  sublabel?:    string;
+  action:       ChatAction | null;
+  variant:      Variant;
+  isDismissable?: boolean;   // true → kattintás = lokális reset, WS nélkül
+  disabled?:    boolean;
+  pulse?:       boolean;
 };
 
-function resolveConfig(
-  req:        ChatRequest | null,
-  localUser:  string,
-  isPending:  boolean,
-  isOffline:  boolean,
-): ButtonConfig {
-  // ── Friend offline — always wins, no chat actions possible ───────────
-  if (isOffline) {
-    return {
-      label:    "Offline",
-      action:   null,
-      variant:  "ghost",
-      disabled: true,
-    };
-  }
+// ── State → vizuális konfig ───────────────────────────────────────────────────
 
-  // ── Optimistic in-flight ──────────────────────────────────────────────
-  if (isPending) {
-    return {
-      label:    "···",
-      action:   null,
-      variant:  "slate",
-      disabled: true,
-    };
+function resolveConfig(
+  req:       ChatRequest | null,
+  localUser: string,
+  isOffline: boolean,
+): ButtonConfig {
+  if (isOffline) {
+    return { label: "Offline", action: null, variant: "ghost", disabled: true };
   }
 
   if (!req) {
-    return {
-      label:   "Start Chat",
-      action:  "send_request",
-      variant: "teal",
-    };
+    return { label: "Start Chat", action: "send_request", variant: "teal" };
   }
 
   const isFrom = localUser === req.user_from;
@@ -85,7 +74,7 @@ function resolveConfig(
         pulse:    true,
       };
       if (isTo) return {
-        // Split Accept/Reject handled separately in the render path below
+        // A split Accept/Reject az alábbi render ágban van
         label:    "Incoming",
         sublabel: "Accept / Reject",
         action:   null,
@@ -102,29 +91,30 @@ function resolveConfig(
         variant:  "teal",
       };
 
-    // ── Terminal states — click to dismiss back to idle ───────────────
+    // ── Terminal állapotok — dismissálható ───────────────────────────────
     case "rejected":
       return {
-        label:    "Rejected",
-        sublabel: "Click to reset",
-        action:   "dismiss",
-        variant:  "slate",
+        label:         "Rejected",
+        sublabel:      "Click to reset",
+        action:        null,
+        variant:       "slate",
+        isDismissable: true,
       };
-
     case "cancelled":
       return {
-        label:    "Cancelled",
-        sublabel: "Click to reset",
-        action:   "dismiss",
-        variant:  "slate",
+        label:         "Cancelled",
+        sublabel:      "Click to reset",
+        action:        null,
+        variant:       "slate",
+        isDismissable: true,
       };
-
     case "closed":
       return {
-        label:    "Chat Ended",
-        sublabel: "Click to reset",
-        action:   "dismiss",
-        variant:  "slate",
+        label:         "Chat Ended",
+        sublabel:      "Click to reset",
+        action:        null,
+        variant:       "slate",
+        isDismissable: true,
       };
 
     default:
@@ -132,17 +122,17 @@ function resolveConfig(
   }
 }
 
-// ── Variant styles (unchanged) ────────────────────────────────────────────────
+// ── Variant stílusok (változatlan) ────────────────────────────────────────────
 
-const VARIANT_CLASSES: Record<NonNullable<ButtonConfig["variant"]>, string> = {
+const VARIANT_CLASSES: Record<Variant, string> = {
   teal:  "bg-teal-500/15 border-teal-400/40 text-teal-300 hover:bg-teal-500/25 hover:border-teal-300/60",
   amber: "bg-amber-500/15 border-amber-400/40 text-amber-300 hover:bg-amber-500/25 hover:border-amber-300/60",
   red:   "bg-red-500/15 border-red-400/40 text-red-300 hover:bg-red-500/25 hover:border-red-300/60",
   slate: "bg-slate-700/40 border-slate-600/40 text-slate-400 hover:bg-slate-700/60 hover:text-slate-300",
-  ghost: "bg-transparent border-slate-700 text-slate-500",   // no hover — offline is truly inert
+  ghost: "bg-transparent border-slate-700 text-slate-500",
 };
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Komponens ─────────────────────────────────────────────────────────────────
 
 export function ChatActionButton({
   friendUsername,
@@ -150,52 +140,57 @@ export function ChatActionButton({
   sendAction,
   className = "",
 }: ChatActionButtonProps) {
-  // ── Store subscriptions ───────────────────────────────────────────────
-  const req     = useChatRequestsStore(s => s.getRequestForPair(localUser, friendUsername));
-  const reqId   = req?.req_id ?? null;
-  const pending = useChatRequestsStore(s => reqId ? s.isPending(reqId) : false);
 
-  // Presence — this is the missing piece: friend must be online to interact
+  // ── Store subscriptions ───────────────────────────────────────────────────
+  const req          = useChatRequestsStore(s => s.getRequestForPair(localUser, friendUsername));
   const friendStatus = useFriendsStore(s => s.friends[friendUsername]?.status ?? "unknown");
-  // "unknown" = not yet synced; treat as potentially online so we don't
-  // flash a disabled button before the first presence_sync arrives.
-  const isOffline = friendStatus === "offline";
+  const isOffline    = friendStatus === "offline";
 
-  const { optimisticallyApply, dismissRequest } = useChatRequestsStore.getState();
+  // ── Lokális dismiss állapot ───────────────────────────────────────────────
+  // Csak terminal állapotokban aktív. Ha a szerver új state-t küld (req változik),
+  // az effect nullázza → a szerver state jelenik meg azonnal.
+  const [isDismissed, setIsDismissed] = useState(false);
 
-  const config = resolveConfig(req, localUser, pending, isOffline);
+  useEffect(() => {
+    // Ha a szerver új adatot küld (req_id vagy status változik), töröljük a dismiss-t
+    setIsDismissed(false);
+  }, [req?.req_id, req?.status]);
 
-  // ── Action dispatcher ─────────────────────────────────────────────────
+  // ── Effektív request: dismiss esetén null → idle nézet ───────────────────
+  const effectiveReq = isDismissed ? null : req;
+  const config       = resolveConfig(effectiveReq, localUser, isOffline);
+
+  // ── WS action → Django Channels handler neve ─────────────────────────────
+  const WS_HANDLER: Record<ChatAction, string> = {
+    send_request: "chat_request",   // handle_chat_request
+    accept:       "accept_chat",    // handle_accept_chat
+    reject:       "reject_chat",    // handle_reject_chat
+    cancel:       "cancel_chat",    // handle_cancel_chat
+    close:        "close_chat",     // handle_close_chat
+  };
+
+  // ── Akció küldése ─────────────────────────────────────────────────────────
   const fire = useCallback((action: ChatAction) => {
-    if (!canAct(action, req ?? null, localUser)) return;
-
-    const skeleton = action === "send_request" ? { user_to: friendUsername } : undefined;
-    const accepted  = optimisticallyApply(action, reqId, localUser, skeleton);
-    if (!accepted) return;
-
-    const wsAction: Record<ChatAction, string> = {
-      send_request: "chat_request",
-      accept:       "accept_chat",
-      reject:       "reject_chat",
-      cancel:       "cancel_chat",
-      close:        "close_chat",
-    };
+    // FSM guard — ha a szerver state nem engedi, nem küldünk
+    if (!canAct(action, effectiveReq ?? null, localUser)) return;
 
     sendAction(action, {
-      action:    wsAction[action],
+      action:    WS_HANDLER[action],  // ez megy a backendnek data["action"]-ként
       user_from: localUser,
       user_to:   friendUsername,
-      ...(req?.req_id ? { req_id: req.req_id } : {}),
+      ...(effectiveReq?.req_id ? { req_id: effectiveReq.req_id } : {}),
     });
-  }, [req, reqId, localUser, friendUsername, sendAction, optimisticallyApply]);
+  }, [effectiveReq, localUser, friendUsername, sendAction]);
 
-  // ── Dismiss handler — local only, no WS ──────────────────────────────
+  // ── Dismiss: csak lokális reset, nincs WS ────────────────────────────────
   const handleDismiss = useCallback(() => {
-    if (reqId) dismissRequest(reqId);
-  }, [reqId, dismissRequest]);
+    if (req && TERMINAL_STATUSES.has(req.status as any)) {
+      setIsDismissed(true);
+    }
+  }, [req]);
 
-  // ── Incoming request: split Accept / Reject ───────────────────────────
-  if (req?.status === "pending" && localUser === req.user_to && !isOffline) {
+  // ── Incoming pending: split Accept / Reject ───────────────────────────────
+  if (req?.status === "pending" && localUser === req.user_to && !isOffline && !isDismissed) {
     return (
       <div className={`flex gap-1.5 ${className}`}>
         <ActionBtn
@@ -203,20 +198,18 @@ export function ChatActionButton({
           variant="teal"
           pulse
           onClick={() => fire("accept")}
-          disabled={pending}
         />
         <ActionBtn
           label="Reject"
           variant="red"
           onClick={() => fire("reject")}
-          disabled={pending}
         />
       </div>
     );
   }
 
-  // ── Standard single button ─────────────────────────────────────────────
-  const handleClick = config.action === "dismiss"
+  // ── Normál egygombos nézet ────────────────────────────────────────────────
+  const handleClick = config.isDismissable
     ? handleDismiss
     : config.action
       ? () => fire(config.action as ChatAction)
@@ -228,19 +221,19 @@ export function ChatActionButton({
       sublabel={config.sublabel}
       variant={config.variant}
       pulse={config.pulse}
-      disabled={config.disabled || !config.action}
+      disabled={config.disabled || (!config.action && !config.isDismissable)}
       onClick={handleClick}
       className={className}
     />
   );
 }
 
-// ── Primitive button (appearance unchanged) ───────────────────────────────────
+// ── Primitív gomb (kinézet változatlan) ──────────────────────────────────────
 
 interface ActionBtnProps {
   label:      string;
   sublabel?:  string;
-  variant:    ButtonConfig["variant"];
+  variant:    Variant;
   pulse?:     boolean;
   disabled?:  boolean;
   onClick?:   () => void;
