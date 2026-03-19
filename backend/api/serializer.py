@@ -156,7 +156,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     Serializer for the Profile model with nested user serialization
     """
-    user_id = serializers.IntegerField(source="user.id")
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     first_name = serializers.CharField(source='user.first_name', required=False)
     last_name = serializers.CharField(source='user.last_name', required=False)

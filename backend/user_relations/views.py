@@ -54,6 +54,7 @@ class FriendRequestCreateView(APIView):
         )
         serializer.is_valid(raise_exception=True)
 
+        # 'target' is resolved and validated inside the serializer's validate()
         target: User = serializer.validated_data["target"]
         requester: User = request.user
 
@@ -204,6 +205,11 @@ class FriendListView(generics.ListAPIView):
     """
     GET /api/friends/
     List all confirmed friends of the authenticated user.
+
+    Each friendship row includes a 'friend' field enriched with profile data
+    (avatar_image from UserProfile; rankpoints + current_player from
+    UserProperties). All related tables are joined in a single query via
+    select_related to prevent N+1 hits.
     """
 
     permission_classes = [permissions.IsAuthenticated]
@@ -213,7 +219,19 @@ class FriendListView(generics.ListAPIView):
         user = self.request.user
         from django.db.models import Q
         return (
-            Friendship.objects.select_related("user1", "user2")
+            Friendship.objects.select_related(
+                # Core user rows
+                "user1",
+                "user2",
+                # Profile tables for user1
+                "user1__userprofile",
+                "user1__userproperties",
+                "user1__userproperties__current_player",
+                # Profile tables for user2
+                "user2__userprofile",
+                "user2__userproperties",
+                "user2__userproperties__current_player",
+            )
             .filter(Q(user1=user) | Q(user2=user))
         )
 
