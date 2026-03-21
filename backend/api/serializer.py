@@ -131,8 +131,18 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password', 'password2', 'email')
+        extra_kwargs = {
+            'username': {
+                'min_length': 4,
+                'max_length': 20,
+                'error_messages': {
+                    'min_length': 'Username must be at least 4 characters!',
+                    'max_length': 'Username cant be longer than 20 characters!',
+                }
+            }
+        }
 
-    def validate(self, attrs):
+    def validate(self, attrs):        
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."})
