@@ -6,7 +6,8 @@ from .models import Friendship, FriendRequest
 
 User = get_user_model()
 
-
+# Friend TennisPlayerSummarySerializer, FriendProfileSerializer added 
+# from api, to make the friendslist query more verbose
 # ---------------------------------------------------------------------------
 # Minimal user representation (avoid exposing sensitive fields)
 # ---------------------------------------------------------------------------

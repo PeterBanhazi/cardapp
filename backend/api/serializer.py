@@ -138,7 +138,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                 {"password": "Password fields didn't match."})
         if not attrs['email']:
             raise serializers.ValidationError(
-                {"Email": "Not valid email"})            
+                {"Email": "Not valid email"}) 
+        if User.objects.filter(email=attrs['email']).exists():
+                raise serializers.ValidationError("Email is already registered!")                  
 
         return attrs
 
@@ -151,6 +153,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+            
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """
