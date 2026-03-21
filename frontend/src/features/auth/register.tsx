@@ -64,6 +64,7 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const [openModal, setOpenModal] = useState(false);
+    const [emailTouched, setEmailTouched] = useState(false);
 
     const isLoggedIn = useAuthStore.getState().isAuthenticated;
     const { register, error, clearError } = useAuthStore();
@@ -96,6 +97,8 @@ const Register: React.FC = () => {
     const passwordStrength = password ? getPasswordStrength(password) : null;
     const passwordsMatch = password === password2;
     const showMismatchError = password2.length > 0 && !passwordsMatch;
+    const isEmailValid =
+        !emailTouched || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     // ── Reset ──
     const resetForm = () => {
@@ -121,15 +124,13 @@ const Register: React.FC = () => {
                 sanitizeEmail(email)
             ),
         onSuccess: () => {
-            resetForm(); // ← itt biztonságos, a kérés már elment
+            resetForm();
         },
         onError: () => {
             // Error is already set inside useAuthStore.register;
             // focus the first field for screen readers.
             usernameInputRef.current?.focus();
         },
-        // onSuccess: useAuthStore.register calls login() which navigates
-        // internally. The useNotifications toast fires from there too.
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -260,7 +261,7 @@ const Register: React.FC = () => {
                                 {password && passwordStrength && (
                                     <div className="mt-1" id={passwordHintId}>
                                         <div
-                                            className="h-1 w-full rounded bg-gray-200"
+                                            className="h-2 w-full rounded bg-gray-200"
                                             role="meter"
                                             aria-label="Password strength"
                                             aria-valuenow={
@@ -275,7 +276,7 @@ const Register: React.FC = () => {
                                             aria-valuemax={3}
                                         >
                                             <div
-                                                className={`h-1 rounded transition-all duration-300 ${strengthMeta[passwordStrength].color} ${strengthMeta[passwordStrength].width}`}
+                                                className={`h-2 rounded transition-all duration-300 ${strengthMeta[passwordStrength].color} ${strengthMeta[passwordStrength].width}`}
                                             />
                                         </div>
                                         <p className="text-xs mt-0.5 text-gray-500">
@@ -342,17 +343,34 @@ const Register: React.FC = () => {
                                     Email
                                 </Label>
                                 <TextInput
-                                    type="email"
+                                    type="text"
+                                    inputMode="email"
                                     id="email"
                                     name="email"
                                     autoComplete="email"
                                     value={email}
                                     aria-required="true"
+                                    aria-invalid={!isEmailValid}
+                                    aria-describedby={
+                                        !isEmailValid
+                                            ? 'email-error'
+                                            : undefined
+                                    }
+                                    onBlur={() => setEmailTouched(true)}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="email@example.com"
                                     required
                                     color="tennisprimary"
                                 />
+                                {!isEmailValid && (
+                                    <p
+                                        id="email-error"
+                                        role="alert"
+                                        className="text-sm text-red-600 mt-0.5"
+                                    >
+                                        Valid email please.
+                                    </p>
+                                )}
                             </div>
 
                             {/* ── Submit ── */}
