@@ -90,7 +90,7 @@ export const useUpdateProfile = () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       useNotifications.getState().addNotification({
         type: 'success',
-        title: 'Congratulatios!',
+        title: 'Congratulations!',
         message: "Your profile has been updated successfully!",
       });
     },
