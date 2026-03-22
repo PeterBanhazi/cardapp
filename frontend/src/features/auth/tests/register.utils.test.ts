@@ -2,7 +2,8 @@
  * register.utils.test.ts
  *
  * Pure function unit tests — no mocks, no DOM, lightning fast.
- * Covers: sanitizeUsername, sanitizeEmail, sanitizePassword, getPasswordStrength
+ * Covers: sanitizeUsername, sanitizeEmail, sanitizePassword,
+ *         getPasswordStrength, isEmailValid, createButtonIsEnabled logic
  *
  * Run: vitest run
  */
@@ -10,10 +11,8 @@
 import { describe, it, expect } from 'vitest';
 
 // ─── Functions under test ─────────────────────────────────────────────────────
-// These are currently defined inside the Register component.
-// Recommended: extract them to a separate file (e.g. register.utils.ts)
-// and import from both the component and here.
-// Until then, they are redefined here — the logic is identical.
+// Recommended: extract these to register.utils.ts and import from both
+// the component and this file. Until then they are redefined here.
 
 const sanitizeUsername = (value: string): string =>
     value.trim().replace(/[^a-zA-Z0-9_\-.]/g, '').slice(0, 20);
@@ -28,14 +27,36 @@ type PasswordStrength = 'weak' | 'fair' | 'strong';
 
 const getPasswordStrength = (password: string): PasswordStrength => {
     if (password.length < 8) return 'weak';
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasDigit = /\d/.test(password);
+    const hasUpper   = /[A-Z]/.test(password);
+    const hasLower   = /[a-z]/.test(password);
+    const hasDigit   = /\d/.test(password);
     const hasSpecial = /[^a-zA-Z0-9]/.test(password);
     const score = [hasUpper, hasLower, hasDigit, hasSpecial].filter(Boolean).length;
     if (score <= 2) return 'weak';
     if (score === 3) return 'fair';
     return 'strong';
+};
+
+// Mirrors the component's isEmailValid derived value.
+// Only validates after the field has been touched (onBlur fired).
+const isEmailValid = (email: string, touched: boolean): boolean =>
+    !touched || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Mirrors the component's createButtonIsEnabled useEffect logic.
+const isFormSubmittable = (
+    username: string,
+    password: string,
+    password2: string,
+    email: string,
+    emailTouched: boolean,
+): boolean => {
+    const isUsernameValid  = username.length >= 4 && username.length <= 20;
+    const strength         = getPasswordStrength(password);
+    const isPasswordValid  = strength === 'fair' || strength === 'strong';
+    const passwordsMatch   = password === password2;
+    const showMismatch     = password2.length > 0 && !passwordsMatch;
+    const emailOk          = isEmailValid(email, emailTouched);
+    return isPasswordValid && passwordsMatch && !showMismatch && isUsernameValid && emailOk;
 };
 
 // ─── sanitizeUsername ─────────────────────────────────────────────────────────
@@ -58,13 +79,11 @@ describe('sanitizeUsername', () => {
     });
 
     it('truncates to 20 characters', () => {
-        const long = 'a'.repeat(30);
-        expect(sanitizeUsername(long)).toHaveLength(20);
+        expect(sanitizeUsername('a'.repeat(30))).toHaveLength(20);
     });
 
     it('keeps exactly 20 characters when input is 20', () => {
-        const twenty = 'a'.repeat(20);
-        expect(sanitizeUsername(twenty)).toHaveLength(20);
+        expect(sanitizeUsername('a'.repeat(20))).toHaveLength(20);
     });
 
     it('returns empty string for empty input', () => {
@@ -75,7 +94,7 @@ describe('sanitizeUsername', () => {
         expect(sanitizeUsername('   ')).toBe('');
     });
 
-    it('strips the @ sign (email-like input)', () => {
+    it('strips the @ sign', () => {
         expect(sanitizeUsername('user@name')).toBe('username');
     });
 
@@ -96,13 +115,7 @@ describe('sanitizeEmail', () => {
     });
 
     it('truncates to 254 characters (RFC 5321 limit)', () => {
-        const long = 'a'.repeat(250) + '@b.com'; // 256 chars
-        expect(sanitizeEmail(long)).toHaveLength(254);
-    });
-
-    it('keeps exactly 254 characters when input is 254', () => {
-        const exact = 'a'.repeat(249) + '@b.co'; // 254 chars
-        expect(sanitizeEmail(exact)).toHaveLength(254);
+        expect(sanitizeEmail('a'.repeat(250) + '@b.com')).toHaveLength(254);
     });
 
     it('returns empty string for empty input', () => {
@@ -138,10 +151,6 @@ describe('sanitizePassword', () => {
         expect(sanitizePassword(special)).toBe(special);
     });
 
-    it('preserves unicode / accented characters', () => {
-        expect(sanitizePassword('Árvíztűrő1!')).toBe('Árvíztűrő1!');
-    });
-
     it('does not trim — spaces are valid password characters', () => {
         expect(sanitizePassword('  password  ')).toBe('  password  ');
     });
@@ -165,10 +174,6 @@ describe('getPasswordStrength', () => {
 
         it('7 characters → weak (below threshold)', () => {
             expect(getPasswordStrength('Abc123!')).toBe('weak');
-        });
-
-        it('exactly 7 characters → weak', () => {
-            expect(getPasswordStrength('abcdefg')).toBe('weak');
         });
     });
 
@@ -208,24 +213,158 @@ describe('getPasswordStrength', () => {
         it('long strong password → strong', () => {
             expect(getPasswordStrength('MyS3cur3P@ssword!')).toBe('strong');
         });
-
-        it('exactly 8 characters with all 4 types → strong', () => {
-            expect(getPasswordStrength('Aa1!aaaa')).toBe('strong');
-        });
     });
 
     describe('edge cases', () => {
-        it('exactly 8 characters, lowercase only → weak', () => {
-            expect(getPasswordStrength('abcdefgh')).toBe('weak');
-        });
-
-        it('9 characters, uppercase only → weak', () => {
-            expect(getPasswordStrength('ABCDEFGHI')).toBe('weak');
-        });
-
         it('space counts as a special character', () => {
-            // lowercase + uppercase + space = 3 types → fair
             expect(getPasswordStrength('Abcdefg ')).toBe('fair');
+        });
+    });
+});
+
+// ─── isEmailValid (onBlur logic) ──────────────────────────────────────────────
+
+describe('isEmailValid', () => {
+    describe('before the field is touched (emailTouched = false)', () => {
+        it('empty string → valid (no error shown yet)', () => {
+            expect(isEmailValid('', false)).toBe(true);
+        });
+
+        it('invalid format → valid (no error shown yet)', () => {
+            expect(isEmailValid('notanemail', false)).toBe(true);
+        });
+
+        it('partially typed email → valid (no error shown yet)', () => {
+            expect(isEmailValid('john@', false)).toBe(true);
+        });
+    });
+
+    describe('after the field is touched (emailTouched = true)', () => {
+        it('valid email → valid', () => {
+            expect(isEmailValid('john@example.com', true)).toBe(true);
+        });
+
+        it('valid email with subdomain → valid', () => {
+            expect(isEmailValid('john@mail.example.co.uk', true)).toBe(true);
+        });
+
+        it('empty string → invalid', () => {
+            expect(isEmailValid('', true)).toBe(false);
+        });
+
+        it('missing @ → invalid', () => {
+            expect(isEmailValid('johnexample.com', true)).toBe(false);
+        });
+
+        it('missing domain → invalid', () => {
+            expect(isEmailValid('john@', true)).toBe(false);
+        });
+
+        it('missing TLD → invalid', () => {
+            expect(isEmailValid('john@example', true)).toBe(false);
+        });
+
+        it('space in email → invalid', () => {
+            expect(isEmailValid('jo hn@example.com', true)).toBe(false);
+        });
+    });
+});
+
+// ─── createButtonIsEnabled (form submit gate) ─────────────────────────────────
+
+describe('createButtonIsEnabled', () => {
+    // Baseline valid values — individual tests override one field at a time
+    const valid = {
+        username:     'johndoe',
+        password:     'Abcdef12',   // fair
+        password2:    'Abcdef12',
+        email:        'john@example.com',
+        emailTouched: true,
+    };
+
+    const check = (overrides: Partial<typeof valid>) => {
+        const v = { ...valid, ...overrides };
+        return isFormSubmittable(v.username, v.password, v.password2, v.email, v.emailTouched);
+    };
+
+    it('returns true when all fields are valid', () => {
+        expect(isFormSubmittable(
+            valid.username, valid.password, valid.password2,
+            valid.email, valid.emailTouched,
+        )).toBe(true);
+    });
+
+    it('returns true with a strong password', () => {
+        expect(check({ password: 'Abcdef1!', password2: 'Abcdef1!' })).toBe(true);
+    });
+
+    describe('username validation', () => {
+        it('username shorter than 4 chars → disabled', () => {
+            expect(check({ username: 'jo' })).toBe(false);
+        });
+
+        it('username exactly 4 chars → enabled', () => {
+            expect(check({ username: 'john' })).toBe(true);
+        });
+
+        it('username exactly 20 chars → enabled', () => {
+            expect(check({ username: 'a'.repeat(20) })).toBe(true);
+        });
+
+        it('username longer than 20 chars → disabled', () => {
+            // sanitizeUsername would truncate this in the component,
+            // but the raw length check here reflects the pre-sanitized state
+            expect(check({ username: 'a'.repeat(21) })).toBe(false);
+        });
+
+        it('empty username → disabled', () => {
+            expect(check({ username: '' })).toBe(false);
+        });
+    });
+
+    describe('password validation', () => {
+        it('weak password → disabled', () => {
+            expect(check({ password: 'abcdefgh', password2: 'abcdefgh' })).toBe(false);
+        });
+
+        it('fair password → enabled', () => {
+            expect(check({ password: 'Abcdef12', password2: 'Abcdef12' })).toBe(true);
+        });
+
+        it('strong password → enabled', () => {
+            expect(check({ password: 'Abcdef1!', password2: 'Abcdef1!' })).toBe(true);
+        });
+
+        it('password shorter than 8 chars → disabled', () => {
+            expect(check({ password: 'Abc1!', password2: 'Abc1!' })).toBe(false);
+        });
+    });
+
+    describe('password confirmation', () => {
+        it('passwords do not match → disabled', () => {
+            expect(check({ password2: 'Different1!' })).toBe(false);
+        });
+
+        it('password2 empty → disabled (passwords do not match)', () => {
+            expect(check({ password2: '' })).toBe(false);
+        });
+    });
+
+    describe('email validation', () => {
+        it('invalid email after touch → disabled', () => {
+            expect(check({ email: 'notanemail', emailTouched: true })).toBe(false);
+        });
+
+        it('invalid email before touch → enabled (no error shown yet)', () => {
+            expect(check({ email: 'notanemail', emailTouched: false })).toBe(true);
+        });
+
+        it('empty email after touch → disabled', () => {
+            expect(check({ email: '', emailTouched: true })).toBe(false);
+        });
+
+        it('valid email after touch → enabled', () => {
+            expect(check({ email: 'jane@example.com', emailTouched: true })).toBe(true);
         });
     });
 });

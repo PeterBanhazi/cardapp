@@ -64,6 +64,7 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const [openModal, setOpenModal] = useState(false);
+    const [createButtonIsEnabled, setCreateButtonIsEnabled] = useState(false);
     const [emailTouched, setEmailTouched] = useState(false);
 
     const isLoggedIn = useAuthStore.getState().isAuthenticated;
@@ -87,12 +88,6 @@ const Register: React.FC = () => {
         if (location.pathname === '/register') setOpenModal(true);
     }, [isLoggedIn, navigate, location.pathname]);
 
-    useEffect(() => {
-        if (error && usernameInputRef.current) {
-            usernameInputRef.current.focus();
-        }
-    }, [error]);
-
     // ── Derived state ──
     const passwordStrength = password ? getPasswordStrength(password) : null;
     const passwordsMatch = password === password2;
@@ -109,9 +104,10 @@ const Register: React.FC = () => {
     };
 
     const handleClose = () => {
-        setOpenModal(false);
         resetForm();
         clearError();
+        setEmailTouched(false);
+        setOpenModal(false);
     };
 
     // ── TanStack mutation ──
@@ -141,6 +137,24 @@ const Register: React.FC = () => {
 
     const isLoading = registerMutation.isPending;
 
+    useEffect(() => {
+        const isUsernameValid = username.length >= 4 && username.length <= 20;
+        const isPasswordValid =
+            getPasswordStrength(password) === 'fair' ||
+            getPasswordStrength(password) === 'strong';
+        if (
+            !isLoading &&
+            isPasswordValid &&
+            passwordsMatch &&
+            !showMismatchError &&
+            isUsernameValid &&
+            isEmailValid
+        ) {
+            setCreateButtonIsEnabled(true);
+        } else {
+            setCreateButtonIsEnabled(false);
+        }
+    }, [username, password, password2, email, isEmailValid, isLoading]);
     // ── Render ──
     return (
         <>
@@ -204,7 +218,7 @@ const Register: React.FC = () => {
                                             className="pl-3 text-red-700 text-sm"
                                             aria-live="polite"
                                         >
-                                            Username may already be taken.
+                                            Username is already taken.
                                         </span>
                                     )}
                                 </Label>
@@ -225,7 +239,7 @@ const Register: React.FC = () => {
                                         setUsername(e.target.value);
                                         clearError();
                                     }}
-                                    placeholder="Username (max 20 characters)"
+                                    placeholder="Username (min 5, max 20 characters)"
                                     required
                                     color="tennisprimary"
                                 />
@@ -377,8 +391,8 @@ const Register: React.FC = () => {
                             <Button
                                 type="submit"
                                 color="tennisprimary"
-                                disabled={isLoading || showMismatchError}
-                                aria-disabled={isLoading || showMismatchError}
+                                disabled={!createButtonIsEnabled}
+                                aria-disabled={!createButtonIsEnabled}
                                 // className="w-full"
                             >
                                 {isLoading && (
