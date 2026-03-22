@@ -37,10 +37,17 @@ const getPasswordStrength = (password: string): PasswordStrength => {
     return 'strong';
 };
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Controls error message visibility — silent until the field is blurred.
 // Mirrors the component's isEmailValid derived value.
-// Only validates after the field has been touched (onBlur fired).
 const isEmailValid = (email: string, touched: boolean): boolean =>
-    !touched || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    !touched || EMAIL_REGEX.test(email);
+
+// Controls the button gate — always requires a valid filled email,
+// regardless of whether the field has been touched.
+// Mirrors the component's isEmailFilled derived value.
+const isEmailFilled = (email: string): boolean => EMAIL_REGEX.test(email);
 
 // Mirrors the component's createButtonIsEnabled useEffect logic.
 const isFormSubmittable = (
@@ -48,15 +55,13 @@ const isFormSubmittable = (
     password: string,
     password2: string,
     email: string,
-    emailTouched: boolean,
 ): boolean => {
-    const isUsernameValid  = username.length >= 4 && username.length <= 20;
-    const strength         = getPasswordStrength(password);
-    const isPasswordValid  = strength === 'fair' || strength === 'strong';
-    const passwordsMatch   = password === password2;
-    const showMismatch     = password2.length > 0 && !passwordsMatch;
-    const emailOk          = isEmailValid(email, emailTouched);
-    return isPasswordValid && passwordsMatch && !showMismatch && isUsernameValid && emailOk;
+    const isUsernameValid = username.length >= 4 && username.length <= 20;
+    const strength        = getPasswordStrength(password);
+    const isPasswordValid = strength === 'fair' || strength === 'strong';
+    const passwordsMatch  = password === password2;
+    const showMismatch    = password2.length > 0 && !passwordsMatch;
+    return isPasswordValid && passwordsMatch && !showMismatch && isUsernameValid && isEmailFilled(email);
 };
 
 // ─── sanitizeUsername ─────────────────────────────────────────────────────────
@@ -275,22 +280,20 @@ describe('isEmailValid', () => {
 describe('createButtonIsEnabled', () => {
     // Baseline valid values — individual tests override one field at a time
     const valid = {
-        username:     'johndoe',
-        password:     'Abcdef12',   // fair
-        password2:    'Abcdef12',
-        email:        'john@example.com',
-        emailTouched: true,
+        username:  'johndoe',
+        password:  'Abcdef12',   // fair
+        password2: 'Abcdef12',
+        email:     'john@example.com',
     };
 
     const check = (overrides: Partial<typeof valid>) => {
         const v = { ...valid, ...overrides };
-        return isFormSubmittable(v.username, v.password, v.password2, v.email, v.emailTouched);
+        return isFormSubmittable(v.username, v.password, v.password2, v.email);
     };
 
     it('returns true when all fields are valid', () => {
         expect(isFormSubmittable(
-            valid.username, valid.password, valid.password2,
-            valid.email, valid.emailTouched,
+            valid.username, valid.password, valid.password2, valid.email,
         )).toBe(true);
     });
 
@@ -351,20 +354,24 @@ describe('createButtonIsEnabled', () => {
     });
 
     describe('email validation', () => {
-        it('invalid email after touch → disabled', () => {
-            expect(check({ email: 'notanemail', emailTouched: true })).toBe(false);
+        it('invalid email → disabled (regardless of touched state)', () => {
+            expect(check({ email: 'notanemail' })).toBe(false);
         });
 
-        it('invalid email before touch → enabled (no error shown yet)', () => {
-            expect(check({ email: 'notanemail', emailTouched: false })).toBe(true);
+        it('empty email → disabled (regardless of touched state)', () => {
+            expect(check({ email: '' })).toBe(false);
         });
 
-        it('empty email after touch → disabled', () => {
-            expect(check({ email: '', emailTouched: true })).toBe(false);
+        it('valid email → enabled', () => {
+            expect(check({ email: 'jane@example.com' })).toBe(true);
         });
 
-        it('valid email after touch → enabled', () => {
-            expect(check({ email: 'jane@example.com', emailTouched: true })).toBe(true);
+        it('missing @ → disabled', () => {
+            expect(check({ email: 'johnexample.com' })).toBe(false);
+        });
+
+        it('missing TLD → disabled', () => {
+            expect(check({ email: 'john@example' })).toBe(false);
         });
     });
 });

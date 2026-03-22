@@ -92,8 +92,14 @@ const Register: React.FC = () => {
     const passwordStrength = password ? getPasswordStrength(password) : null;
     const passwordsMatch = password === password2;
     const showMismatchError = password2.length > 0 && !passwordsMatch;
-    const isEmailValid =
-        !emailTouched || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Controls error message visibility — silent until the field is blurred
+    const isEmailValid = !emailTouched || EMAIL_REGEX.test(email);
+
+    // Controls button gate — must always be a valid filled value,
+    // regardless of whether the field has been touched yet
+    const isEmailFilled = EMAIL_REGEX.test(email);
 
     // ── Reset ──
     const resetForm = () => {
@@ -148,13 +154,13 @@ const Register: React.FC = () => {
             passwordsMatch &&
             !showMismatchError &&
             isUsernameValid &&
-            isEmailValid
+            isEmailFilled
         ) {
             setCreateButtonIsEnabled(true);
         } else {
             setCreateButtonIsEnabled(false);
         }
-    }, [username, password, password2, email, isEmailValid, isLoading]);
+    }, [username, password, password2, email, isEmailFilled, isLoading]);
     // ── Render ──
     return (
         <>
