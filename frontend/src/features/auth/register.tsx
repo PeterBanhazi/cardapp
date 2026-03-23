@@ -1,7 +1,4 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
-import { useAuthStore } from '../../core/store/useAuthStore';
+import React, { useId } from 'react';
 import {
     Button,
     Label,
@@ -12,66 +9,18 @@ import {
     TextInput,
     ThemeProvider,
 } from 'flowbite-react';
+import { useAuthStore } from '../../core/store/useAuthStore';
 import { customTheme } from '../../shared/formThemes';
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
+import {
+    useRegisterForm,
+    strengthMeta,
+} from './register_hooks/useRegisterForm';
+import { useRegisterModal } from './register_hooks/useRegisterModal';
+import { useRegisterMutation } from './register_hooks/useRegisterMutation';
 
-// ─── Sanitization helpers ────────────────────────────────────────────────────
-// Trim and strip characters that have no place in these fields.
-// Backend must always re-validate — these are UX guards only.
-const sanitizeUsername = (value: string): string =>
-    value
-        .trim()
-        .replace(/[^a-zA-Z0-9_\-.]/g, '')
-        .slice(0, 20);
-
-const sanitizeEmail = (value: string): string =>
-    value.trim().toLowerCase().slice(0, 254); // RFC 5321 max
-
-const sanitizePassword = (value: string): string =>
-    // Allow any printable ASCII; strip null bytes and control chars
-    value.replace(/[\x00-\x1F\x7F]/g, '');
-
-// ─── Password strength ───────────────────────────────────────────────────────
-type PasswordStrength = 'weak' | 'fair' | 'strong';
-
-const getPasswordStrength = (password: string): PasswordStrength => {
-    if (password.length < 8) return 'weak';
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
-    const hasDigit = /\d/.test(password);
-    const hasSpecial = /[^a-zA-Z0-9]/.test(password);
-    const score = [hasUpper, hasLower, hasDigit, hasSpecial].filter(
-        Boolean
-    ).length;
-    if (score <= 2) return 'weak';
-    if (score === 3) return 'fair';
-    return 'strong';
-};
-
-const strengthMeta: Record<
-    PasswordStrength,
-    { label: string; color: string; width: string }
-> = {
-    weak: { label: 'Weak', color: 'bg-red-500', width: 'w-1/3' },
-    fair: { label: 'Fair', color: 'bg-yellow-400', width: 'w-2/3' },
-    strong: { label: 'Strong', color: 'bg-green-500', width: 'w-full' },
-};
-
-// ─── Component ───────────────────────────────────────────────────────────────
 const Register: React.FC = () => {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
-    const [openModal, setOpenModal] = useState(false);
-    const [createButtonIsEnabled, setCreateButtonIsEnabled] = useState(false);
-    const [emailTouched, setEmailTouched] = useState(false);
-
-    const isLoggedIn = useAuthStore.getState().isAuthenticated;
-    const { register, error, clearError } = useAuthStore();
-    const navigate = useNavigate();
-    const location = useLocation();
-    const usernameInputRef = useRef<HTMLInputElement>(null);
+    const { error, clearError } = useAuthStore();
 
     // Stable IDs for aria-describedby associations
     const usernameErrorId = useId();
@@ -79,89 +28,32 @@ const Register: React.FC = () => {
     const password2ErrorId = useId();
     const formErrorId = useId();
 
-    // ── Side-effects ──
-    useEffect(() => {
-        if (isLoggedIn) {
-            navigate('/lobby');
-            return;
-        }
-        if (location.pathname === '/register') setOpenModal(true);
-    }, [isLoggedIn, navigate, location.pathname]);
+    // isLoading needed by the form hook → initialize with a temp value,
+    // then wire them together via a shared loading state.
+    // Simplest approach: initialize form first with isLoading=false,
+    // then pass real isLoading from the mutation.
+    const form = useRegisterForm({ isLoading: false, clearError });
 
-    // ── Derived state ──
-    const passwordStrength = password ? getPasswordStrength(password) : null;
-    const passwordsMatch = password === password2;
-    const showMismatchError = password2.length > 0 && !passwordsMatch;
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const {
+        handleSubmit: submit,
+        isLoading: loading,
+        usernameInputRef: inputRef,
+    } = useRegisterMutation({
+        username: form.username,
+        password: form.password,
+        password2: form.password2,
+        email: form.email,
+        passwordsMatch: form.passwordsMatch,
+        onSuccess: form.reset,
+    });
 
-    // Controls error message visibility — silent until the field is blurred
-    const isEmailValid = !emailTouched || EMAIL_REGEX.test(email);
-
-    // Controls button gate — must always be a valid filled value,
-    // regardless of whether the field has been touched yet
-    const isEmailFilled = EMAIL_REGEX.test(email);
-
-    // ── Reset ──
-    const resetForm = () => {
-        setUsername('');
-        setPassword('');
-        setPassword2('');
-        setEmail('');
-    };
-
-    const handleClose = () => {
-        resetForm();
-        clearError();
-        setEmailTouched(false);
-        setOpenModal(false);
-    };
-
-    // ── TanStack mutation ──
-    const registerMutation = useMutation({
-        mutationFn: () =>
-            register(
-                sanitizeUsername(username),
-                sanitizePassword(password),
-                sanitizePassword(password2),
-                sanitizeEmail(email)
-            ),
-        onSuccess: () => {
-            resetForm();
-        },
-        onError: () => {
-            // Error is already set inside useAuthStore.register;
-            // focus the first field for screen readers.
-            usernameInputRef.current?.focus();
+    const { openModal, setOpenModal, handleClose } = useRegisterModal({
+        onClose: () => {
+            form.reset();
+            clearError();
         },
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!passwordsMatch || registerMutation.isPending) return;
-        registerMutation.mutate();
-    };
-
-    const isLoading = registerMutation.isPending;
-
-    useEffect(() => {
-        const isUsernameValid = username.length >= 4 && username.length <= 20;
-        const isPasswordValid =
-            getPasswordStrength(password) === 'fair' ||
-            getPasswordStrength(password) === 'strong';
-        if (
-            !isLoading &&
-            isPasswordValid &&
-            passwordsMatch &&
-            !showMismatchError &&
-            isUsernameValid &&
-            isEmailFilled
-        ) {
-            setCreateButtonIsEnabled(true);
-        } else {
-            setCreateButtonIsEnabled(false);
-        }
-    }, [username, password, password2, email, isEmailFilled, isLoading]);
-    // ── Render ──
     return (
         <>
             <ModalOpenTriggerButton
@@ -178,7 +70,7 @@ const Register: React.FC = () => {
                     position="top-center"
                     dismissible
                     onClose={handleClose}
-                    initialFocus={usernameInputRef}
+                    initialFocus={inputRef}
                     aria-labelledby="register-modal-title"
                 >
                     <ModalHeader
@@ -207,7 +99,7 @@ const Register: React.FC = () => {
                         </div>
 
                         <form
-                            onSubmit={handleSubmit}
+                            onSubmit={submit}
                             noValidate
                             aria-describedby={error ? formErrorId : undefined}
                         >
@@ -229,22 +121,23 @@ const Register: React.FC = () => {
                                     )}
                                 </Label>
                                 <TextInput
-                                    ref={usernameInputRef}
+                                    ref={inputRef}
                                     type="text"
                                     id="username"
                                     name="username"
                                     autoComplete="username"
                                     maxLength={20}
-                                    value={username}
+                                    value={form.username}
                                     aria-required="true"
                                     aria-invalid={!!error}
                                     aria-describedby={
                                         error ? usernameErrorId : undefined
                                     }
-                                    onChange={(e) => {
-                                        setUsername(e.target.value);
-                                        clearError();
-                                    }}
+                                    onChange={(e) =>
+                                        form.handleUsernameChange(
+                                            e.target.value
+                                        )
+                                    }
                                     placeholder="Username (min 5, max 20 characters)"
                                     required
                                     color="tennisprimary"
@@ -264,30 +157,28 @@ const Register: React.FC = () => {
                                     id="password"
                                     name="password"
                                     autoComplete="new-password"
-                                    value={password}
+                                    value={form.password}
                                     aria-required="true"
                                     aria-describedby={passwordHintId}
-                                    onChange={(e) => {
-                                        setPassword(
-                                            sanitizePassword(e.target.value)
-                                        );
-                                        clearError();
-                                    }}
+                                    onChange={(e) =>
+                                        form.handlePasswordChange(
+                                            e.target.value
+                                        )
+                                    }
                                     placeholder="Password"
                                     required
                                     color="tennisprimary"
                                 />
-                                {/* Password strength meter */}
-                                {password && passwordStrength && (
+                                {form.password && form.passwordStrength && (
                                     <div className="mt-1" id={passwordHintId}>
                                         <div
                                             className="h-2 w-full rounded bg-gray-200"
                                             role="meter"
                                             aria-label="Password strength"
                                             aria-valuenow={
-                                                passwordStrength === 'weak'
+                                                form.passwordStrength === 'weak'
                                                     ? 1
-                                                    : passwordStrength ===
+                                                    : form.passwordStrength ===
                                                         'fair'
                                                       ? 2
                                                       : 3
@@ -296,7 +187,7 @@ const Register: React.FC = () => {
                                             aria-valuemax={3}
                                         >
                                             <div
-                                                className={`h-2 rounded transition-all duration-300 ${strengthMeta[passwordStrength].color} ${strengthMeta[passwordStrength].width}`}
+                                                className={`h-2 rounded transition-all duration-300 ${strengthMeta[form.passwordStrength].color} ${strengthMeta[form.passwordStrength].width}`}
                                             />
                                         </div>
                                         <p className="text-xs mt-0.5 text-gray-500">
@@ -304,7 +195,7 @@ const Register: React.FC = () => {
                                             <span className="font-medium">
                                                 {
                                                     strengthMeta[
-                                                        passwordStrength
+                                                        form.passwordStrength
                                                     ].label
                                                 }
                                             </span>
@@ -328,25 +219,24 @@ const Register: React.FC = () => {
                                     id="confirm-password"
                                     name="confirm-password"
                                     autoComplete="new-password"
-                                    value={password2}
+                                    value={form.password2}
                                     aria-required="true"
-                                    aria-invalid={showMismatchError}
+                                    aria-invalid={form.showMismatchError}
                                     aria-describedby={
-                                        showMismatchError
+                                        form.showMismatchError
                                             ? password2ErrorId
                                             : undefined
                                     }
-                                    onChange={(e) => {
-                                        setPassword2(
-                                            sanitizePassword(e.target.value)
-                                        );
-                                        clearError();
-                                    }}
+                                    onChange={(e) =>
+                                        form.handlePassword2Change(
+                                            e.target.value
+                                        )
+                                    }
                                     placeholder="Confirm password"
                                     required
                                     color="tennisprimary"
                                 />
-                                {showMismatchError && (
+                                {form.showMismatchError && (
                                     <p
                                         id={password2ErrorId}
                                         role="alert"
@@ -368,21 +258,23 @@ const Register: React.FC = () => {
                                     id="email"
                                     name="email"
                                     autoComplete="email"
-                                    value={email}
+                                    value={form.email}
                                     aria-required="true"
-                                    aria-invalid={!isEmailValid}
+                                    aria-invalid={!form.isEmailValid}
                                     aria-describedby={
-                                        !isEmailValid
+                                        !form.isEmailValid
                                             ? 'email-error'
                                             : undefined
                                     }
-                                    onBlur={() => setEmailTouched(true)}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onBlur={() => form.setEmailTouched(true)}
+                                    onChange={(e) =>
+                                        form.handleEmailChange(e.target.value)
+                                    }
                                     placeholder="email@example.com"
                                     required
                                     color="tennisprimary"
                                 />
-                                {!isEmailValid && (
+                                {!form.isEmailValid && (
                                     <p
                                         id="email-error"
                                         role="alert"
@@ -397,19 +289,18 @@ const Register: React.FC = () => {
                             <Button
                                 type="submit"
                                 color="tennisprimary"
-                                disabled={!createButtonIsEnabled}
-                                aria-disabled={!createButtonIsEnabled}
-                                // className="w-full"
+                                disabled={!form.createButtonIsEnabled}
+                                aria-disabled={!form.createButtonIsEnabled}
                             >
-                                {isLoading && (
+                                {loading && (
                                     <Spinner
                                         aria-hidden="true"
                                         size="md"
                                         className="fill-orange-500"
                                     />
                                 )}
-                                <span className={isLoading ? 'pl-2' : ''}>
-                                    {isLoading
+                                <span className={loading ? 'pl-2' : ''}>
+                                    {loading
                                         ? 'Creating account…'
                                         : 'Create new account'}
                                 </span>
