@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
-
+import { useEffect, useId, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
 import {
     Button,
     Checkbox,
@@ -11,9 +12,7 @@ import {
     TextInput,
     ThemeProvider,
 } from 'flowbite-react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../core/store/useAuthStore';
-
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
 import { customTheme } from '../../shared/formThemes';
 import { useNotifications } from '../../shared/components/ui/notifications';
@@ -21,53 +20,84 @@ import { useNotifications } from '../../shared/components/ui/notifications';
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    // ### loading(ok) and error handling for proper UX
-    const { login, isLoading, error, clearError, isAuthenticated } =
-        useAuthStore();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+
+    const { login, error, clearError } = useAuthStore();
     const isLoggedIn = useAuthStore.getState().isAuthenticated;
 
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [openModal, setOpenModal] = useState(false);
 
     const usernameInputRef = useRef<HTMLInputElement>(null);
 
+    // Stable IDs for aria-describedby associations
+    const formErrorId    = useId();
+    const usernameErrorId = useId();
+
+    // ── Side-effects ──────────────────────────────────────────────────────────
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/lobby');
+            return;
         }
         if (location.pathname === '/login') setOpenModal(true);
+    }, [isLoggedIn, navigate, location.pathname]);
+
+    useEffect(() => {
         if (error && usernameInputRef.current) {
             usernameInputRef.current.focus();
         }
-    }, [error, isLoggedIn, location]);
+    }, [error]);
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
     const resetForm = () => {
         setUsername('');
         setPassword('');
     };
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        await login(username, password);
-        if (useAuthStore.getState().isAuthenticated) {
-            navigate('/lobby');
-            resetForm();
-            useNotifications.getState().addNotification({
-                type: 'success',
-                title: 'Info',
-                message: 'You have been successfully logged in!',
-            });
-        }
+    const handleClose = () => {
+        setOpenModal(false);
+        resetForm();
+        clearError();
     };
 
+    // ── TanStack mutation ─────────────────────────────────────────────────────
+    const loginMutation = useMutation({
+        mutationFn: () => login(username, password),
+        onSuccess: () => {
+            // login() sets isAuthenticated synchronously via set() before
+            // this callback fires, so getState() is already up to date.
+            if (useAuthStore.getState().isAuthenticated) {
+                navigate('/lobby');
+                resetForm();
+                useNotifications.getState().addNotification({
+                    type:    'success',
+                    title:   'Welcome back!',
+                    message: 'You have been successfully logged in.',
+                });
+            }
+        },
+        onError: () => {
+            usernameInputRef.current?.focus();
+        },
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (loginMutation.isPending) return;
+        loginMutation.mutate();
+    };
+
+    const isLoading = loginMutation.isPending;
+
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <>
             <ModalOpenTriggerButton
                 buttonText="Login"
                 onClick={() => setOpenModal(true)}
             />
+
             <ThemeProvider theme={customTheme}>
                 <Modal
                     id="login-modal"
@@ -76,114 +106,138 @@ const Login: React.FC = () => {
                     popup
                     position="top-center"
                     dismissible
-                    onClose={() => {
-                        setOpenModal(false);
-                        resetForm();
-                        // navigate('/');
-                    }}
+                    onClose={handleClose}
                     initialFocus={usernameInputRef}
+                    aria-labelledby="login-modal-title"
                 >
-                    <ModalHeader className="text-xl font-medium text-gray-900 pl-4">
+                    <ModalHeader
+                        id="login-modal-title"
+                        className="text-xl font-medium text-gray-900 pl-4"
+                    >
                         Sign in to your account
                     </ModalHeader>
-                    <ModalBody>
-                        <div className="space-y-6">
-                            <form onSubmit={handleLogin}>
-                                <div>
-                                    <div className="mb-1 block">
-                                        <Label htmlFor="username">
-                                            Your username
-                                            {error && (
-                                                <span className="pl-12 text-red-700">
-                                                    Oops! Something doesn't
-                                                    match...
-                                                </span>
-                                            )}
-                                        </Label>
-                                    </div>
 
-                                    <TextInput
-                                        id="username"
-                                        placeholder=""
-                                        type="text"
-                                        name="username"
-                                        autoComplete="username"
-                                        color="tennisprimary"
-                                        required
-                                        value={username}
-                                        ref={usernameInputRef}
-                                        onChange={(e) => {
-                                            setUsername(e.target.value);
-                                            clearError();
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <div className="mb-1 block mt-2">
-                                        <Label htmlFor="password">
-                                            Your password
-                                        </Label>
-                                    </div>
-                                    <TextInput
-                                        type="password"
-                                        id="password"
-                                        name="password"
-                                        color="tennisprimary"
-                                        autoComplete="current-password"
-                                        value={password}
-                                        onChange={(e) => {
-                                            setPassword(e.target.value);
-                                            clearError();
-                                        }}
-                                    />
-                                </div>
-                                <div className="flex justify-between py-1.5">
-                                    <div className="flex items-center gap-2">
-                                        <Checkbox id="remember" />
-                                        <Label htmlFor="remember">
-                                            Remember me
-                                        </Label>
-                                    </div>
-                                    <a
-                                        href="#"
-                                        className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
-                                    >
-                                        Lost Password?
-                                    </a>
-                                </div>
-                                <div className="w-full">
-                                    <Button
-                                        type="submit"
-                                        disabled={isLoading}
-                                        color="tennisprimary"
-                                        className="mt-2"
-                                    >
-                                        {isLoading && (
-                                            <Spinner
-                                                aria-label="Spinner for login button"
-                                                size="md"
-                                                className="fill-orange-500"
-                                            />
-                                        )}
+                    <ModalBody>
+                        {/* Live region — screen readers announce server errors */}
+                        <div
+                            id={formErrorId}
+                            role="alert"
+                            aria-live="polite"
+                            aria-atomic="true"
+                            className={error ? 'mb-3' : 'sr-only'}
+                        >
+                            {error && (
+                                <p className="text-sm text-red-700 pl-1">
+                                    Username or password is incorrect. Please try again.
+                                </p>
+                            )}
+                        </div>
+
+                        <form
+                            onSubmit={handleSubmit}
+                            noValidate
+                            aria-describedby={error ? formErrorId : undefined}
+                        >
+                            {/* ── Username ── */}
+                            <div className="mb-3">
+                                <Label htmlFor="username" className="mb-1 block">
+                                    Your username
+                                    {error && (
                                         <span
-                                            className={`${isLoading ? 'pl-3' : ''}`}
+                                            id={usernameErrorId}
+                                            className="pl-3 text-red-700 text-sm"
+                                            aria-live="polite"
                                         >
-                                            {isLoading
-                                                ? 'Logging in ...'
-                                                : 'Log in to your account'}
+                                            Oops! Something doesn't match...
                                         </span>
-                                    </Button>
+                                    )}
+                                </Label>
+                                <TextInput
+                                    ref={usernameInputRef}
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    autoComplete="username"
+                                    color="tennisprimary"
+                                    required
+                                    value={username}
+                                    aria-required="true"
+                                    aria-invalid={!!error}
+                                    aria-describedby={error ? usernameErrorId : undefined}
+                                    onChange={(e) => {
+                                        setUsername(e.target.value);
+                                        clearError();
+                                    }}
+                                />
+                            </div>
+
+                            {/* ── Password ── */}
+                            <div className="mb-3">
+                                <Label htmlFor="password" className="mb-1 block">
+                                    Your password
+                                </Label>
+                                <TextInput
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    color="tennisprimary"
+                                    autoComplete="current-password"
+                                    required
+                                    value={password}
+                                    aria-required="true"
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        clearError();
+                                    }}
+                                />
+                            </div>
+
+                            {/* ── Remember me + Lost password ── */}
+                            <div className="flex justify-between py-1.5">
+                                <div className="flex items-center gap-2">
+                                    {/* Remember me is a UI placeholder — not wired to store */}
+                                    <Checkbox id="remember" />
+                                    <Label htmlFor="remember">Remember me</Label>
                                 </div>
-                            </form>
-                            <div className="flex justify-between text-sm font-medium  text-gray-500 dark:text-gray-300">
-                                Not registered?&nbsp;
                                 <a
-                                    href="/register"
-                                    className="text-cyan-700 hover:underline dark:text-cyan-500"
+                                    href="#"
+                                    className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
+                                    aria-label="Reset your lost password"
                                 >
-                                    Create account
+                                    Lost Password?
                                 </a>
                             </div>
+
+                            {/* ── Submit ── */}
+                            <div className="w-full mt-2">
+                                <Button
+                                    type="submit"
+                                    color="tennisprimary"
+                                    disabled={isLoading}
+                                    aria-disabled={isLoading}
+                                >
+                                    {isLoading && (
+                                        <Spinner
+                                            aria-hidden="true"
+                                            size="md"
+                                            className="fill-orange-500"
+                                        />
+                                    )}
+                                    <span className={isLoading ? 'pl-3' : ''}>
+                                        {isLoading ? 'Logging in…' : 'Log in to your account'}
+                                    </span>
+                                </Button>
+                            </div>
+                        </form>
+
+                        <div className="flex justify-between text-sm font-medium text-gray-500 dark:text-gray-300 mt-4">
+                            Not registered?&nbsp;
+                            <a
+                                href="/register"
+                                className="text-cyan-700 hover:underline dark:text-cyan-500"
+                            >
+                                Create account
+                            </a>
                         </div>
                     </ModalBody>
                 </Modal>
