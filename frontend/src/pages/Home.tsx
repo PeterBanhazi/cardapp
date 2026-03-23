@@ -2,11 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../core/store/useAuthStore';
 
 import React from 'react';
-
 import Register from '../features/auth/register';
 import ModalOpenTriggerButton from '../features/auth/ModalOpenTriggerButton';
 import ProfileEditModal from '../features/auth/ProfileEditModal';
 import Login from '../features/auth/login';
+import { useMutation } from '@tanstack/react-query';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 const Home: React.FC = () => {
     const loggedInUsername = useAuthStore((state) => state.user?.username);
@@ -25,7 +26,20 @@ const Home: React.FC = () => {
 };
 
 const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
+    const { logout } = useAuthStore();
     const navigate = useNavigate();
+
+    const logoutMutation = useMutation({
+        mutationFn: () => logout(),
+        onSuccess: () => {
+            useNotifications.getState().addNotification({
+                type: 'warning',
+                title: 'Info',
+                message: 'You have been successfully logged out!',
+            });
+            navigate('/');
+        },
+    });
     return (
         <div className="flex gap-3 items-center text-right">
             <h1 className="hidden lg:text-sm xl:text-lg lg:block">
@@ -35,7 +49,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
             <ModalOpenTriggerButton
                 linkTo="/logout"
                 buttonText="Logout"
-                onClick={() => navigate('/logout')}
+                onClick={() => logoutMutation.mutate()}
             />
         </div>
     );

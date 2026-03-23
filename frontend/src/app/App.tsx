@@ -1,26 +1,24 @@
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Notifications } from '../shared/components/ui/notifications';
 
 import MainAuthWrapper from './providers/MainAuthProvider';
+import MainDesignWrapper from './providers/MainDesignWrapper';
+import { WebSocketProvider } from './providers/WebSocketProvider';
+import { ChatProvider } from './providers/ChatProvider';
+
+import PrivateRoute from './routes/PrivateRoute';
 
 import Navbar from '../pages/Navbar';
-
 import BottomFooter from '../pages/BottomFooter';
-import MainDesignWrapper from './providers/MainDesignWrapper';
-
-import { Notifications } from '../shared/components/ui/notifications';
 import Landing from '../pages/Landing';
-
-import Logout from '../features/auth/logout';
 import TopList from '../features/ranks/Ranks';
-import PrivateRoute from './routes/PrivateRoute';
+
 import Options from '../features/options/Options';
 import ChatLobby from '../pages/ChatLobby';
 import DashboardManager from '../features/dashboard/DashboardManager';
 import GameWrapper from '../pages/GameWrapper';
 import Rules from '../pages/Rules';
-import { WebSocketProvider } from './providers/WebSocketProvider';
-import { ChatProvider } from './providers/ChatProvider';
 
 const queryClient = new QueryClient();
 
@@ -93,17 +91,6 @@ const App: React.FC = () => {
                                             }
                                         />
                                         <Route path="*" element={<Landing />} />
-                                        {/* <Route path="/login" element={<Login />} />
-                                <Route
-                                    path="/register"
-                                    element={<Register />}
-                                /> */}
-                                        <Route
-                                            path="/logout"
-                                            element={
-                                                <Logout isVisible={false} />
-                                            }
-                                        />
                                     </Routes>
                                 </ChatProvider>
                             </WebSocketProvider>
