@@ -1,29 +1,48 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    MoreVertical,
     MessageSquare,
     GamepadIcon,
     Trash2,
     Info,
     Check,
     X,
+    Send,
 } from 'lucide-react';
+import { FriendListItemData } from '@/features/options/friendTypes';
 
-import { Friendship } from '../../types/types';
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
 
-// interface FriendListItemProps {
-//     friendship: Friendship;
-//     onAccept?: (username: string) => void;
-//     onDecline?: (username: string) => void;
-//     onDelete?: (username: string) => void;
-//     onChat?: (username: string) => void;
-//     onPlay?: (username: string) => void;
-//     onInfo?: (username: string) => void;
-// }
+export interface FriendListItemProps {
+    friendship: FriendListItemData;
+    /** Received pending request: accept it */
+    onAccept?: (friendReqId: number) => void;
+    /** Received pending request: decline it */
+    onDecline?: (friendReqId: number) => void;
+    /** Sent pending request: cancel it */
+    onCancel?: (friendReqId: number) => void;
+    /** Accepted friend: remove friendship */
+    onDelete?: (friendReqId: number) => void;
+    onChat?: (username: string) => void;
+    onPlay?: (username: string) => void;
+    onInfo?: (username: string) => void;
+}
 
-const FriendListItem: React.FC<{
-    friendship: Friendship;
-}> = ({ friendship }) => {
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+const FriendListItem: React.FC<FriendListItemProps> = ({
+    friendship,
+    onAccept,
+    onDecline,
+    onCancel,
+    onDelete,
+    onChat,
+    onPlay,
+    onInfo,
+}) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLDivElement>(null);
@@ -45,11 +64,9 @@ const FriendListItem: React.FC<{
                 setIsDropdownOpen(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
-        return () => {
+        return () =>
             document.removeEventListener('mousedown', handleClickOutside);
-        };
     }, []);
 
     const handleAction = (action: () => void) => {
@@ -57,22 +74,23 @@ const FriendListItem: React.FC<{
         setIsDropdownOpen(false);
     };
 
+    const { friend, status, source, friend_req_id } = friendship;
+
     return (
         <div className="relative">
             {isDropdownOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute left-5 mt-2 w-26 bg-white rounded-md z-10 border"
+                    className="absolute left-5 mt-2 w-28 bg-white rounded-md z-10 border shadow-sm"
                 >
                     <div className="py-1">
-                        {friendship.status === 'PENDING' && (
+                        {/* ── Received pending: only receiver may accept/decline ── */}
+                        {status === 'pending' && source === 'received' && (
                             <>
                                 <button
                                     onClick={() =>
                                         handleAction(() =>
-                                            onAccept?.(
-                                                friendship.friend_username
-                                            )
+                                            onAccept?.(friend_req_id)
                                         )
                                     }
                                     className="flex items-center px-4 py-2 text-sm text-green-600 hover:bg-gray-100 w-full"
@@ -82,9 +100,7 @@ const FriendListItem: React.FC<{
                                 <button
                                     onClick={() =>
                                         handleAction(() =>
-                                            onDecline?.(
-                                                friendship.friend_username
-                                            )
+                                            onDecline?.(friend_req_id)
                                         )
                                     }
                                     className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
@@ -94,12 +110,27 @@ const FriendListItem: React.FC<{
                             </>
                         )}
 
-                        {friendship.status === 'ACCEPTED' && (
+                        {/* ── Sent pending: only initiator may cancel ── */}
+                        {status === 'pending' && source === 'sent' && (
+                            <button
+                                onClick={() =>
+                                    handleAction(() =>
+                                        onCancel?.(friend_req_id)
+                                    )
+                                }
+                                className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
+                            >
+                                <X className="w-4 h-4 mr-2" /> Cancel
+                            </button>
+                        )}
+
+                        {/* ── Accepted friend ── */}
+                        {status === 'accepted' && (
                             <>
                                 <button
                                     onClick={() =>
                                         handleAction(() =>
-                                            onChat?.(friendship.friend_username)
+                                            onChat?.(friend.username)
                                         )
                                     }
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
@@ -110,7 +141,7 @@ const FriendListItem: React.FC<{
                                 <button
                                     onClick={() =>
                                         handleAction(() =>
-                                            onPlay?.(friendship.friend_username)
+                                            onPlay?.(friend.username)
                                         )
                                     }
                                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
@@ -121,9 +152,7 @@ const FriendListItem: React.FC<{
                                 <button
                                     onClick={() =>
                                         handleAction(() =>
-                                            onDelete?.(
-                                                friendship.friend_username
-                                            )
+                                            onDelete?.(friend_req_id)
                                         )
                                     }
                                     className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full"
@@ -133,11 +162,10 @@ const FriendListItem: React.FC<{
                             </>
                         )}
 
+                        {/* ── Info always available ── */}
                         <button
                             onClick={() =>
-                                handleAction(() =>
-                                    onInfo?.(friendship.friend_username)
-                                )
+                                handleAction(() => onInfo?.(friend.username))
                             }
                             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                         >
@@ -146,47 +174,43 @@ const FriendListItem: React.FC<{
                     </div>
                 </div>
             )}
+
             <div
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                onClick={() => setIsDropdownOpen((prev) => !prev)}
                 ref={buttonRef}
-                className={`relative                  
-                text-slate-900               
-                font-semibold 
-                text-sm                
-                rounded-md
-                transition-all 
-                duration-300
-                bg-gradient-to-br
-                ${
-                    friendship.status === `PENDING`
-                        ? colors.yellow
-                        : friendship.status === 'ACCEPTED'
-                          ? colors.green
-                          : colors.red
-                }
-               
-                border-slate-400/50
-                active:translate-y-[2px]
-                
+                className={`relative
+                    text-slate-900
+                    font-semibold
+                    text-sm
+                    rounded-md
+                    transition-all
+                    duration-300
+                    bg-gradient-to-br
+                    ${
+                        status === 'pending'
+                            ? colors.yellow
+                            : status === 'accepted'
+                              ? colors.green
+                              : colors.red
+                    }
+                    border-slate-400/50
+                    active:translate-y-[2px]
                 `}
             >
                 <span
                     className="
-                absolute 
-                inset-0
-               
-                ring-1
-                
-                ring-slate-800
-                bg-gradient-to-b 
-                from-white/30 
-                to-transparent
-                rounded-md
-                cursor-pointer
-                "
+                        absolute inset-0
+                        ring-1 ring-slate-800
+                        bg-gradient-to-b from-white/30 to-transparent
+                        rounded-md cursor-pointer
+                    "
                 />
-                <div className="pl-1 mr-0.5 overflow-hidden">
-                    {friendship.friend_username}
+                <div className="pl-1 mr-0.5 overflow-hidden flex items-center gap-1">
+                    {/* Small directional hint for pending requests */}
+                    {status === 'pending' && source === 'sent' && (
+                        <Send className="w-3 h-3 shrink-0 opacity-70" />
+                    )}
+                    {friend.username}
                 </div>
             </div>
         </div>

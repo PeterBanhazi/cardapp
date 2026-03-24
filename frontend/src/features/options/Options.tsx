@@ -1,9 +1,6 @@
 import OptionsRightContainer from './OptionsRightContainer';
-
 import OptionsDnDCardWrapper from './OptionsDnDCardWrapper';
 import { useOptionsDataTransformer } from './useOptionsDataTransformer';
-
-// import { console } from 'inspector';
 
 function Options() {
     const {
@@ -41,7 +38,7 @@ function Options() {
             ></OptionsDnDCardWrapper>
 
             <div className="w-[150px] h-[592px] pt-1">
-                <OptionsRightContainer friendships={data!.friendships} />
+                <OptionsRightContainer />
             </div>
         </div>
     );

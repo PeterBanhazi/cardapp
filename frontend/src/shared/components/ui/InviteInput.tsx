@@ -1,20 +1,54 @@
+import useAxios from '@/core/utils/useAxios';
 import { Button, TextInput } from 'flowbite-react';
-import React from 'react';
+import React, { useState } from 'react';
 
+type Props = {
+    onSubmit: (value: string) => void;
+};
 // From https://www.material-tailwind.com/docs/html/input
-const InviteInput = () => {
+const InviteInput = ({ onSubmit }: Props) => {
+    const [value, setValue] = useState('');
+
+    // egyszerű sanitize
+    const sanitize = (input: string) => {
+        return input.trim().replace(/[<>]/g, '');
+    };
+
+    const handleSubmit = () => {
+        const sanitized = sanitize(value);
+
+        if (sanitized.length < 4) return;
+
+        onSubmit(sanitized);
+        setValue('');
+    };
+
+    const isValid = value.trim().length >= 4;
+
     return (
         <div className="w-full">
             <div className="relative">
                 <input
                     type="text"
-                    maxLength={20}
+                    onSubmit={handleSubmit}
+                    id="requestInput"
+                    name="requestInput"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSubmit();
+                        }
+                    }}
                     className="w-full h-7 bg-slate-200 placeholder:text-slate-500 text-slate-800 text-sm font-medium border border-slate-200 rounded-md pl-2 pr-7 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-                    placeholder="Add Username"
+                    placeholder="Add Email or Username"
                 />
                 <button
-                    className="absolute right-1 top-[3px] rounded bg-slate-600 py-[0px] px-1 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                    type="button"
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={!isValid}
+                    className="absolute right-1 top-[3px] rounded cursor-pointer bg-slate-600 py-[0px] px-1 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
                     ➜
                 </button>
