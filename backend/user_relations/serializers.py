@@ -30,11 +30,12 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     sender = UserSummarySerializer(read_only=True)
     receiver = UserSummarySerializer(read_only=True)
     initiator = UserSummarySerializer(read_only=True)
+    friend_req_id = serializers.IntegerField(source="id", read_only=True)
 
     class Meta:
         model = FriendRequest
         fields = [
-            "id",
+            "friend_req_id",
             "sender",
             "receiver",
             "initiator",
@@ -229,10 +230,11 @@ class FriendshipSerializer(serializers.ModelSerializer):
     friend = serializers.SerializerMethodField(
         help_text="The other participant, enriched with profile data."
     )
+    friend_req_id = serializers.IntegerField(source="id", read_only=True)
 
     class Meta:
         model = Friendship
-        fields = ["id", "user1", "user2", "friend", "created_at"]
+        fields = ["friend_req_id", "user1", "user2", "friend", "created_at"]
         read_only_fields = fields
 
     def get_friend(self, obj) -> dict:
