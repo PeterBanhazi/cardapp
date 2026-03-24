@@ -15,7 +15,8 @@ User = get_user_model()
 class UserSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "email"]
+# email removed 
+        fields = ["id", "username"]
         read_only_fields = fields
 
 
@@ -178,7 +179,7 @@ class FriendProfileSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(source="pk", read_only=True)
     username = serializers.CharField(read_only=True)
-    email = serializers.EmailField(read_only=True)
+    # email = serializers.EmailField(read_only=True)
 
     # From UserProfile (OneToOne, related_name='userprofile')
     avatar_image = serializers.SerializerMethodField()

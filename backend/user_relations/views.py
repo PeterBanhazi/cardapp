@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -40,31 +41,50 @@ def _get_pending_request_or_404(pk: int, user) -> FriendRequest:
 # Friend Request — Send
 # ---------------------------------------------------------------------------
 
-class FriendRequestCreateView(APIView):
+class FriendRequestListCreateView(generics.ListAPIView):
     """
+    GET  /api/friends/requests/?direction=received|sent
+         List pending friend requests. direction defaults to 'received'.
+
     POST /api/friends/requests/
-    Send a new friend request to another user.
+         Send a new friend request (user_id, username, or email).
     """
 
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FriendRequestSerializer
 
-    def post(self, request):
+    # --- GET -----------------------------------------------------------
+
+    def get_queryset(self):
+        user = self.request.user
+        direction = self.request.query_params.get("direction", "received")
+        qs = FriendRequest.objects.select_related(
+            "sender", "receiver", "initiator"
+        ).filter(status=FriendRequest.Status.PENDING)
+
+        if direction == "sent":
+            return qs.filter(initiator=user)
+        # default: received — requests initiated by the other person
+        return qs.exclude(initiator=user).filter(
+            Q(sender=user) | Q(receiver=user)
+        )
+
+    # --- POST ----------------------------------------------------------
+
+    def post(self, request, *args, **kwargs):
         serializer = FriendRequestCreateSerializer(
             data=request.data, context={"request": request}
         )
         serializer.is_valid(raise_exception=True)
 
-        # 'target' is resolved and validated inside the serializer's validate()
         target: User = serializer.validated_data["target"]
         requester: User = request.user
-
         sender, receiver = FriendRequest.get_canonical_pair(requester, target)
 
         with transaction.atomic():
             existing = FriendRequest.get_for_pair(requester, target)
 
             if existing and existing.status == FriendRequest.Status.CANCELLED:
-                # Allow re-sending a previously cancelled request
                 existing.status = FriendRequest.Status.PENDING
                 existing.initiator = requester
                 existing.save(update_fields=["status", "initiator", "updated_at"])
@@ -82,33 +102,9 @@ class FriendRequestCreateView(APIView):
         )
 
 
-# ---------------------------------------------------------------------------
-# Friend Request — List (inbox + outbox)
-# ---------------------------------------------------------------------------
-
-class FriendRequestListView(generics.ListAPIView):
-    """
-    GET /api/friends/requests/?direction=received|sent
-    List pending friend requests for the authenticated user.
-    `direction` defaults to 'received'.
-    """
-
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = FriendRequestSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        direction = self.request.query_params.get("direction", "received")
-        qs = FriendRequest.objects.select_related(
-            "sender", "receiver", "initiator"
-        ).filter(status=FriendRequest.Status.PENDING)
-
-        if direction == "sent":
-            return qs.filter(initiator=user)
-        # default: received means the other person initiated
-        return qs.exclude(initiator=user).filter(
-            models.Q(sender=user) | models.Q(receiver=user)
-        )
+# Aliases so existing imports keep working
+FriendRequestCreateView = FriendRequestListCreateView
+FriendRequestListView = FriendRequestListCreateView
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +213,6 @@ class FriendListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        from django.db.models import Q
         return (
             Friendship.objects.select_related(
                 # Core user rows
@@ -264,6 +259,3 @@ class FriendRemoveView(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-# Need this import for FriendRequestListView
-from django.db import models  # noqa: E402 (placed after class defs intentionally)

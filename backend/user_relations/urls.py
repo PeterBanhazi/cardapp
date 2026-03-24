@@ -21,9 +21,8 @@ from .views import (
     FriendListView,
     FriendRemoveView,
     FriendRequestActionView,
-    FriendRequestCreateView,
     FriendRequestDetailView,
-    FriendRequestListView,
+    FriendRequestListCreateView,
 )
 
 urlpatterns = [
@@ -31,9 +30,8 @@ urlpatterns = [
     path("", FriendListView.as_view(), name="friend-list"),
     path("<int:user_id>/", FriendRemoveView.as_view(), name="friend-remove"),
 
-    # Friend Requests
-    path("requests/", FriendRequestCreateView.as_view(), name="friend-request-create"),
-    path("requests/list/", FriendRequestListView.as_view(), name="friend-request-list"),
+    # Friend Requests  —  GET=list, POST=create, both at the same URL
+    path("requests/", FriendRequestListCreateView.as_view(), name="friend-requests"),
     path("requests/<int:pk>/", FriendRequestDetailView.as_view(), name="friend-request-detail"),
     path("requests/<int:pk>/action/", FriendRequestActionView.as_view(), name="friend-request-action"),
 ]
