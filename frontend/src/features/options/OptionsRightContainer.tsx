@@ -3,8 +3,10 @@ import FriendListItem from '../../shared/components/ui/FriendListItem';
 import InviteInput from '../../shared/components/ui/InviteInput';
 import ScrollContainer from '../../shared/components/ui/ScrollContainer';
 import { useFriendList } from './useFriendList';
+import { GameListItemData, mockGames } from './mockGames';
 
 import useFriendMutations from './useFriendMutations';
+import GameListItem from '@/shared/components/ui/GameListItem';
 
 const OptionsRightContainer: React.FC = () => {
     const { data: friendships, isLoading, isError } = useFriendList();
@@ -85,12 +87,23 @@ const OptionsRightContainer: React.FC = () => {
                 />
             </div>
 
-            {/* <ScrollContainer
+            <ScrollContainer
                 headertext={<div>History</div>}
                 className="h-[212px]"
             >
                 {/* TODO: wire up match history data */}
-            {/* </ScrollContainer> */}
+                <div className="mt-0.5">
+                    {mockGames.map((g) => (
+                        <div key={g.game_id} className="py-0.5 px-1">
+                            <GameListItem
+                                game={g}
+                                onInfo={(id) => console.log('info', id)}
+                                onReplay={(id) => console.log('replay', id)}
+                            />
+                        </div>
+                    ))}
+                </div>
+            </ScrollContainer>
         </div>
     );
 };
