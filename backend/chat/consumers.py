@@ -10,8 +10,9 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 User = get_user_model()
 from .models import Message
-from api.models import Friendship  # Updated import path
+from user_relations.models import Friendship  # Updated import path
 from django.utils import timezone
+from django.db import models
 # from asgiref.sync import sync_to_async
 from django.conf import settings
 from .redis_presence import (
@@ -240,15 +241,15 @@ class SystemConsumer(AsyncWebsocketConsumer):
           2. Any active (pending / accepted) chat requests involving this user.
         """
         friends = await self.get_friends()
-
+        print(self.username +":" + str(friends))
         # 1. Friend presence
-        for friend_username in friends:
-            friend_id = await self.get_user_id(friend_username)
-            is_online = await async_is_online(friend_id) if friend_id else False
+        for friend in friends:
+            # friend_id = await self.get_user_id(friend_username)
+            is_online = await async_is_online(friend["user_id"]) if friend["user_id"] else False
             await self._send({
                 "event": "presence_sync",
                 "payload": {
-                    "username": friend_username,
+                    "username": friend["username"],
                     "status":   "online" if is_online else "offline",
                 },
             })
@@ -333,7 +334,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
         friends = await self.get_friends()
         for friend in friends:
             await self.channel_layer.group_send(
-                f"system_{friend}",
+                f"system_{friend["username"]}",
                 {
                     "type":    "system_message",
                     "event":   "presence_update",
@@ -382,17 +383,25 @@ class SystemConsumer(AsyncWebsocketConsumer):
     # ──────────────────────────────────────────────
     #  DB helpers
     # ──────────────────────────────────────────────
-
     @database_sync_to_async
-    def get_friends(self) -> list[str]:
-        return list(
-            Friendship.objects.filter(username=self.user, status="ACCEPTED")
-            .values_list("friend__username", flat=True)
+    def get_friends(self) -> list[dict]:
+        user = self.user
+
+        as_user1 = Friendship.objects.filter(user1=user).order_by().values(
+            user_id=models.F("user2_id"),
+            username=models.F("user2__username"),
+        )
+        as_user2 = Friendship.objects.filter(user2=user).order_by().values(
+            user_id=models.F("user1_id"),
+            username=models.F("user1__username"),
         )
 
-    @database_sync_to_async
-    def get_user_id(self, username: str) -> int | None:
-        try:
-            return User.objects.get(username=username).id
-        except User.DoesNotExist:
-            return None
+        return list(as_user1.union(as_user2))
+
+# deprecated:
+    # @database_sync_to_async
+    # def get_user_id(self, username: str) -> int | None:
+    #     try:
+    #         return User.objects.get(username=username).id
+    #     except User.DoesNotExist:
+    #         return None
