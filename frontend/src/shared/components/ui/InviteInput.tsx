@@ -41,7 +41,7 @@ const InviteInput = ({ onSubmit }: Props) => {
                             handleSubmit();
                         }
                     }}
-                    className="w-full h-7 bg-slate-200 placeholder:text-slate-500 text-slate-800 text-sm font-medium border border-slate-200 rounded-md pl-2 pr-7 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                    className="w-full h-7 bg-slate-200 placeholder:text-slate-500 text-slate-800 text-sm font-medium border border-slate-200 rounded-md pl-1.5 pt-[5px] pr-7 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
                     placeholder="Add Email or Username"
                 />
                 <button
