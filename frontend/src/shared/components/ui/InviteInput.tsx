@@ -41,14 +41,14 @@ const InviteInput = ({ onSubmit }: Props) => {
                             handleSubmit();
                         }
                     }}
-                    className="w-full h-7 bg-slate-200 placeholder:text-slate-500 text-slate-800 text-sm font-medium border border-slate-200 rounded-md pl-1.5 pt-[5px] pr-7 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-                    placeholder="Add Email or Username"
+                    className="w-full h-7 bg-slate-200 placeholder:text-slate-500 text-slate-800 text-sm font-medium border border-slate-200 rounded-md pl-[6px] pt-[6px]  transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                    placeholder="Add Email or User"
                 />
                 <button
                     type="submit"
                     onClick={handleSubmit}
                     disabled={!isValid}
-                    className="absolute right-1 top-[3px] rounded cursor-pointer bg-slate-600 py-[0px] px-1 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    className="absolute right-1 rounded cursor-pointer bg-slate-600 px-0.5 py-0 mt-[3px] border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
                     ➜
                 </button>
