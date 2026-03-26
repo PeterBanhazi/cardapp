@@ -13,11 +13,15 @@ import useSound from 'use-sound';
 import { usePreferences } from '../store/usePreferences';
 import { useSelectedUser } from '../store/useSelectedUser';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFriendsStore } from '../../../core/store/useFriendsStore';
 import { useChatStore } from '../../../core/store/useChatStore';
 import { useAuthStore } from '../../../core/store/useAuthStore';
+import { useFriendList } from '../../../core/store/useFriendList';
 import { Friend } from '@/shared/types/friend';
+
+import { ChatActionButton } from '@/features/lobbychat/components/chat/ChatActionButton';
+
 interface SidebarProps {
     isCollapsed: boolean;
 }
@@ -25,12 +29,29 @@ interface SidebarProps {
 const Sidebar = ({ isCollapsed }: SidebarProps) => {
     const [playClickSound] = useSound('/sounds/mouse-click.mp3');
     const { soundEnabled } = usePreferences();
-    const { setSelectedUser, selectedUser } = useSelectedUser();
+    const { setSelectedUser } = useSelectedUser();
 
-    const { friends, isConnected, sendAcceptChatRequest } = useFriendsStore();
-    const { openChat, getUnreadCount } = useChatStore();
-    const { activeChatUser, setActiveChatUser } = useChatStore();
-    const loggedInUsername = useAuthStore((state) => state.user?.username);
+    const { friends, isConnected, setFriendStatus, sendAction } =
+        useFriendsStore();
+    const { getUnreadCount, activeChatUser } = useChatStore();
+    const loggedInUsername =
+        useAuthStore((state) => state.user?.username) ?? '';
+
+    // ── Populate friends from REST on mount ───────────────────────────────────
+    const { data: friendships } = useFriendList();
+
+    useEffect(() => {
+        if (!friendships) return;
+        friendships.forEach(({ friend }) => {
+            // Only seed entries not yet tracked — WebSocketStatusManager will
+            // overwrite status via presence_sync once the socket is open.
+            if (!friends[friend.username]) {
+                setFriendStatus(friend.username, 'offline');
+            }
+        });
+    }, [friendships]);
+
+    // ── Sorted friends list ───────────────────────────────────────────────────
 
     const statusPriority: Record<Friend['status'], number> = {
         active: 0,
@@ -41,6 +62,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
         closed: 5,
         offline: 6,
     };
+
     const friendsList = useMemo(() => {
         const userStatusMap = new Map<string, Friend['status']>();
 
@@ -56,88 +78,52 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
             );
     }, [friends, loggedInUsername]);
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
     const handleSideBarFriendClick = (friend: Friend) => {
-        // if (friend.status === 'pending') {
-        // Accept the chat request
         setSelectedUser(friend);
-        // sendAcceptChatRequest(friend.user);
-        // }
-        //      else if
-        // (friend.status === 'active' || friend.status === 'online') {
-        //         // Open existing chat
-        //         setSelectedUser(friend);
-        //         // setActiveChatUser(friend.user);
-        //     }
     };
 
     const getAvatarRingConfig = (ringStatus: Friend['status']) => {
         switch (ringStatus) {
             case 'online':
-                return {
-                    text: 'Chat',
-                    styles: 'ring-2 ring-blue-500 ring-inset',
-                    disabled: false,
-                };
+                return { styles: 'ring-2 ring-blue-500 ring-inset' };
             case 'offline':
-                return {
-                    text: 'Offline',
-                    styles: '',
-                    disabled: true,
-                };
+                return { styles: '' };
             case 'pending':
-                return {
-                    text: 'Pending',
-                    styles: 'ring-2 ring-yellow-500 ring-inset',
-                    disabled: false,
-                };
+                return { styles: 'ring-2 ring-yellow-500 ring-inset' };
             case 'active':
-                return {
-                    text: 'Active',
-                    styles: 'ring-2 ring-green-400 ring-inset',
-                    disabled: true,
-                };
+                return { styles: 'ring-2 ring-green-400 ring-inset' };
             case 'closed':
-                return {
-                    text: 'Reconnect',
-                    styles: 'ring-3 ring-grey-300 ring-inset',
-                    disabled: false,
-                };
+                return { styles: 'ring-3 ring-grey-300 ring-inset' };
             case 'rejected':
-                return {
-                    text: 'Rejected',
-                    styles: 'ring-2 ring-red-400 ring-inset',
-                    disabled: true,
-                };
+                return { styles: 'ring-2 ring-red-400 ring-inset' };
             case 'cancelled':
-                return {
-                    text: 'Cancelled',
-                    styles: 'ring-2 ring-red-300 ring-inset',
-                    disabled: false,
-                };
+                return { styles: 'ring-2 ring-red-300 ring-inset' };
             default:
-                return {
-                    text: 'Chat',
-                    styles: 'ring-2 ring-blue-400 ring-inset',
-                    disabled: true,
-                };
+                return { styles: 'ring-2 ring-blue-400 ring-inset' };
         }
     };
 
+    // ── Render ────────────────────────────────────────────────────────────────
+
     return (
-        <div className="group relative flex flex-col h-full gap-1 p-1 data-[collapsed=true]:p-2  max-h-full overflow-auto bg-background">
+        <div className="group relative flex flex-col h-full gap-1 p-1 data-[collapsed=true]:p-2 max-h-full overflow-auto bg-background">
             <div className="flex justify-between p-1 items-center">
                 <div className="flex gap-2 items-center text-2xl">
                     <p className="font-semibold text-slate-800">Friends</p>
                 </div>
             </div>
+
             {friendsList.length === 0 ? (
                 <div className="p-4 text-center text-gray-800">
                     {isConnected ? 'No friends online' : 'Connecting...'}
                 </div>
             ) : (
-                <ScrollArea className="gap-2 px-2 group-[[data - collapsed= true]]:justify-center group-[[data-collapsed=true]]:px-2">
+                <ScrollArea className="gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
                     {friendsList.map((friend, idx) =>
                         isCollapsed ? (
+                            // ── Collapsed: avatar + tooltip only ──────────────
                             <TooltipProvider key={idx}>
                                 <Tooltip delayDuration={0}>
                                     <TooltipTrigger asChild>
@@ -148,7 +134,6 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                 handleSideBarFriendClick(
                                                     friend
                                                 );
-                                                setSelectedUser(friend);
                                             }}
                                         >
                                             <Avatar className="my-3 flex justify-center items-center">
@@ -156,8 +141,10 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                     src={'/avatars/user3.png'}
                                                     alt="User Image"
                                                     className={cn(
-                                                        `flex justify-center items-center p-0.5  border-white rounded-full w-10 h-10`,
-                                                        `${getAvatarRingConfig(friend.status).styles}`
+                                                        'flex justify-center items-center p-0.5 border-white rounded-full w-10 h-10',
+                                                        getAvatarRingConfig(
+                                                            friend.status
+                                                        ).styles
                                                     )}
                                                 />
                                                 <AvatarFallback>
@@ -175,25 +162,27 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 </Tooltip>
                             </TooltipProvider>
                         ) : (
+                            // ── Expanded: full row with ChatActionButton ───────
                             <Button
                                 key={idx}
                                 variant={'grey'}
                                 size="lg"
                                 className={cn(
-                                    'w-[240px] px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
+                                    'w-full px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
                                     activeChatUser === friend.user &&
-                                        'bg-slate-50/50  hover:bg-muted hover:text-white shrink'
+                                        'bg-slate-50/50 hover:bg-muted hover:text-white shrink'
                                 )}
                                 onClick={() => {
                                     soundEnabled && playClickSound();
                                     handleSideBarFriendClick(friend);
-                                    setSelectedUser(friend);
                                 }}
                             >
+                                {/* Avatar */}
                                 <Avatar
                                     className={cn(
-                                        `flex justify-center p-0.5 items-center`,
-                                        `${getAvatarRingConfig(friend.status).styles}`
+                                        'flex justify-center p-0.5 items-center',
+                                        getAvatarRingConfig(friend.status)
+                                            .styles
                                     )}
                                 >
                                     <AvatarImage
@@ -204,12 +193,11 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                         {friend.user}
                                     </AvatarFallback>
                                 </Avatar>
-                                <div className="flex flex-col  text-lg w-48 ">
-                                    <span className="text-left">
-                                        {friend.user}
-                                        {':'}
-                                        {friend.status}
 
+                                {/* Name + unread badge */}
+                                <div className="flex flex-col text-lg flex-1 min-w-0">
+                                    <span className="text-left truncate">
+                                        {friend.user}
                                         {getUnreadCount(friend.user) > 0 && (
                                             <span className="ml-1 bg-red-500 text-white text-xs px-1 rounded-full">
                                                 {getUnreadCount(friend.user)}
@@ -217,15 +205,30 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                         )}
                                     </span>
                                 </div>
+
+                                {/* ChatActionButton — stopPropagation so Accept/Reject
+                                    don't also trigger the row's setSelectedUser */}
+                                <div
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="ml-auto shrink-0"
+                                >
+                                    <ChatActionButton
+                                        friendUsername={friend.user}
+                                        localUser={loggedInUsername}
+                                        sendAction={sendAction}
+                                    />
+                                </div>
                             </Button>
                         )
                     )}
                 </ScrollArea>
             )}
-            <div className="mt-auto"></div>
+
+            {/* Footer */}
+            <div className="mt-auto" />
             <div className="flex justify-between items-center gap-2 md:px-6 py-2">
                 {!isCollapsed && (
-                    <div className="hidden md:flex gap-2 items-center ">
+                    <div className="hidden md:flex gap-2 items-center">
                         <Avatar className="flex justify-center items-center">
                             <AvatarImage
                                 src={'/user-placeholder.png'}

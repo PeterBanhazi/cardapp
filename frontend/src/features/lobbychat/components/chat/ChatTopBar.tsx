@@ -5,11 +5,17 @@ import { useChatStore } from '../../../../core/store/useChatStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
 import { ChatRequestButton } from '@/features/lobbychat/components/chat/ChatRequestButton';
 import { useFriendsStore } from '@/core/store/useFriendsStore';
+import { ChatActionButton } from './ChatActionButton';
+import { useAuthStore } from '@/core/store/useAuthStore';
+
 const ChatTopBar = () => {
     const selectedUser = useSelectedUser((state) => state.selectedUser);
 
     const { sendClosedChat } = useFriendsStore();
     const { activeChatUser, setActiveChatUser, closeChat } = useChatStore();
+    const loggedInUsername =
+        useAuthStore((state) => state.user?.username) ?? '';
+    const { sendAction } = useFriendsStore();
     return (
         <div className="w-full h-20 flex p-4 justify-between items-center border-b">
             <div className="flex items-center gap-2">
@@ -30,7 +36,11 @@ const ChatTopBar = () => {
             {selectedUser && (
                 <span className="w-full flex justify-start gap-2 m-2 h-6 bg-red-300">
                     <ChatRequestButton friendUser={selectedUser.user} />
-                    <ChatRequestButton friendUser={selectedUser?.user} />
+                    <ChatActionButton
+                        friendUsername={selectedUser.user}
+                        localUser={loggedInUsername}
+                        sendAction={sendAction}
+                    />
                 </span>
             )}
             <div className="flex gap-2">

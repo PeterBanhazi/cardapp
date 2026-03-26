@@ -1,262 +1,247 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware'
-import {HEARTBEAT_INTERVAL} from '../../core/utils/constants';
-
+import { devtools } from 'zustand/middleware';
+import { HEARTBEAT_INTERVAL } from '../../core/utils/constants';
 
 import { useAuthStore } from './useAuthStore';
-import { useChatStore } from './useChatStore';
+import { useChatRequestsStore } from '@/features/lobbychat/store/chatRequestsStore';
+import type { ChatAction, ChatRequest } from '@/features/lobbychat/store/chatFSM';
+import { Friend } from '@/shared/types/friend';
 
-import {Friend} from "@/shared/types/friend"
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 interface StatusMessage {
     type: 'system_message';
-    user_to: string;
-    user_from: string;
     event: string;
-    action?: string;
-    payload: {
-        "user_from": string,
-        "username": string,
-        "status": Friend["status"]
-    }
-    status: Friend["status"]
+    // All events carry their data inside payload
+    payload: Record<string, any>;
 }
 
-
+// ── Store ─────────────────────────────────────────────────────────────────────
 
 interface FriendsState {
     friends: Record<string, Friend>;
     isConnected: boolean;
     sendMessage: ((message: string) => void) | null;
+
     setFriendStatus: (user: string, status: Friend['status']) => void;
     setConnected: (connected: boolean) => void;
     setSendMessage: (sendFn: ((message: string) => void) | null) => void;
+
+    // Generic action sender — used directly by ChatActionButton
+    sendAction: (action: ChatAction, payload: Record<string, unknown>) => void;
+
+    // Legacy named helpers (kept for backward compat, delegate to sendAction)
     sendChatRequest: (user: string) => void;
-    sendClosedChat:(user: string) => void;
+    sendClosedChat: (user: string) => void;
     sendAcceptChatRequest: (user: string) => void;
     sendRejectChatRequest: (user: string) => void;
     sendCancelledChat: (user: string) => void;
+
     resetFriends: () => void;
 }
 
+export const useFriendsStore = create<FriendsState>()(
+    devtools((set, get) => ({
+        friends: {},
+        isConnected: false,
+        sendMessage: null,
 
-// Zustand Store
-export const useFriendsStore = create<FriendsState>()(devtools(((set, get) => ({
-  friends: {},
-  isConnected: false,
-  sendMessage: null,
-  setFriendStatus: (user: Friend['user'], status: Friend['status']) => {
-    set((state) => ({
-      friends: {
-        ...state.friends,
-        [user]: { user, status },
-      },
-    }),undefined,
-      'setFriendStatus',);
-    
-    // Auto-open chat when request is accepted
-    // if (status === 'pending') {
-    //   const chatStore = useChatStore.getState();
-    //   chatStore.openChat(user);
-    // }
-  },
-  setConnected: (connected: boolean) =>
-    set({ isConnected: connected }),
-  setSendMessage: (sendFn: ((message: string) => void) | null) =>
-    set({ sendMessage: sendFn }),
-  sendChatRequest: (user: string) => {
-    const { sendMessage, isConnected } = get();
-    if (sendMessage && isConnected) {
-      const message = JSON.stringify({
-        type: "system_message",
-        user_to: user,
-        user_from: useAuthStore.getState().user?.username,
-        action: "chat_request",
-       
-      });
-      sendMessage(message);
-      console.log('Sent chat request:', message);
-    } else {
-      console.warn('Cannot send message: WebSocket not connected or sendMessage not available');
-    }
-  },
-  sendAcceptChatRequest: (user: string) => {
-    const { sendMessage, isConnected } = get();
-    if (sendMessage && isConnected) {
-      const message = JSON.stringify({
-        type: "system_message",
-        user_to: user,
-        user_from: useAuthStore.getState().user?.username,
-        action: "accept_chat",        
-      });
-      sendMessage(message);
-      console.log('Accepted chat request:', message);
-    }
-  },
-  sendRejectChatRequest: (user: string) => {
-    const { sendMessage, isConnected } = get();
-    if (sendMessage && isConnected) {
-      const message = JSON.stringify({
-        type: "system_message",
-        user_to: user,
-        user_from: useAuthStore.getState().user?.username,
-        action: "reject_chat",        
-      });
-      sendMessage(message);
-      console.log('Rejected chat:', message);
-    }
-  },
-  sendCancelledChat: (user: string) => {
-    const { sendMessage, isConnected } = get();
-    if (sendMessage && isConnected) {
-      const message = JSON.stringify({
-        type: "system_message",
-        user_to: user,
-        user_from: useAuthStore.getState().user?.username,
-        action: "cancel_chat",        
-      });
-      sendMessage(message);
-      console.log('Cancelled chat request chat:', message);
-    }
-  },
-  sendClosedChat: (user: string) => {
-    const { sendMessage, isConnected } = get();
-    if (sendMessage && isConnected) {
-      const message = JSON.stringify({
-        type: "system_message",
-        user_to: user,
-        user_from: useAuthStore.getState().user?.username,
-        action: "close_chat",        
-      });
-      sendMessage(message);
-      console.log('Closed chat:', message);
-    }
-  },
-  resetFriends: () => set({ friends: {}, isConnected: false, sendMessage: null }),
-}))));
+        setFriendStatus: (user: string, status: Friend['status']) => {
+            set(
+                (state) => ({
+                    friends: {
+                        ...state.friends,
+                        [user]: { user, status },
+                    },
+                }),
+                undefined,
+                'setFriendStatus',
+            );
+        },
 
+        setConnected: (connected: boolean) => set({ isConnected: connected }),
 
+        setSendMessage: (sendFn: ((message: string) => void) | null) =>
+            set({ sendMessage: sendFn }),
 
+        // ── Generic sender — used by ChatActionButton ─────────────────────────
+        // `payload` must contain `action` (the WS handler name), `user_from`, `user_to`
+        // and optionally `req_id`. ChatActionButton already builds this shape via
+        // its WS_HANDLER map, so we just forward it.
+        sendAction: (action: ChatAction, payload: Record<string, unknown>) => {
+            const { sendMessage, isConnected } = get();
+            if (!sendMessage || !isConnected) {
+                console.warn('[FriendsStore] sendAction: WebSocket not connected');
+                return;
+            }
+            const message = JSON.stringify({
+                type: 'system_message',
+                ...payload, // spreads action, user_from, user_to, req_id
+            });
+            sendMessage(message);
+            console.log('[FriendsStore] sendAction:', action, payload);
+        },
 
-export const WebSocketStatusManager = (url: string, options: any = {}) => {
-  const { setFriendStatus, setConnected, setSendMessage, resetFriends } = useFriendsStore();
+        // ── Legacy helpers ────────────────────────────────────────────────────
+        sendChatRequest: (user: string) => {
+            const username = useAuthStore.getState().user?.username ?? '';
+            get().sendAction('send_request', {
+                action:    'chat_request',
+                user_from: username,
+                user_to:   user,
+            });
+        },
+        sendAcceptChatRequest: (user: string) => {
+            const username = useAuthStore.getState().user?.username ?? '';
+            get().sendAction('accept', {
+                action:    'accept_chat',
+                user_from: username,
+                user_to:   user,
+            });
+        },
+        sendRejectChatRequest: (user: string) => {
+            const username = useAuthStore.getState().user?.username ?? '';
+            get().sendAction('reject', {
+                action:    'reject_chat',
+                user_from: username,
+                user_to:   user,
+            });
+        },
+        sendCancelledChat: (user: string) => {
+            const username = useAuthStore.getState().user?.username ?? '';
+            get().sendAction('cancel', {
+                action:    'cancel_chat',
+                user_from: username,
+                user_to:   user,
+            });
+        },
+        sendClosedChat: (user: string) => {
+            const username = useAuthStore.getState().user?.username ?? '';
+            get().sendAction('close', {
+                action:    'close_chat',
+                user_from: username,
+                user_to:   user,
+            });
+        },
 
+        resetFriends: () =>
+            set({ friends: {}, isConnected: false, sendMessage: null }),
+    })),
+);
 
-  
-  const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
-  const { lastMessage, readyState, sendMessage } = useWebSocket(
-    url, // Replace with your actual WebSocket URL
-    {    
-      onOpen: () => {
-        
-        console.log('WebSocket connection opened');
-        setConnected(true);
-        startHeartbeat(sendMessage);
-      },
-      onClose: () => {
-        console.log('WebSocket connection closed');
+// ── WebSocketStatusManager ────────────────────────────────────────────────────
+// Owns the single WS connection for the whole app.
+// Routes presence AND chat-request events to their respective stores.
+
+export const useWebSocketStatusManager = (url: string |null, options: any = {}) => {
+   const setFriendStatus = useFriendsStore(s => s.setFriendStatus);
+const setConnected = useFriendsStore(s => s.setConnected);
+const setSendMessage = useFriendsStore(s => s.setSendMessage);
+const resetFriends = useFriendsStore(s => s.resetFriends);
+
+    const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
+
+    const { lastMessage, readyState, sendMessage } = useWebSocket(url, {
+        onOpen: () => {
+            console.log('WebSocket connection opened');
+            setConnected(true);
+            startHeartbeat(sendMessage);
+        },
+        onClose: () => {
+            console.log('WebSocket connection closed');
+            stopHeartbeat();
+            setConnected(false);
+            resetFriends();
+        },
+        onError: (error) => {
+            console.error('WebSocket error:', error);
+            setConnected(false);
+        },
+        ...options,
+    });
+
+    // Keep sendMessage reference in store so sendAction (and legacy helpers) work
+    useEffect(() => {
+        setSendMessage(readyState === ReadyState.OPEN ? sendMessage : null);
+    }, [readyState, sendMessage]);
+
+    // ── Message router ────────────────────────────────────────────────────────
+    useEffect(() => {
+        if (!lastMessage) return;
+
+        let msg: StatusMessage;
+        try {
+            msg = JSON.parse(lastMessage.data);
+        } catch {
+            console.error('[WebSocketStatusManager] Failed to parse message');
+            return;
+        }
+
+        if (msg.type !== 'system_message') return;
+
+        const { event, payload } = msg;
+        const { applyServerUpdate, syncFromServer } =
+            useChatRequestsStore.getState();
+
+        switch (event) {
+            // ── Presence ──────────────────────────────────────────────────────
+            // payload: { username, status }
+            case 'presence_sync':
+            case 'presence_update': {
+                setFriendStatus(payload.username, payload.status);
+                break;
+            }
+
+            // ── Chat-request FSM transitions ──────────────────────────────────
+            // payload IS the full req dict from _broadcast_to_pair:
+            //   { req_id, user_from, user_to, status, created_at, updated_at, … }
+            case 'chat_request':
+            case 'chat_request_received':
+            case 'chat_request_accepted':
+            case 'chat_request_rejected':
+            case 'cancel_chat':
+            case 'chat_closed': {
+                applyServerUpdate(payload as ChatRequest);
+
+                // Also keep legacy friend-status flags in sync
+                if (payload.user_from) setFriendStatus(payload.user_from, payload.status);
+                if (payload.user_to)   setFriendStatus(payload.user_to,   payload.status);
+                break;
+            }
+
+            // ── Reconnect bulk sync ───────────────────────────────────────────
+            // payload: { requests: ChatRequest[] }
+            case 'state_sync': {
+                if (Array.isArray(payload.requests)) {
+                    syncFromServer(payload.requests);
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+    }, [lastMessage]);
+
+    useEffect(() => {
+        setConnected(readyState === ReadyState.OPEN);
+    }, [readyState]);
+
+    function startHeartbeat(sendFn: (msg: string) => void) {
         stopHeartbeat();
-        setConnected(false);
-        resetFriends();
-   
-      },
-      onError: (error) => {
-        console.error('WebSocket error:', error);
-        setConnected(false);
-      },
-       ...options,
-    }
-  );
-
-  // Set the sendMessage function in the store when WebSocket is ready
-  useEffect(() => {
-    if (readyState === ReadyState.OPEN && sendMessage) {
-      setSendMessage(sendMessage);
-    } else {
-      setSendMessage(null);
-    }
-  }, [readyState, sendMessage, setSendMessage]);
-
-  useEffect(() => {
-    if (lastMessage !== null) {
-      try {
-        const message: StatusMessage = JSON.parse(lastMessage.data);
-        //   if (message.user === useAuthStore.getState().user?.username) {
-        //      setFriendStatus(message.user, message.status);
-        //  }
-          
-        if (message.event === 'presence_sync') {
-           
-          setFriendStatus(message.payload.username  , message.payload.status);
-        }
-        if (message.event = 'chat_request') {
-          setFriendStatus(message.payload.user_from  , message.payload.status);
-           
-          
-        }
-        if (message.event === 'chat_request_received') {
-          setFriendStatus(message.user_from, message.status);
-        }
-
-        if (message.event === 'chat_request_accepted') {
-           
-          setFriendStatus(message.user_from, message.status);
-          setFriendStatus(message.user_to, message.status);
-        }
-        
-        if (message.event === 'chat_request_rejected') {
-           
-          setFriendStatus(message.user_from, message.status);
-          setFriendStatus(message.user_to, message.status);
-        }
-        if (message.event === 'cancel_chat') {
-           
-          setFriendStatus(message.user_from, message.status);
-          setFriendStatus(message.user_to, message.status);
-        }
-        if (message.event === 'chat_closed') {
-           
-          setFriendStatus(message.user_from, message.status);
-          setFriendStatus(message.user_to, message.status);
-        }
-
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
-      }
-    }
-  }, [lastMessage, setFriendStatus]);
-
-  useEffect(() => {
-    setConnected(readyState === ReadyState.OPEN);
-  }, [readyState, setConnected]);
-function startHeartbeat(sendMessage: any) {
-
-    stopHeartbeat();
-
-    heartbeatRef.current = setInterval(() => {
-
-      sendMessage(JSON.stringify({
-        type: "system_message",
-        action: "heartbeat"
-      }));
-
-    }, HEARTBEAT_INTERVAL);
-
-  }
-
-  function stopHeartbeat() {
-
-    if (heartbeatRef.current) {
-
-      clearInterval(heartbeatRef.current);
-
-      heartbeatRef.current = null;
-
+        heartbeatRef.current = setInterval(() => {
+            sendFn(JSON.stringify({ type: 'system_message', action: 'heartbeat' }));
+        }, HEARTBEAT_INTERVAL);
     }
 
-  }
-  return null; // This is a logic-only component
+    function stopHeartbeat() {
+        if (heartbeatRef.current) {
+            clearInterval(heartbeatRef.current);
+            heartbeatRef.current = null;
+        }
+    }
+
+    return null;
 };
-

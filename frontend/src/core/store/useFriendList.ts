@@ -6,8 +6,8 @@ import type {
     FriendListItemData,
     FriendshipStatus,
     ApiUser,
-} from './friendTypes';
-import useAxios from '../../core/utils/useAxios';
+} from '../../shared/types/friendTypes';
+import useAxios from '../utils/useAxios';
 import { error } from 'console';
 // ---------------------------------------------------------------------------
 // Fetchers

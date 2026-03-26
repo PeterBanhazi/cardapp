@@ -9,7 +9,6 @@ type Props = {
 const InviteInput = ({ onSubmit }: Props) => {
     const [value, setValue] = useState('');
 
-    // egyszerű sanitize
     const sanitize = (input: string) => {
         return input.trim().replace(/[<>]/g, '');
     };

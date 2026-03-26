@@ -8,7 +8,7 @@ import {
     X,
     Send,
 } from 'lucide-react';
-import { FriendListItemData } from '@/features/options/friendTypes';
+import { FriendListItemData } from '@/shared/types/friendTypes';
 
 // ---------------------------------------------------------------------------
 // Props

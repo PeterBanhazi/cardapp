@@ -2,8 +2,8 @@ import React from 'react';
 import FriendListItem from '../../shared/components/ui/FriendListItem';
 import InviteInput from '../../shared/components/ui/InviteInput';
 import ScrollContainer from '../../shared/components/ui/ScrollContainer';
-import { useFriendList } from './useFriendList';
-import { GameListItemData, mockGames } from './mockGames';
+import { useFriendList } from '../../core/store/useFriendList';
+import { mockGames } from './mockGames';
 
 import useFriendMutations from './useFriendMutations';
 import GameListItem from '@/shared/components/ui/GameListItem';

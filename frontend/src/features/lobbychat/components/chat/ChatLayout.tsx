@@ -9,7 +9,6 @@ import {
 } from '../ui/resizable';
 
 import { useChatStore } from '../../../../core/store/useChatStore';
-import { FriendsList } from '@/features/proto/FriendsListDemo';
 
 interface ChatLayoutProps {
     defaultLayout: number[] | undefined;
@@ -39,7 +38,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
 
     return (
         <>
-            <FriendsList />
+            {/* <FriendsList /> */}
             <ResizablePanelGroup
                 direction="horizontal"
                 className="h-full items-stretch bg-slate-200/20 rounded-md border border-blue-200 shadow-md"
