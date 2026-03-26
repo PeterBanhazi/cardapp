@@ -43,9 +43,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.friend_username = self.scope['url_route']['kwargs']['username']
 
         # Check if they are friends
-        is_friend = await self.check_friendship()
-        
-        
+        is_friend = await self.check_friendship()       
         if not is_friend:
             await self.close()
             return
@@ -223,6 +221,20 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await async_refresh_ttl(self.user_id)
             return
 
+        user_to = data.get("user_to")
+        self.friend_username = user_to
+        if not user_to:
+            return
+
+        # Check if they are friends and friend is online
+        is_friend = await self.check_friendship()        
+        friend_id = await get_user_id(self.friend_username)        
+        is_online = await async_is_online(friend_id) if friend_id else False
+      
+        if not (is_friend and is_online):             
+            return
+        
+        # proceed action 
         handler = getattr(self, f"handle_{action}", None)
         if handler:
             await handler(data)
@@ -268,6 +280,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
     async def handle_chat_request(self, data):
         """(no state | terminal state) ──► pending"""
         user_to = data.get("user_to")
+        self.friend_username = user_to
         if not user_to:
             return
 
@@ -396,6 +409,40 @@ class SystemConsumer(AsyncWebsocketConsumer):
         )
 
         return list(as_user1.union(as_user2))   
+    
+    @database_sync_to_async
+    def check_friendship(self):
+        try:
+            friend = User.objects.get(username=self.friend_username)
+        except User.DoesNotExist:
+            return False
+
+        return Friendship.are_friends(self.user, friend)
+    
+# for batch id lookup
+@database_sync_to_async
+def get_friend_ids(usernames):
+    return list(
+        User.objects.filter(username__in=usernames)
+        .values_list("id", flat=True)
+    )
+
+#for id + name lookup: {"id": 5, "username": "john"}
+@database_sync_to_async
+def get_friend(username: str) -> int | None:
+    return User.objects.filter(username=username).values(
+    "id", "username").first()
+        
+@database_sync_to_async
+def get_user_id(username: str) -> int | None:
+    try:
+        return User.objects.values_list("id", flat=True).get(username=username)
+    except User.DoesNotExist:
+        return None
+            
+@database_sync_to_async
+def get_friend_id(username):
+    return User.objects.values_list("id", flat=True).get(username=username)
 
 
 # deprecated:
