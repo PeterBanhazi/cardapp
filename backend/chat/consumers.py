@@ -9,7 +9,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 User = get_user_model()
-# from .models import Message
+from .models import Message
 from user_relations.models import Friendship  # Updated import path
 from django.utils import timezone
 from django.db import models
@@ -32,146 +32,143 @@ from .redis_chat_state import (
 
 User = get_user_model()
 
-# class ChatConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         self.user = self.scope['user']
-#         if not self.user.is_authenticated:
-#             await self.close()
-#             return
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope['user']       
+        if not self.user.is_authenticated:
+            await self.close()
+            return
             
-#         self.username = self.user.username
-#         self.friend_username = self.scope['url_route']['kwargs']['username']
-        
-#         # Check if they are friends
-#         is_friend = await self.check_friendship()
-#         if not is_friend:
-#             await self.close()
-#             return
-        
-#         # Create a unique room name for these two users (alphabetically sorted)
-#         users = sorted([self.username, self.friend_username])
-#         self.room_name = f"chat_{users[0]}_{users[1]}"
-#         self.room_group_name = f"chat_{self.room_name}"
-        
-#         # Join room group
-#         await self.channel_layer.group_add(
-#             self.room_group_name,
-#             self.channel_name
-#         )
-        
-#         await self.accept()
-        
-#         ###
-#         # await self.send(text_data=json.dumps({
-#         #     'type': 'message',
-#         #     'message': 'Connected',
-#         #     'sender': {self.username},            
-#         # }))
-#         # Update user status
+        self.username = self.user.username
+        self.friend_username = self.scope['url_route']['kwargs']['username']
+
+        # Check if they are friends
+        is_friend = await self.check_friendship()
         
         
-#     async def disconnect(self, close_code):
-#         # Leave room group
-#         if hasattr(self, 'room_group_name'):
-#             await self.channel_layer.group_discard(
-#                 self.room_group_name,
-#                 self.channel_name
-#             )
+        if not is_friend:
+            await self.close()
+            return
         
-#         # Update typing status to false when disconnecting
-#         if hasattr(self, 'room_group_name') and hasattr(self, 'username'):
-#             await self.channel_layer.group_send(
-#                 self.room_group_name,
-#                 {
-#                     'type': 'typing_status',
-#                     'user': self.username,
-#                     'is_typing': False
-#                 }
-#             )
+        # Create a unique room name for these two users (alphabetically sorted)
+        users = sorted([self.username, self.friend_username])
+        self.room_name = f"chat_{users[0]}_{users[1]}"
+        self.room_group_name = f"chat_{self.room_name}"
+        
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()
+        
+        ###
+        # await self.send(text_data=json.dumps({
+        #     'type': 'message',
+        #     'message': 'Connected',
+        #     'sender': {self.username},            
+        # }))
+        # Update user status
+        
+        
+    async def disconnect(self, close_code):
+        # Leave room group
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+        
+        # Update typing status to false when disconnecting
+        if hasattr(self, 'room_group_name') and hasattr(self, 'username'):
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'typing_status',
+                    'user': self.username,
+                    'is_typing': False
+                }
+            )
     
-#     async def receive(self, text_data):
-#         data = json.loads(text_data)
-#         message_type = data.get('type', 'message')
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data.get('type', 'message')
         
-#         if message_type == 'message':
-#             message = data['message']
+        if message_type == 'message':
+            message = data['message']
             
-#             # Save message to database
-#             message_obj = await self.save_message(self.user, 
-#                                              await self.get_user_by_username(self.friend_username), 
-#                                              message)
+            # Save message to database
+            message_obj = await self.save_message(self.user, 
+                                             await self.get_user_by_username(self.friend_username), 
+                                             message)
             
-#             # Send message to room group
-#             await self.channel_layer.group_send(
-#                 self.room_group_name,
-#                 {
-#                     'type': 'chat_message',
-#                     'message': message,
-#                     'sender': self.username,
-#                     'timestamp': message_obj.timestamp.isoformat()
-#                 }
-#             )
-#         elif message_type == 'typing':
-#             is_typing = data['is_typing']
+            # Send message to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'sender': self.username,
+                    'timestamp': message_obj.timestamp.isoformat()
+                }
+            )
+        elif message_type == 'typing':
+            is_typing = data['is_typing']
             
-#             # Send typing status to room group
-#             await self.channel_layer.group_send(
-#                 self.room_group_name,
-#                 {
-#                     'type': 'typing_status',
-#                     'user': self.username,
-#                     'is_typing': is_typing
-#                 }
-#             )
+            # Send typing status to room group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'typing_status',
+                    'user': self.username,
+                    'is_typing': is_typing
+                }
+            )
     
-#     async def chat_message(self, event):
-#         # Send message to WebSocket
-#         text_data=json.dumps({
-#             'type': 'message',
-#             'message': event['message'],
-#             'sender': event['sender'],
-#             'timestamp': event['timestamp']
-#         })
-#         print(text_data)
-#         await self.send(text_data)
+    async def chat_message(self, event):
+        # Send message to WebSocket
+        text_data=json.dumps({
+            'type': 'message',
+            'message': event['message'],
+            'sender': event['sender'],
+            'timestamp': event['timestamp']
+        })
+        print(text_data)
+        await self.send(text_data)
     
-#     async def typing_status(self, event):
-#         # Send typing status to WebSocket
-#         await self.send(text_data=json.dumps({
-#             'type': 'typing',
-#             'user': event['user'],
-#             'is_typing': event['is_typing']
-#         }))
+    async def typing_status(self, event):
+        # Send typing status to WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'typing',
+            'user': event['user'],
+            'is_typing': event['is_typing']
+        }))
     
-#     @database_sync_to_async
-#     def check_friendship(self):
-#         try:
-#             # Check if there's an accepted friendship in either direction
-#             friendship = Friendship.objects.filter(
-#                 username__username=self.username,
-#                 friend__username=self.friend_username,
-#                 status='ACCEPTED'
-#             ).exists() or Friendship.objects.filter(
-#                 username__username=self.friend_username,
-#                 friend__username=self.username,
-#                 status='ACCEPTED'
-#             ).exists()
-#             return friendship
-#         except Exception:
-#             return False
+    @database_sync_to_async
+    def check_friendship(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+
+        try:
+            friend = User.objects.get(username=self.friend_username)
+        except User.DoesNotExist:
+            return False
+
+        return Friendship.are_friends(self.user, friend)
     
-#     @database_sync_to_async
-#     def save_message(self, sender, receiver, content):
-#         message = Message.objects.create(
-#             sender=sender,
-#             receiver=receiver,
-#             content=content
-#         )
-#         return message
+    @database_sync_to_async
+    def save_message(self, sender, receiver, content):
+        message = Message.objects.create(
+            sender=sender,
+            receiver=receiver,
+            content=content
+        )
+        return message
     
-#     @database_sync_to_async
-#     def get_user_by_username(self, username):
-#         return User.objects.get(username=username)
+    @database_sync_to_async
+    def get_user_by_username(self, username):
+        return User.objects.get(username=username)
     
 
 
@@ -242,6 +239,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
         """
         friends = await self.get_friends()
         print(self.username +":" + str(friends))
+             
+     
         # 1. Friend presence
         for friend in friends:
             # friend_id = await self.get_user_id(friend_username)
@@ -396,7 +395,8 @@ class SystemConsumer(AsyncWebsocketConsumer):
             username=models.F("user1__username"),
         )
 
-        return list(as_user1.union(as_user2))
+        return list(as_user1.union(as_user2))   
+
 
 # deprecated:
     # @database_sync_to_async

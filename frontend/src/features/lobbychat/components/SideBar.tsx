@@ -33,7 +33,14 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
     const { friends, isConnected, setFriendStatus, sendAction } =
         useFriendsStore();
-    const { getUnreadCount, activeChatUser } = useChatStore();
+    const {
+        activeChatUser,
+        getUnreadCount,
+        setActiveChatUser,
+        openChat,
+        closeChat,
+    } = useChatStore();
+
     const loggedInUsername =
         useAuthStore((state) => state.user?.username) ?? '';
 
@@ -82,6 +89,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
     const handleSideBarFriendClick = (friend: Friend) => {
         setSelectedUser(friend);
+        openChat(friend.user);
     };
 
     const getAvatarRingConfig = (ringStatus: Friend['status']) => {

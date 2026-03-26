@@ -136,10 +136,10 @@ export const useFriendsStore = create<FriendsState>()(
 // Routes presence AND chat-request events to their respective stores.
 
 export const useWebSocketStatusManager = (url: string |null, options: any = {}) => {
-   const setFriendStatus = useFriendsStore(s => s.setFriendStatus);
-const setConnected = useFriendsStore(s => s.setConnected);
-const setSendMessage = useFriendsStore(s => s.setSendMessage);
-const resetFriends = useFriendsStore(s => s.resetFriends);
+    const setFriendStatus = useFriendsStore(s => s.setFriendStatus);
+    const setConnected = useFriendsStore(s => s.setConnected);
+    const setSendMessage = useFriendsStore(s => s.setSendMessage);
+    const resetFriends = useFriendsStore(s => s.resetFriends);
 
     const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
 
