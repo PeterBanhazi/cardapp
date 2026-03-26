@@ -1,11 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
+# from . import views
 
 router = DefaultRouter()
-router.register(r'messages', views.MessageViewSet, basename='message')
+# router.register(r'messages', views.MessageViewSet, basename='message')
 
 urlpatterns = [
     path('', include(router.urls)),   
-    path('messages/read/<int:friend_id>/', views.mark_messages_read, name='mark-messages-read'),
+    # path('messages/read/<int:friend_id>/', views.mark_messages_read, name='mark-messages-read'),
 ]

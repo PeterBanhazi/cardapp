@@ -87,27 +87,6 @@ class UserProperties(models.Model):
         ordering = ['-user']  # Optional: default ordering
         verbose_name_plural = "UserProperties"
 
-
-#List for friend connection persistence 
-class Friendship(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friendships')
-    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend_of')
-    status = models.CharField(
-        max_length=20, 
-        choices=[
-            ('PENDING', 'Request sent'), 
-            ('ACCEPTED', 'Friendship accepted'), 
-            ('BLOCKED', 'Blocked')
-        ],
-        default='PENDING'
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.username.username} - {self.friend.username}"
-    
-    class Meta:
-        ordering = ['-created_at'] 
         
 AVATAR_CHOICES = [
     ('user1.png', 'Avatar 1'),

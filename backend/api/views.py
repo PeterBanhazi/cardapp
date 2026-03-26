@@ -17,8 +17,8 @@ import json
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
-from .models import TennisPlayer,UserProperties, Friendship, UserProfile
-from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, FriendshipSerializer, UserProfileSerializer, PasswordChangeSerializer
+from .models import TennisPlayer,UserProperties, UserProfile
+from .serializer import TennisPlayerSerializer, UserPropertiesSerializer, TopListSerializer, UserProfileSerializer, PasswordChangeSerializer
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -32,8 +32,7 @@ def getRoutes(request):
         '/api/get/playerlist',
         '/api/post/add-player/',
         '/api/get/ranks/',
-        '/api/options/',
-        '/api/get/friends/',
+        '/api/options/',     
         '/api/friends/'
         
 
@@ -68,13 +67,7 @@ class UserProfileView(RetrieveUpdateAPIView):
     def get_object(self):
         user_profile = UserProfile.objects.get(username=self.request.user)
         return user_profile
-class FriendshipViewSet(RetrieveUpdateAPIView):
-    serializer_class = FriendshipSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Friendship.objects.filter(username=self.request.user).order_by('-created_at')
-
+    
 class UserPropertiesView(RetrieveUpdateAPIView):
 
     serializer_class = UserPropertiesSerializer

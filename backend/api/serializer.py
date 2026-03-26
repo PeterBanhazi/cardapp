@@ -3,20 +3,12 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import TennisPlayer, UserProperties, Friendship, UserProfile
+from .models import TennisPlayer, UserProperties, UserProfile
 from .models import AVATAR_CHOICES
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-
-# Default list serializers for friend connections 
-class FriendshipSerializer(serializers.ModelSerializer):
-    friend_username = serializers.CharField(source='friend.username', read_only=True)
-
-    class Meta:
-        model = Friendship
-        fields = ['friend_username', 'status', 'created_at']
 
 
 #Default list serializers
@@ -73,8 +65,7 @@ class TennisPlayerSerializer(serializers.ModelSerializer):
 
 class UserPropertiesSerializer(serializers.ModelSerializer):
     
-    username = serializers.CharField(source='user.username')
-    friendships = FriendshipSerializer(source='user.friendships', many=True, read_only=True)
+    username = serializers.CharField(source='user.username')   
     custom_players = TennisPlayerSerializer(source='user.custom_players', many=True, read_only=True)
     favorite_players = TennisPlayerSerializer(source='user.favorite_player_for_profile', many=True, read_only=False)
     favorite_player_id_change = serializers.IntegerField(write_only=True, required=False)
@@ -85,7 +76,7 @@ class UserPropertiesSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserProperties
-        fields = ['username','friendships','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
+        fields = ['username','rankpoints','current_player_id_change','favorite_players','favorite_player_id_change','current_player','custom_players']
 
         def update(self, instance, validated_data):
             user = instance.username
