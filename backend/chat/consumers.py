@@ -41,7 +41,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             
         self.username = self.user.username
         self.friend_username = self.scope['url_route']['kwargs']['username']
-
+        
+        #check if friend is online
+        friend_id = await get_user_id(self.friend_username)        
+        is_online = await async_is_online(friend_id) if friend_id else False
+        if not is_online:
+            await self.close()
+            return
+         
         # Check if they are friends
         is_friend = await self.check_friendship()       
         if not is_friend:
@@ -221,20 +228,6 @@ class SystemConsumer(AsyncWebsocketConsumer):
             await async_refresh_ttl(self.user_id)
             return
 
-        user_to = data.get("user_to")
-        self.friend_username = user_to
-        if not user_to:
-            return
-
-        # Check if they are friends and friend is online
-        is_friend = await self.check_friendship()        
-        friend_id = await get_user_id(self.friend_username)        
-        is_online = await async_is_online(friend_id) if friend_id else False
-      
-        if not (is_friend and is_online):             
-            return
-        
-        # proceed action 
         handler = getattr(self, f"handle_{action}", None)
         if handler:
             await handler(data)
@@ -282,6 +275,14 @@ class SystemConsumer(AsyncWebsocketConsumer):
         user_to = data.get("user_to")
         self.friend_username = user_to
         if not user_to:
+            return
+
+        # Check if they are friends and friend is online
+        is_friend = await self.check_friendship()        
+        friend_id = await get_user_id(self.friend_username)        
+        is_online = await async_is_online(friend_id) if friend_id else False
+      
+        if not (is_friend and is_online):             
             return
 
         try:

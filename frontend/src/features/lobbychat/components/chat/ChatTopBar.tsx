@@ -3,7 +3,6 @@ import { Info, X } from 'lucide-react';
 import PreferencesTab from '../PreferencesTab';
 import { useChatStore } from '../../../../core/store/useChatStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
-import { ChatRequestButton } from '@/features/lobbychat/components/chat/ChatRequestButton';
 import { useFriendsStore } from '@/core/store/useFriendsStore';
 import { ChatActionButton } from './ChatActionButton';
 import { useAuthStore } from '@/core/store/useAuthStore';
@@ -35,7 +34,6 @@ const ChatTopBar = () => {
             </div>
             {selectedUser && (
                 <span className="w-full flex justify-start gap-2 m-2 h-6 bg-red-300">
-                    <ChatRequestButton friendUser={selectedUser.user} />
                     <ChatActionButton
                         friendUsername={selectedUser.user}
                         localUser={loggedInUsername}
