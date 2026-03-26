@@ -10,7 +10,6 @@ function Options() {
         filteredPlayers,
         isOnline,
         rankPoints,
-        data,
         isPending,
         isError,
         error,

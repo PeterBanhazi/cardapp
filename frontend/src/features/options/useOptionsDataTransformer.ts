@@ -6,8 +6,7 @@ interface OptionsDataResult {
     userName: string|null;
     currentPlayer: PlayerStats[] | null;
     currentCardId: number;
-    filteredPlayers: PlayerStats[];
-    data: UserData | null;
+    filteredPlayers: PlayerStats[];  
     isPending: boolean; 
     isError: boolean;
     error: Error | null;
@@ -60,8 +59,7 @@ export function useOptionsDataTransformer(): OptionsDataResult {
             currentPlayer: null,
             userName: null,
             currentCardId: 0,
-            filteredPlayers: [],
-            data: null,
+            filteredPlayers: [],          
             isPending: true,
             isError: false,
             error: null,
@@ -76,8 +74,7 @@ export function useOptionsDataTransformer(): OptionsDataResult {
             currentPlayer: null,
             userName: null,
             currentCardId: 0,
-            filteredPlayers: [],
-            data: null,
+            filteredPlayers: [],          
             isPending: false,
             isError: true,
             isOnline: false,
@@ -144,8 +141,7 @@ export function useOptionsDataTransformer(): OptionsDataResult {
         
         userName: userData.username,
         currentCardId,
-        filteredPlayers,
-        data: userData,
+        filteredPlayers,       
         isOnline: userData.isonline,
         rankPoints: userData.rankpoints,
         isPending: false,
