@@ -16,12 +16,12 @@ const ChatTopBar = () => {
         useAuthStore((state) => state.user?.username) ?? '';
     const { sendAction } = useFriendsStore();
     return (
-        <div className="w-full h-20 flex p-4 justify-between items-center border-b">
+        <div className="w-full h-20 flex p-4 justify-between items-center border-b border-blue-200 ">
             <div className="flex items-center gap-2">
                 {activeChatUser && (
                     <Avatar className="flex justify-center items-center">
                         <AvatarImage
-                            src={'/user-placeholder.png'}
+                            src={'/avatars/user3.png'}
                             alt="User Image"
                             className="w-10 h-10 object-cover rounded-full"
                         />
@@ -33,7 +33,7 @@ const ChatTopBar = () => {
                 {/* <span className="font-medium">{activeChatUser}</span> */}
             </div>
             {selectedUser && (
-                <span className="w-full flex justify-start gap-2 m-2 h-6 bg-red-300">
+                <span className="w-full flex justify-start gap-2 m-1 pl-1 h-10">
                     <ChatActionButton
                         friendUsername={selectedUser.user}
                         localUser={loggedInUsername}

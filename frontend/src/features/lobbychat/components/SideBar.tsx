@@ -19,9 +19,6 @@ import { useChatStore } from '../../../core/store/useChatStore';
 import { useAuthStore } from '../../../core/store/useAuthStore';
 import { useFriendList } from '../../../core/store/useFriendList';
 import { Friend } from '@/shared/types/friend';
-
-import { ChatActionButton } from '@/features/lobbychat/components/chat/ChatActionButton';
-
 interface SidebarProps {
     isCollapsed: boolean;
 }
@@ -170,13 +167,13 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 </Tooltip>
                             </TooltipProvider>
                         ) : (
-                            // ── Expanded: full row with ChatActionButton ───────
+                            // -----------------Expanded
                             <Button
                                 key={idx}
                                 variant={'grey'}
                                 size="lg"
                                 className={cn(
-                                    'w-full px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
+                                    'w-[220px] px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
                                     activeChatUser === friend.user &&
                                         'bg-slate-50/50 hover:bg-muted hover:text-white shrink'
                                 )}
@@ -219,13 +216,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 <div
                                     onClick={(e) => e.stopPropagation()}
                                     className="ml-auto shrink-0"
-                                >
-                                    <ChatActionButton
-                                        friendUsername={friend.user}
-                                        localUser={loggedInUsername}
-                                        sendAction={sendAction}
-                                    />
-                                </div>
+                                ></div>
                             </Button>
                         )
                     )}
@@ -234,7 +225,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
             {/* Footer */}
             <div className="mt-auto" />
-            <div className="flex justify-between items-center gap-2 md:px-6 py-2">
+            <div className="flex justify-between items-center gap-2 md:px-2 py-2">
                 {!isCollapsed && (
                     <div className="hidden md:flex gap-2 items-center">
                         <Avatar className="flex justify-center items-center">

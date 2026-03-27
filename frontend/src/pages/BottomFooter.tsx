@@ -1,3 +1,5 @@
+// # TODO: use import { createTheme } from "flowbite-react";
+
 import React from 'react';
 import {
     Mail,
@@ -169,11 +171,11 @@ const BottomFooter = () => {
                                     <input
                                         type="email"
                                         placeholder="Enter your email"
-                                        className="px-4 py-2 bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                        className="px-4 py-2 font-medium bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                                     />
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="px-4 py-2 font-medium bg-orange-400 text-slate-100 rounded-lg hover:bg-orange-300 transition-colors"
                                     >
                                         Subscribe
                                     </button>
