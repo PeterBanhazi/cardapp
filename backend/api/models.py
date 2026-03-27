@@ -87,6 +87,8 @@ class UserProperties(models.Model):
         ordering = ['-user']  # Optional: default ordering
         verbose_name_plural = "UserProperties"
 
+
+
         
 AVATAR_CHOICES = [
     ('user1.png', 'Avatar 1'),

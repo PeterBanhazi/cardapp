@@ -14,7 +14,7 @@ export const WebSocketProvider = ({
 
     const socketUrl =
         username && accessToken
-            ? `${WS_BASE_URL}ws/system/?token=${accessToken}`
+            ? `${WS_BASE_URL}/ws/system/?token=${accessToken}`
             : null;
 
     useWebSocketStatusManager(socketUrl, WS_CONNECT_OPTIONS);

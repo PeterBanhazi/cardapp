@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { PlayerStats } from '../../shared/types/types';
 
-import TennisPlayerCreator from './playercards/TennisPlayerCreator';
+// import TennisPlayerCreator from './playercards/TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../core/utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
@@ -141,11 +141,11 @@ const OptionsLeftContainer: React.FC<{
                                         Create new player
                                     </div>
                                 </button>
-                                {isCreateOpen && (
+                                {/* {isCreateOpen && (
                                     <TennisPlayerCreator
                                         onClose={() => setIsCreateOpen(false)}
                                     />
-                                )}
+                                )} */}
                             </div>
                         </ScrollContainer>
                     </div>

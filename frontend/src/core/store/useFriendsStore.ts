@@ -155,8 +155,8 @@ export const useWebSocketStatusManager = (url: string |null, options: any = {}) 
             setConnected(false);
             resetFriends();
         },
-        onError: (error) => {
-            console.error('WebSocket error:', error);
+        onError: () => {
+            console.error('WebSocket error:', "systemWs error");
             setConnected(false);
         },
         ...options,

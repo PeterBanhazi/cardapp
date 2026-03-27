@@ -1,0 +1,50 @@
+services:
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - sqlite_data:/app/db
+    depends_on:
+      - redis
+    networks:
+      - internal
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput && 
+             python manage.py import_tennis_players &&
+             daphne -b 0.0.0.0 -p 8000 backend.asgi:application"
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # A Droplet IP-je vagy domain neve - build időben égeti be a React-ba
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_WS_URL: ${VITE_WS_URL}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - internal
+
+volumes:
+  sqlite_data:
+
+networks:
+  internal:
+    driver: bridge

@@ -266,7 +266,7 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
     const accessToken = useAuthStore((s) => s.accessToken);
 
   
-    const wsUrl = username&& accessToken && friendUser ? `${WS_BASE_URL}ws/chat/${friendUser}/?token=${accessToken}` : null;
+    const wsUrl = username&& accessToken && friendUser ? `${WS_BASE_URL}/ws/chat/${friendUser}/?token=${accessToken}` : null;
     
     const { lastMessage, readyState, sendMessage } = useWebSocket(
         wsUrl,

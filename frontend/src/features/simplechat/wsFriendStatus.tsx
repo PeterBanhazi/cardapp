@@ -118,7 +118,7 @@ export const RequestButton: React.FC<{
 };
 
 export const FriendsList: React.FC = () => {
-    const { friends, isConnected, acceptChatRequest } = useFriendsStore();
+    const { friends, isConnected, sendAcceptChatRequest } = useFriendsStore();
     const { openChat, getUnreadCount } = useChatStore();
     const loggedInUsername = useAuthStore.getState().user?.username;
     const friendsLista = Object.values(friends);
@@ -156,7 +156,7 @@ export const FriendsList: React.FC = () => {
             console.log(friend.user);
             // Accept the chat request
             openChat(friend.user);
-            acceptChatRequest(friend.user);
+            sendAcceptChatRequest(friend.user);
         } else if (friend.status === 'active' || friend.status === 'online') {
             // Open existing chat
             openChat(friend.user);

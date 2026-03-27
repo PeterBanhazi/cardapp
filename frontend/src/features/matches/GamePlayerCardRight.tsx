@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from 'flowbite-react';
-import { useAuthStore } from '../../core/store/useAuthStore';
+import GamePlayerCardRightSVG from '@/features/matches/GamePlayerCardRight.svg';
 
 interface PlayerAbilities {
     serve: number;
@@ -45,7 +43,7 @@ const GamePlayerCardRight: React.FC<PlayerCardProps> = ({ player }) => {
             <div className="flex select-none">
                 <div className="grid">
                     <img
-                        src="src/features/matches/GamePlayerCardRight.svg"
+                        src={GamePlayerCardRightSVG}
                         className="opacity-100  col-start-1 row-start-1 self-center"
                         alt="Card Background"
                     />
