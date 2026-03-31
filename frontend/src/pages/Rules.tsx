@@ -5,7 +5,7 @@ const Rules: React.FC = () => {
     return (
         <div className="flex flex-col items-center">
             <img
-                src="src\assets\bg\mario-gogh-MpmAzASjUaM-unsplash.jpg"
+                src="src\assets\bg\shep-mcallister-J1j3cImjmgE-unsplash_min.webp"
                 alt="Rules"
                 className="w-full max-w-md rounded-lg shadow-xl shadow-black"
             />

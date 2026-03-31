@@ -28,10 +28,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        # A Droplet IP-je vagy domain neve - build időben égeti be a React-ba
-        VITE_API_URL: ${VITE_API_URL}
-        VITE_WS_URL: ${VITE_WS_URL}
     restart: unless-stopped
     ports:
       - "80:80"
