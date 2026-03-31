@@ -162,8 +162,8 @@ const BottomFooter = () => {
                             </div>
                         </div>
                         {/* Newsletter Column */}
-                        <div className="max-w-11/12">
-                            <h3 className="text-xl font-semibold mb-2">
+                        <div className="md:max-w-11/12 max-w-64 flex-col justify-self-center">
+                            <h3 className="text-xl font-semibold text-center lg:text-left mb-2">
                                 Newsletter
                             </h3>
                             <form onSubmit={handleSubmit} className="mb-3">

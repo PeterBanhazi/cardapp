@@ -83,7 +83,6 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                 avatar_image: initialProfileData.avatar_image,
                 birthday: initialProfileData.birthday || null,
             });
-            console.log(initialProfileData);
         }
         if (initialProfileData?.birthday) {
             // Convert YYYY-MM-DD string to Date object

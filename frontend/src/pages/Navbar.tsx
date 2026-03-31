@@ -111,7 +111,7 @@ const Navbar: React.FC = () => {
                                 to="/"
                                 className="text-xl font-bold text-gray-800"
                             >
-                                Logo
+                                TennisCards
                             </NavLink>
                             {/* Your other nav items
                                                         <NavLink to="/testone" onClick={handleTestClick}>
