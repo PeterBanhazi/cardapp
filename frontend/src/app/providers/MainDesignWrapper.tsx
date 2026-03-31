@@ -9,8 +9,9 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
             }}
         >
             <div
-                className="scrollbar-container max-h-screen overflow-y-auto
-                    [&::-webkit-scrollbar]:w-6
+                className="w-screen h-screen overflow-y-auto scrollbar-container max-h-screen
+                    [&::-webkit-scrollbar]:w-5
+                    md:[&::-webkit-scrollbar]:w-6
                     [&::-webkit-scrollbar]:h-2                   
                     [&::-webkit-scrollbar-button]:h-2
                     [&::-webkit-scrollbar-track]:bg-transparent
@@ -24,7 +25,13 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
                     overflow-auto
             "
             >
-                {children}
+                <div className="flex justify-center">
+                    {/* left spacer */}
+                    <div className="w-5 md:w-6 shrink-0" />
+
+                    {/* content */}
+                    <div className="w-full">{children}</div>
+                </div>
             </div>
         </div>
     );
