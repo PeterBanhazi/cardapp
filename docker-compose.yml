@@ -14,14 +14,17 @@ services:
     env_file: .env
     volumes:
       - sqlite_data:/app/db
+      - static_volume:/app/staticfiles  #shared static directory for django admin and /api page
     depends_on:
       - redis
     networks:
       - internal
+# init default playercards + add some random users for testing
     command: >
       sh -c "python manage.py migrate --noinput &&
              python manage.py collectstatic --noinput && 
-             python manage.py import_tennis_players &&
+             python manage.py import_tennis_players && 
+             python manage.py seed_users &&
              daphne -b 0.0.0.0 -p 8000 backend.asgi:application"
 
   nginx:
@@ -33,6 +36,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/usr/share/nginx/staticfiles:ro
     depends_on:
       - backend
     networks:
@@ -40,6 +44,7 @@ services:
 
 volumes:
   sqlite_data:
+  static_volume:
 
 networks:
   internal:
