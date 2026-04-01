@@ -34,7 +34,7 @@ const App: React.FC = () => {
                             <WebSocketProvider>
                                 <ChatProvider>
                                     <Navbar />
-                                    <main className="flex-1 min-h-[100vh]">
+                                    <main className="flex-1 min-h-[50vh]">
                                         <Routes>
                                             <Route
                                                 path="/"
