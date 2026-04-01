@@ -1,47 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import useAxios from '../../core/utils/useAxios';
 import { useAuthStore } from '../../core/store/useAuthStore';
-import { Button, ThemeProvider } from 'flowbite-react';
-import { customTheme } from '../../shared/formThemes';
+import { Button } from 'flowbite-react';
+import { useGetUsersRanks } from './useGetUsersRanks';
+
 import ScrollContainer from '../../shared/components/ui/ScrollContainer';
-interface User {
-    username: string;
-    rankpoints: number;
-}
 
 const Ranks: React.FC = () => {
-    const [users, setUsers] = useState<User[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [itemsPerPage] = useState<number>(12);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [totalPages, setTotalPages] = useState<number>(0);
 
-    const loggedInUsername = useAuthStore().user?.username;
+    const { isLoading, error, data } = useGetUsersRanks();
+    const loggedInUsername = useAuthStore((s) => s.user?.username);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await useAxios().get<User[]>('ranks/');
-                setUsers(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching users:', error);
-                setLoading(false);
+        if (data) {
+            const getUserPageIndex = Math.floor(
+                data.findIndex((user) => user.username === loggedInUsername) /
+                    itemsPerPage
+            );
+            if (getUserPageIndex > -1) {
+                setCurrentPage(getUserPageIndex);
             }
-        };
-        fetchUsers();
-    }, []);
-
-    useEffect(() => {
-        const getUserPageIndex = Math.floor(
-            users.findIndex((user) => user.username === loggedInUsername) /
-                itemsPerPage
-        );
-        if (getUserPageIndex > -1) {
-            setCurrentPage(getUserPageIndex);
+            setTotalPages(Math.ceil(data.length / itemsPerPage));
         }
-    }, [users]);
-
-    const totalPages = Math.ceil(users.length / itemsPerPage);
+    }, [data]);
 
     const handleNextPage = () => {
         if (currentPage < totalPages - 1) {
@@ -54,15 +38,13 @@ const Ranks: React.FC = () => {
             setCurrentPage(currentPage - 1);
         }
     };
-
-    const currentItems = users.slice(
+    const currentItems = (data ?? []).slice(
         currentPage * itemsPerPage,
         (currentPage + 1) * itemsPerPage
     );
-
     return (
-        <ThemeProvider theme={customTheme}>
-            {loading ? (
+        <>
+            {isLoading ? (
                 <div className="text-center">Loading...</div>
             ) : (
                 <>
@@ -104,7 +86,7 @@ const Ranks: React.FC = () => {
                         <Button
                             onClick={handlePrevPage}
                             disabled={currentPage === 0}
-                            color="tennisprimary"
+                            color="cardAppPrimary"
                             className="ring-1 ring-slate-300"
                         >
                             Previous
@@ -115,7 +97,7 @@ const Ranks: React.FC = () => {
                         <Button
                             onClick={handleNextPage}
                             disabled={currentPage === totalPages - 1}
-                            color="tennisprimary"
+                            color="cardAppPrimary"
                             className="ring-1 ring-slate-300"
                         >
                             Next
@@ -123,7 +105,7 @@ const Ranks: React.FC = () => {
                     </div>
                 </>
             )}
-        </ThemeProvider>
+        </>
     );
 };
 
