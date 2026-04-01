@@ -1,5 +1,3 @@
-// # TODO: use import { createTheme } from "flowbite-react";
-
 import React from 'react';
 import {
     Mail,
@@ -16,7 +14,7 @@ import {
     Github,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-
+import { Button, TextInput } from 'flowbite-react';
 const BottomFooter = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -168,17 +166,19 @@ const BottomFooter = () => {
                             </h3>
                             <form onSubmit={handleSubmit} className="mb-3">
                                 <div className="flex flex-col gap-2">
-                                    <input
+                                    <TextInput
                                         type="email"
+                                        color="tennisprimary"
                                         placeholder="Enter your email"
-                                        className="px-4 py-2 font-medium bg-white text-black border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                        className="font-medium"
                                     />
-                                    <button
+                                    <Button
+                                        color="tennisprimary"
                                         type="submit"
-                                        className="px-4 py-2 font-medium bg-orange-400 text-slate-100 rounded-lg hover:bg-orange-300 transition-colors"
+                                        className="py-2 font-medium"
                                     >
                                         Subscribe
-                                    </button>
+                                    </Button>
                                 </div>
                             </form>
 
