@@ -168,12 +168,12 @@ const BottomFooter = () => {
                                 <div className="flex flex-col gap-2">
                                     <TextInput
                                         type="email"
-                                        color="tennisprimary"
+                                        color="cardAppPrimary"
                                         placeholder="Enter your email"
                                         className="font-medium"
                                     />
                                     <Button
-                                        color="tennisprimary"
+                                        color="cardAppPrimary"
                                         type="submit"
                                         className="py-2 font-medium"
                                     >

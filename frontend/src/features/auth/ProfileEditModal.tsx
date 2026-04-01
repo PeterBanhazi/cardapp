@@ -9,7 +9,6 @@ import {
     Datepicker,
     ModalHeader,
     ModalBody,
-    ThemeProvider,
     Spinner,
 } from 'flowbite-react';
 import { ProfileData, PasswordChangeData } from '../../shared/types/types';
@@ -19,7 +18,6 @@ import {
     useChangeProfilePassword,
 } from '../../core/utils/useDataQuery';
 import ModalOpenTriggerButton from './ModalOpenTriggerButton';
-import { customTheme } from '../../shared/formThemes';
 
 // TODO: when there is no birthday and user logout and login with another account the prv. bd should have been invalidated
 // Input field configuration for consistent styling
@@ -213,344 +211,328 @@ const ProfileEditModal: React.FC<{}> = ({}) => {
                 buttonText="Settings"
                 onClick={() => setOpenModal(true)}
             />
-            <ThemeProvider theme={customTheme}>
-                <Modal
-                    id="profile-modal"
-                    dismissible={true}
-                    show={openModal}
-                    onClose={() => setOpenModal(false)}
-                    size="xl"
-                >
-                    <ModalHeader className="">
-                        Edit Profile (
-                        {profileData.username
-                            ? profileData.username
-                            : 'Loading...'}
-                        )
-                    </ModalHeader>
-                    <ModalBody className="max-h-[80vh] overflow-y-auto">
-                        {/* Profile Information Form */}
-                        <form
-                            onSubmit={handleProfileSubmit}
-                            className="space-y-4"
+
+            <Modal
+                id="profile-modal"
+                dismissible={true}
+                show={openModal}
+                onClose={() => setOpenModal(false)}
+                size="xl"
+            >
+                <ModalHeader className="">
+                    Edit Profile (
+                    {profileData.username ? profileData.username : 'Loading...'}
+                    )
+                </ModalHeader>
+                <ModalBody className="max-h-[80vh] overflow-y-auto ml-2">
+                    {/* Profile Information Form */}
+                    <form onSubmit={handleProfileSubmit} className="space-y-4">
+                        <h2 className="text-lg font-semibold">
+                            Personal Information
+                        </h2>
+
+                        {/* First Name */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="firstName">First Name</Label>
+                            </div>
+                            <TextInput
+                                id="firstName"
+                                value={profileData.first_name}
+                                onChange={(e) =>
+                                    setProfileData((prev) => ({
+                                        ...prev,
+                                        first_name: e.target.value,
+                                    }))
+                                }
+                                color={
+                                    validationErrors.profile.first_name
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.profile.first_name && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.profile.first_name}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Last Name */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="lastName">Last Name</Label>
+                            </div>
+                            <TextInput
+                                id="lastName"
+                                value={profileData.last_name}
+                                onChange={(e) =>
+                                    setProfileData((prev) => ({
+                                        ...prev,
+                                        last_name: e.target.value,
+                                    }))
+                                }
+                                color={
+                                    validationErrors.profile.last_name
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.profile.last_name && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.profile.last_name}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="description">Description</Label>
+                            </div>
+                            <Textarea
+                                id="description"
+                                value={profileData.description}
+                                onChange={(e) =>
+                                    setProfileData((prev) => ({
+                                        ...prev,
+                                        description: e.target.value,
+                                    }))
+                                }
+                                rows={3}
+                                color={
+                                    validationErrors.profile.description
+                                        ? 'failure'
+                                        : 'gray'
+                                }
+                                className="border-gray-300 bg-gray-50 focus:border-orange-500 focus:border focus:ring-orange-500"
+                            />
+                            {validationErrors.profile.description && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.profile.description}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Avatar Selection */}
+                        <div>
+                            <Label className="block mb-2">Avatar</Label>
+                            <div className="grid grid-cols-5 gap-2">
+                                {AVATAR_OPTIONS.map((avatar) => (
+                                    <button
+                                        key={avatar}
+                                        type="button"
+                                        aria-pressed={
+                                            profileData.avatar_image === avatar
+                                        }
+                                        onClick={() =>
+                                            setProfileData((prev) => ({
+                                                ...prev,
+                                                avatar_image: avatar,
+                                            }))
+                                        }
+                                        className={`border-2 rounded-md p-1 hover:border-orange-500 cursor-pointer transition-colors ${
+                                            profileData.avatar_image === avatar
+                                                ? 'border-orange-500'
+                                                : 'border-transparent'
+                                        }`}
+                                    >
+                                        <img
+                                            src={`/avatars/${avatar}`}
+                                            alt={avatar}
+                                            className="w-16 h-16 object-cover"
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Birthday */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="birthday">Birthday</Label>
+                            </div>
+                            <Datepicker
+                                id="birthday"
+                                maxDate={new Date()}
+                                showTodayButton={false}
+                                defaultValue={bdayData}
+                                value={bdayData}
+                                onChange={(value) => handleDateChange(value)}
+                                color={
+                                    validationErrors.profile.birthday
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.profile.birthday && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.profile.birthday}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Profile Update Button */}
+                        <Button
+                            type="submit"
+                            disabled={updateProfile.isPending}
+                            color="cardAppPrimary"
                         >
-                            <h2 className="text-lg font-semibold">
-                                Personal Information
-                            </h2>
-
-                            {/* First Name */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="firstName">
-                                        First Name
-                                    </Label>
-                                </div>
-                                <TextInput
-                                    id="firstName"
-                                    value={profileData.first_name}
-                                    onChange={(e) =>
-                                        setProfileData((prev) => ({
-                                            ...prev,
-                                            first_name: e.target.value,
-                                        }))
-                                    }
-                                    color={
-                                        validationErrors.profile.first_name
-                                            ? 'failure'
-                                            : 'tennisprimary'
-                                    }
+                            {updateProfile.isPending && (
+                                <Spinner
+                                    aria-label="Spinner for update button"
+                                    size="sm"
+                                    color="cardAppPrimary"
                                 />
-                                {validationErrors.profile.first_name && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.profile.first_name}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Last Name */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="lastName">Last Name</Label>
-                                </div>
-                                <TextInput
-                                    id="lastName"
-                                    value={profileData.last_name}
-                                    onChange={(e) =>
-                                        setProfileData((prev) => ({
-                                            ...prev,
-                                            last_name: e.target.value,
-                                        }))
-                                    }
-                                    color={
-                                        validationErrors.profile.last_name
-                                            ? 'failure'
-                                            : 'tennisprimary'
-                                    }
-                                />
-                                {validationErrors.profile.last_name && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.profile.last_name}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="description">
-                                        Description
-                                    </Label>
-                                </div>
-                                <Textarea
-                                    id="description"
-                                    value={profileData.description}
-                                    onChange={(e) =>
-                                        setProfileData((prev) => ({
-                                            ...prev,
-                                            description: e.target.value,
-                                        }))
-                                    }
-                                    rows={3}
-                                    color={
-                                        validationErrors.profile.description
-                                            ? 'failure'
-                                            : 'gray'
-                                    }
-                                    className="border-gray-300 bg-gray-50 focus:border-orange-500 focus:border focus:ring-orange-500"
-                                />
-                                {validationErrors.profile.description && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.profile.description}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Avatar Selection */}
-                            <div>
-                                <Label className="block mb-2">Avatar</Label>
-                                <div className="grid grid-cols-5 gap-2">
-                                    {AVATAR_OPTIONS.map((avatar) => (
-                                        <button
-                                            key={avatar}
-                                            type="button"
-                                            aria-pressed={
-                                                profileData.avatar_image ===
-                                                avatar
-                                            }
-                                            onClick={() =>
-                                                setProfileData((prev) => ({
-                                                    ...prev,
-                                                    avatar_image: avatar,
-                                                }))
-                                            }
-                                            className={`border-2 rounded-md p-1 hover:border-orange-500 transition-colors ${
-                                                profileData.avatar_image ===
-                                                avatar
-                                                    ? 'border-orange-500'
-                                                    : 'border-transparent'
-                                            }`}
-                                        >
-                                            <img
-                                                src={`/avatars/${avatar}`}
-                                                alt={avatar}
-                                                className="w-16 h-16 object-cover"
-                                            />
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Birthday */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="birthday">Birthday</Label>
-                                </div>
-                                <Datepicker
-                                    id="birthday"
-                                    maxDate={new Date()}
-                                    showTodayButton={false}
-                                    defaultValue={bdayData}
-                                    value={bdayData}
-                                    onChange={(value) =>
-                                        handleDateChange(value)
-                                    }
-                                    color={
-                                        validationErrors.profile.birthday
-                                            ? 'failure'
-                                            : 'tennisprimary'
-                                    }
-                                />
-                                {validationErrors.profile.birthday && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.profile.birthday}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Profile Update Button */}
-                            <Button
-                                type="submit"
-                                disabled={updateProfile.isPending}
-                                color="tennisprimary"
+                            )}
+                            <span
+                                className={`${updateProfile.isPending ? 'pl-2' : ''}`}
                             >
-                                {updateProfile.isPending && (
-                                    <Spinner
-                                        aria-label="Spinner for update button"
-                                        size="sm"
-                                        className="fill-orange-500"
-                                    />
-                                )}
-                                <span
-                                    className={`${updateProfile.isPending ? 'pl-2' : ''}`}
-                                >
-                                    {updateProfile.isPending
-                                        ? 'Updating...'
-                                        : 'Update Profile'}
-                                </span>
-                            </Button>
-                        </form>
+                                {updateProfile.isPending
+                                    ? 'Updating...'
+                                    : 'Update Profile'}
+                            </span>
+                        </Button>
+                    </form>
 
-                        {/* Password Change Form */}
-                        <form
-                            onSubmit={handlePasswordSubmit}
-                            className="space-y-4 mt-6"
-                        >
-                            <h2 className="text-lg font-semibold">
-                                Change Password
-                            </h2>
+                    {/* Password Change Form */}
+                    <form
+                        onSubmit={handlePasswordSubmit}
+                        className="space-y-4 mt-6"
+                    >
+                        <h2 className="text-lg font-semibold">
+                            Change Password
+                        </h2>
 
-                            {/* Current Password */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="currentPassword">
-                                        Current Password
-                                    </Label>
-                                </div>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    name="username"
-                                    autoComplete="username"
-                                    className="hidden"
-                                />
-                                <TextInput
-                                    id="currentPassword"
-                                    type="password"
-                                    autoComplete="off"
-                                    value={passwordData.old_password}
-                                    onChange={(e) =>
-                                        setPasswordData((prev) => ({
-                                            ...prev,
-                                            old_password: e.target.value,
-                                        }))
-                                    }
-                                    color={
-                                        validationErrors.password.old_password
-                                            ? 'failure'
-                                            : 'tennisprimary'
-                                    }
-                                />
-                                {validationErrors.password.old_password && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.password.old_password}
-                                    </p>
-                                )}
+                        {/* Current Password */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="currentPassword">
+                                    Current Password
+                                </Label>
                             </div>
+                            <input
+                                id="username"
+                                type="text"
+                                name="username"
+                                autoComplete="username"
+                                className="hidden"
+                            />
+                            <TextInput
+                                id="currentPassword"
+                                type="password"
+                                autoComplete="off"
+                                value={passwordData.old_password}
+                                onChange={(e) =>
+                                    setPasswordData((prev) => ({
+                                        ...prev,
+                                        old_password: e.target.value,
+                                    }))
+                                }
+                                color={
+                                    validationErrors.password.old_password
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.password.old_password && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.password.old_password}
+                                </p>
+                            )}
+                        </div>
 
-                            {/* New Password */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="newPassword">
-                                        New Password
-                                    </Label>
-                                </div>
-                                <TextInput
-                                    id="newPassword"
-                                    type="password"
-                                    autoComplete="off"
-                                    value={passwordData.new_password}
-                                    onChange={(e) =>
-                                        setPasswordData((prev) => ({
-                                            ...prev,
-                                            new_password: e.target.value,
-                                        }))
-                                    }
-                                    color={
-                                        validationErrors.password.new_password
-                                            ? 'failure'
-                                            : 'tennisprimary'
-                                    }
-                                />
-                                {validationErrors.password.new_password && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {validationErrors.password.new_password}
-                                    </p>
-                                )}
+                        {/* New Password */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="newPassword">
+                                    New Password
+                                </Label>
                             </div>
+                            <TextInput
+                                id="newPassword"
+                                type="password"
+                                autoComplete="off"
+                                value={passwordData.new_password}
+                                onChange={(e) =>
+                                    setPasswordData((prev) => ({
+                                        ...prev,
+                                        new_password: e.target.value,
+                                    }))
+                                }
+                                color={
+                                    validationErrors.password.new_password
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.password.new_password && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {validationErrors.password.new_password}
+                                </p>
+                            )}
+                        </div>
 
-                            {/* Confirm New Password */}
-                            <div>
-                                <div className="mb-2 block">
-                                    <Label htmlFor="confirmPassword">
-                                        Confirm New Password
-                                    </Label>
-                                </div>
-                                <TextInput
-                                    id="confirmPassword"
-                                    type="password"
-                                    autoComplete="off"
-                                    value={passwordData.confirm_new_password}
-                                    onChange={(e) =>
-                                        setPasswordData((prev) => ({
-                                            ...prev,
-                                            confirm_new_password:
-                                                e.target.value,
-                                        }))
-                                    }
-                                    color={
+                        {/* Confirm New Password */}
+                        <div>
+                            <div className="mb-2 block">
+                                <Label htmlFor="confirmPassword">
+                                    Confirm New Password
+                                </Label>
+                            </div>
+                            <TextInput
+                                id="confirmPassword"
+                                type="password"
+                                autoComplete="off"
+                                value={passwordData.confirm_new_password}
+                                onChange={(e) =>
+                                    setPasswordData((prev) => ({
+                                        ...prev,
+                                        confirm_new_password: e.target.value,
+                                    }))
+                                }
+                                color={
+                                    validationErrors.password
+                                        .confirm_new_password
+                                        ? 'failure'
+                                        : 'cardAppPrimary'
+                                }
+                            />
+                            {validationErrors.password.confirm_new_password && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {
                                         validationErrors.password
                                             .confirm_new_password
-                                            ? 'failure'
-                                            : 'tennisprimary'
                                     }
-                                />
-                                {validationErrors.password
-                                    .confirm_new_password && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {
-                                            validationErrors.password
-                                                .confirm_new_password
-                                        }
-                                    </p>
-                                )}
-                            </div>
+                                </p>
+                            )}
+                        </div>
 
-                            {/* Password Change Button */}
-                            <Button
-                                type="submit"
-                                disabled={passwordChangeMutation.isPending}
-                                color="tennisprimary"
+                        {/* Password Change Button */}
+                        <Button
+                            type="submit"
+                            disabled={passwordChangeMutation.isPending}
+                            color="cardAppPrimary"
+                        >
+                            {passwordChangeMutation.isPending && (
+                                <Spinner
+                                    aria-label="Spinner for update button"
+                                    size="sm"
+                                    color="cardAppPrimary"
+                                />
+                            )}
+                            <span
+                                className={`${passwordChangeMutation.isPending ? 'pl-2' : ''}`}
                             >
-                                {passwordChangeMutation.isPending && (
-                                    <Spinner
-                                        aria-label="Spinner for update button"
-                                        size="sm"
-                                        className="fill-orange-500"
-                                    />
-                                )}
-                                <span
-                                    className={`${passwordChangeMutation.isPending ? 'pl-2' : ''}`}
-                                >
-                                    {passwordChangeMutation.isPending
-                                        ? 'Changing...'
-                                        : 'Change Password'}
-                                </span>
-                            </Button>
-                        </form>
-                    </ModalBody>
-                    <div className="h-1" />
-                </Modal>
-            </ThemeProvider>
+                                {passwordChangeMutation.isPending
+                                    ? 'Changing...'
+                                    : 'Change Password'}
+                            </span>
+                        </Button>
+                    </form>
+                </ModalBody>
+                <div className="h-1" />
+            </Modal>
         </>
     );
 };

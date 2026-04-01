@@ -110,7 +110,7 @@ const Login: React.FC = () => {
             >
                 <ModalHeader
                     id="login-modal-title"
-                    className="text-xl font-medium text-gray-900 pl-4"
+                    className="text-xl font-medium pl-4"
                 >
                     Sign in to your account
                 </ModalHeader>
@@ -157,7 +157,7 @@ const Login: React.FC = () => {
                                 name="username"
                                 type="text"
                                 autoComplete="username"
-                                color="tennisprimary"
+                                color="cardAppPrimary"
                                 required
                                 value={username}
                                 aria-required="true"
@@ -181,7 +181,7 @@ const Login: React.FC = () => {
                                 id="password"
                                 name="password"
                                 type="password"
-                                color="tennisprimary"
+                                color="cardAppPrimary"
                                 autoComplete="current-password"
                                 required
                                 value={password}
@@ -197,9 +197,13 @@ const Login: React.FC = () => {
                         <div className="flex justify-between py-1.5">
                             <div className="flex items-center gap-2">
                                 {/* Remember me is a UI placeholder — not wired to store */}
-                                <Checkbox id="remember" />
+                                <Checkbox
+                                    color="cardAppPrimary"
+                                    id="remember"
+                                />
                                 <Label htmlFor="remember">Remember me</Label>
                             </div>
+
                             <a
                                 href="#"
                                 className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
@@ -213,7 +217,7 @@ const Login: React.FC = () => {
                         <div className="w-full mt-2">
                             <Button
                                 type="submit"
-                                color="tennisprimary"
+                                color="cardAppPrimary"
                                 disabled={isLoading}
                                 aria-disabled={isLoading}
                             >
@@ -221,7 +225,7 @@ const Login: React.FC = () => {
                                     <Spinner
                                         aria-hidden="true"
                                         size="md"
-                                        className="fill-orange-500"
+                                        color="cardAppPrimary"
                                     />
                                 )}
                                 <span className={isLoading ? 'pl-3' : ''}>
