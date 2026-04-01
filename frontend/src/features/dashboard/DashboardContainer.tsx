@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ChevronDown,
     ChevronUp,
@@ -35,6 +35,12 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     onClose,
     children,
 }) => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const handleHeaderClick = (e: React.MouseEvent) => {
         // Prevent toggling when clicking buttons
         if (!(e.target as HTMLElement).closest('button')) {
@@ -45,7 +51,11 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
     const { dashboards } = useDashboardStore();
     const navigate = useNavigate();
     return (
-        <div className="w-full mb-4 h-full bg-stone-200/30 border border-slate-200/40 rounded-b-lg shadow-lg">
+        <div
+            className={`w-full mb-4 h-full bg-stone-200/30 border border-slate-200/40 rounded-b-lg shadow-lg transition-opacity duration-100 ${
+                mounted ? 'opacity-100' : 'opacity-0'
+            }`}
+        >
             <div
                 className={`flex items-center h-8 justify-between px-4 py-2 bg-gray-200 cursor-pointer 
             hover:bg-gray-100 transition-colors ${

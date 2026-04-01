@@ -1,4 +1,4 @@
-import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
+import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Notifications } from '../shared/components/ui/notifications';
 
@@ -34,64 +34,62 @@ const App: React.FC = () => {
                             <WebSocketProvider>
                                 <ChatProvider>
                                     <Navbar />
-                                    <Routes>
-                                        <Route path="/" element={<Landing />} />
-                                        <Route
-                                            path="/options"
-                                            element={
-                                                <PrivateRoute>
+                                    <main className="flex-1 min-h-[100vh]">
+                                        <Routes>
+                                            <Route
+                                                path="/"
+                                                element={<Landing />}
+                                            />
+                                            <Route
+                                                path="/options"
+                                                element={
+                                                    <PrivateRoute>
+                                                        <DashboardManager>
+                                                            <Options />
+                                                        </DashboardManager>
+                                                    </PrivateRoute>
+                                                }
+                                            />
+                                            <Route
+                                                path="/lobby"
+                                                element={
+                                                    <PrivateRoute>
+                                                        <DashboardManager>
+                                                            <ChatLobby />
+                                                        </DashboardManager>
+                                                    </PrivateRoute>
+                                                }
+                                            />
+                                            <Route
+                                                path="/matches"
+                                                element={
                                                     <DashboardManager>
-                                                        <Options />
+                                                        <GameWrapper />
                                                     </DashboardManager>
-                                                </PrivateRoute>
-                                            }
-                                        />
-                                        <Route
-                                            path="/lobby"
-                                            element={
-                                                <PrivateRoute>
+                                                }
+                                            />
+                                            <Route
+                                                path="/ranks"
+                                                element={
                                                     <DashboardManager>
-                                                        <ChatLobby />
+                                                        <TopList />
                                                     </DashboardManager>
-                                                </PrivateRoute>
-                                            }
-                                        />{' '}
-                                        <Route
-                                            path="/lobby"
-                                            element={
-                                                <PrivateRoute>
+                                                }
+                                            />
+                                            <Route
+                                                path="/rules"
+                                                element={
                                                     <DashboardManager>
-                                                        <ChatLobby />
+                                                        <Rules />
                                                     </DashboardManager>
-                                                </PrivateRoute>
-                                            }
-                                        />
-                                        <Route
-                                            path="/matches"
-                                            element={
-                                                <DashboardManager>
-                                                    <GameWrapper />
-                                                </DashboardManager>
-                                            }
-                                        />
-                                        <Route
-                                            path="/ranks"
-                                            element={
-                                                <DashboardManager>
-                                                    <TopList />
-                                                </DashboardManager>
-                                            }
-                                        />
-                                        <Route
-                                            path="/rules"
-                                            element={
-                                                <DashboardManager>
-                                                    <Rules />
-                                                </DashboardManager>
-                                            }
-                                        />
-                                        <Route path="*" element={<Landing />} />
-                                    </Routes>
+                                                }
+                                            />
+                                            <Route
+                                                path="*"
+                                                element={<Landing />}
+                                            />
+                                        </Routes>
+                                    </main>
                                 </ChatProvider>
                             </WebSocketProvider>
                         </MainAuthWrapper>

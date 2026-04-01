@@ -109,14 +109,10 @@ const Navbar: React.FC = () => {
                         <div className="flex-shrink-0 w-32">
                             <NavLink
                                 to="/"
-                                className="text-xl font-bold text-gray-800"
+                                className="text-xl font-bold text-orange-800"
                             >
                                 TennisCards
                             </NavLink>
-                            {/* Your other nav items
-                                                        <NavLink to="/testone" onClick={handleTestClick}>
-                                TestOne
-                            </NavLink> */}
                         </div>
 
                         {/* Desktop Navigation - Centered */}

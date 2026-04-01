@@ -1,9 +1,17 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
 
 const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
     return (
         <div
-            className="w-screen h-screen bg-no-repeat bg-cover min-h-screen"
+            className={`w-screen h-screen bg-no-repeat bg-cover min-h-screen flex flex-col transition-opacity duration-200 ${
+                mounted ? 'opacity-100' : 'opacity-0'
+            }`}
             style={{
                 backgroundImage: `url(./src/assets/bg/todor-dimov-XCTigZX4v9U-unsplash.webp`,
             }}
