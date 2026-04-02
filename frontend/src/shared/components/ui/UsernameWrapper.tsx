@@ -28,7 +28,7 @@ const themeClasses: Record<TooltipTheme, string> = {
     dark: 'bg-gray-800 text-white',
 };
 
-export const Username: React.FC<UsernameProps> = ({
+export const UsernameWrapper: React.FC<UsernameProps> = ({
     username,
     options,
     className = '',

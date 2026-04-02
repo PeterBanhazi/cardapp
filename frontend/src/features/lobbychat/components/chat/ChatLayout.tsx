@@ -41,7 +41,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
             {/* <FriendsList /> */}
             <ResizablePanelGroup
                 direction="horizontal"
-                className="h-full items-stretch bg-slate-200/20 rounded-md border border-blue-200 shadow-md"
+                className="h-full items-stretch bg-slate-200/20 rounded-md rounded-t-none  shadow-md"
                 onLayout={(sizes: number[]) => {
                     document.cookie = `react-resizable-panels:layout=${JSON.stringify(
                         sizes

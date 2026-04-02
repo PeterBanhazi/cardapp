@@ -228,6 +228,13 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
             <div className="flex justify-between items-center gap-2 md:px-2 py-2">
                 {!isCollapsed && (
                     <div className="hidden md:flex gap-2 items-center">
+                        <div className="flex items-center space-x-2">
+                            <div
+                                className={`w-2 h-2 rounded-full ${
+                                    isConnected ? 'bg-green-500' : 'bg-red-500'
+                                }`}
+                            />
+                        </div>
                         <Avatar className="flex justify-center items-center">
                             <AvatarImage
                                 src={'/user-placeholder.png'}
@@ -237,13 +244,6 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                             />
                         </Avatar>
                         <p className="font-bold text-lg">{loggedInUsername}</p>
-                        <div className="flex items-center space-x-2">
-                            <div
-                                className={`w-2 h-2 rounded-full ${
-                                    isConnected ? 'bg-green-500' : 'bg-red-500'
-                                }`}
-                            />
-                        </div>
                     </div>
                 )}
                 <div className="flex">

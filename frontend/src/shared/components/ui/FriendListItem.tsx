@@ -9,7 +9,7 @@ import {
     Send,
 } from 'lucide-react';
 import { FriendListItemData } from '@/shared/types/friendTypes';
-import { Username } from './UsernameWrapper';
+import { UsernameWrapper } from './UsernameWrapper';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -206,20 +206,20 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
                         rounded-md cursor-pointer
                     "
                 />
-                <div className="pl-1 mr-0.5 overflow-hidden flex items-center gap-1">
+                <div className="pl-1 overflow-hidden flex items-center gap-1">
                     {/* Small directional hint for pending requests */}
                     {status === 'pending' && source === 'sent' && (
                         <Send className="w-3 h-3 shrink-0 opacity-70" />
                     )}
-                    <Username
+                    <UsernameWrapper
                         username={friend.username}
                         options={{
-                            maxWidth: 120,
+                            maxWidth: source === 'sent' ? 120 : 140,
+                            tooltipIsActive: false,
                             tooltipTheme: 'light',
                             isClickable: true,
                         }}
                     />
-                    {/* {friend.username} */}
                 </div>
             </div>
         </div>
