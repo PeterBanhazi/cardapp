@@ -9,6 +9,7 @@ import {
     Send,
 } from 'lucide-react';
 import { FriendListItemData } from '@/shared/types/friendTypes';
+import { Username } from './UsernameWrapper';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -210,7 +211,15 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
                     {status === 'pending' && source === 'sent' && (
                         <Send className="w-3 h-3 shrink-0 opacity-70" />
                     )}
-                    {friend.username}
+                    <Username
+                        username={friend.username}
+                        options={{
+                            maxWidth: 120,
+                            tooltipTheme: 'light',
+                            isClickable: true,
+                        }}
+                    />
+                    {/* {friend.username} */}
                 </div>
             </div>
         </div>

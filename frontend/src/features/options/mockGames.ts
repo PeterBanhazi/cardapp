@@ -18,7 +18,7 @@ const names = [
 
 export const mockGames: GameListItemData[] = Array.from({ length: 20 }).map(
     (_, i) => ({
-        game_id: "my uuudid",
+        game_id: `my uuudid_${i}`,
         opponent: names[i],
         result: i < 4 ? 'won' : 'lost', // 4 win, rest lose
     })

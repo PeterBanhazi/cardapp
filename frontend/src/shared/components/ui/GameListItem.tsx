@@ -1,3 +1,11 @@
+/// TODO: use middle-truncate on listitems gameid:
+
+// const middleTruncate = (str: string, max = 12) => {
+//   if (str.length <= max) return str;
+//   const half = Math.floor((max - 3) / 2);
+//   return str.slice(0, half) + "..." + str.slice(-half);
+// };
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Info, RotateCcw } from 'lucide-react';
 import { GameListItemData } from '@/features/options/mockGames';
