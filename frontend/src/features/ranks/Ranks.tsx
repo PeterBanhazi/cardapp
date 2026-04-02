@@ -48,60 +48,63 @@ const Ranks: React.FC = () => {
                 <div className="text-center">Loading...</div>
             ) : (
                 <>
-                    <div className="w-full pt-2 flex items-center">
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mx-auto">
-                            {currentItems.map((user, index) => (
-                                <ScrollContainer
-                                    key={user.username}
-                                    className={`text-center max-h-17 w-[200px] overflow-hidden ${
-                                        user.username === loggedInUsername
-                                            ? 'bg-red-500'
-                                            : ''
-                                    }`}
-                                    headertext={
-                                        <div className="flex justify-between mb-0.5">
-                                            <div className="min-w-8 pb-0.5  mt-0.5 bg-amber-300/60 rounded-b-full">
-                                                {index +
-                                                    1 +
-                                                    currentPage * itemsPerPage}
-                                            </div>
-                                            <div className="bg-neutral-300/60 h-5 min-w-10  rounded-b-md ring-1 font-bold text-slate-600 ring-blue-200 px-3">
-                                                <div className="relative -top-0.5">
-                                                    {user.rankpoints}
+                    <div className="p-3">
+                        <div className="w-full flex items-center">
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-6 gap-4 mx-auto">
+                                {currentItems.map((user, index) => (
+                                    <ScrollContainer
+                                        key={user.username}
+                                        className={`text-center max-h-17 w-[200px] overflow-hidden ${
+                                            user.username === loggedInUsername
+                                                ? 'bg-red-500'
+                                                : ''
+                                        }`}
+                                        headertext={
+                                            <div className="flex justify-between mb-0.5">
+                                                <div className="min-w-8 pb-0.5  mt-0.5 bg-amber-300/60 rounded-b-full">
+                                                    {index +
+                                                        1 +
+                                                        currentPage *
+                                                            itemsPerPage}
                                                 </div>
+                                                <div className="bg-neutral-300/60 h-5 min-w-10  rounded-b-md ring-1 font-bold text-slate-600 ring-blue-200 px-3">
+                                                    <div className="relative -top-0.5">
+                                                        {user.rankpoints}
+                                                    </div>
+                                                </div>
+                                                <div className="min-w-8"></div>
                                             </div>
-                                            <div className="min-w-8"></div>
-                                        </div>
-                                    }
-                                >
-                                    <p className="text-lg font-bold pt-0.5 text-slate-800">
-                                        {user.username}
-                                    </p>
-                                </ScrollContainer>
-                            ))}
+                                        }
+                                    >
+                                        <p className="text-lg font-bold pt-0.5 text-slate-800">
+                                            {user.username}
+                                        </p>
+                                    </ScrollContainer>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex justify-between items-center mt-4 mx-6">
-                        <Button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 0}
-                            color="cardAppPrimary"
-                            className="ring-1 ring-slate-300"
-                        >
-                            Previous
-                        </Button>
-                        <span className="font-semibold text-slate-700">
-                            Page {currentPage + 1} of {totalPages}
-                        </span>
-                        <Button
-                            onClick={handleNextPage}
-                            disabled={currentPage === totalPages - 1}
-                            color="cardAppPrimary"
-                            className="ring-1 ring-slate-300"
-                        >
-                            Next
-                        </Button>
+                        <div className="flex justify-between items-center mt-4 mx-6">
+                            <Button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 0}
+                                color="cardAppPrimary"
+                                className="ring-1 ring-slate-300"
+                            >
+                                Previous
+                            </Button>
+                            <span className="font-semibold text-slate-700">
+                                Page {currentPage + 1} of {totalPages}
+                            </span>
+                            <Button
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages - 1}
+                                color="cardAppPrimary"
+                                className="ring-1 ring-slate-300"
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
                 </>
             )}

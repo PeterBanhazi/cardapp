@@ -6,10 +6,8 @@ const ChatLobby = () => {
     const defaultLayout = layout ? JSON.parse(layout) : undefined;
 
     return (
-        <div className="z-10 rounded-lg max-w-full w-full h-[500px] text-sm lg:flex-row">
-            <div className="max-h-[400px] w-full lg:flex"></div>
-
-            <div className="h-[500px]">
+        <div className="z-10 rounded-lg max-w-full w-full h-full text-sm lg:flex-row">
+            <div className="h-full ">
                 <ChatLayout defaultLayout={defaultLayout} />
             </div>
         </div>

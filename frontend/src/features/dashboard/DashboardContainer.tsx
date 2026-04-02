@@ -1,3 +1,5 @@
+//TODO: refact state when last dash closed. now: on x button
+
 import React, { useEffect, useState } from 'react';
 import {
     ChevronDown,
@@ -123,6 +125,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                                 if (dashboards.length === 1) {
                                     navigate('/');
                                 }
+
                                 // if (
                                 //     dashboards.length > 1 &&
                                 //     id === dashboards[0].id
@@ -146,7 +149,7 @@ export const DashboardContainer: React.FC<DashboardContainerProps> = ({
                     isCollapsed ? 'max-h-0' : 'max-h-screen'
                 }`}
             >
-                <div className="p-3">{children}</div>
+                <div className="">{children}</div>
             </div>
         </div>
     );

@@ -26,18 +26,20 @@ function Options() {
         return <span>Error: Something went wrong!</span>;
 
     return (
-        <div className="flex justify-evenly w-full h-[600px] ">
-            <OptionsDnDCardWrapper
-                userName={userName}
-                playerCards={filteredPlayers}
-                currentCardId={currentCardId}
-                currentPlayer={currentPlayer}
-                isOnline={isOnline}
-                rankPoints={rankPoints}
-            ></OptionsDnDCardWrapper>
+        <div className="p-3">
+            <div className="flex justify-evenly w-full h-[600px] ">
+                <OptionsDnDCardWrapper
+                    userName={userName}
+                    playerCards={filteredPlayers}
+                    currentCardId={currentCardId}
+                    currentPlayer={currentPlayer}
+                    isOnline={isOnline}
+                    rankPoints={rankPoints}
+                ></OptionsDnDCardWrapper>
 
-            <div className="w-[150px] h-[592px] pt-1">
-                <OptionsRightContainer />
+                <div className="w-[150px] h-[592px] pt-1">
+                    <OptionsRightContainer />
+                </div>
             </div>
         </div>
     );

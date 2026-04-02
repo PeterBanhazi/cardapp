@@ -8,7 +8,7 @@ import {
     ResizablePanelGroup,
 } from '../ui/resizable';
 
-import { useChatStore } from '../../../../core/store/useChatStore';
+import { useChatStore } from '@/core/store/useChatStore';
 
 interface ChatLayoutProps {
     defaultLayout: number[] | undefined;
