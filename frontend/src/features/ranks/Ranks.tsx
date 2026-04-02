@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import useAxios from '../../core/utils/useAxios';
 import { useAuthStore } from '../../core/store/useAuthStore';
 import { Button } from 'flowbite-react';
 import { useGetUsersRanks } from './useGetUsersRanks';
 
 import ScrollContainer from '../../shared/components/ui/ScrollContainer';
+import { UsernameWrapper } from '@/shared/components/ui/UsernameWrapper';
 
 const Ranks: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(0);
@@ -76,8 +76,16 @@ const Ranks: React.FC = () => {
                                             </div>
                                         }
                                     >
-                                        <p className="text-lg font-bold pt-0.5 text-slate-800">
-                                            {user.username}
+                                        <p className="text-lg font-bold flex justify-center mt-0.5 text-slate-800">
+                                            <UsernameWrapper
+                                                username={user.username}
+                                                options={{
+                                                    maxWidth: 186,
+                                                    tooltipIsActive: false,
+                                                    tooltipTheme: 'light',
+                                                    isClickable: false,
+                                                }}
+                                            />
                                         </p>
                                     </ScrollContainer>
                                 ))}

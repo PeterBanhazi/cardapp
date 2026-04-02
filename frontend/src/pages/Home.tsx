@@ -8,7 +8,7 @@ import ProfileEditModal from '../features/auth/ProfileEditModal';
 import Login from '../features/auth/login';
 import { useMutation } from '@tanstack/react-query';
 import { useNotifications } from '@/shared/components/ui/notifications';
-import { Username } from '@/shared/components/ui/UsernameWrapper';
+import { UsernameWrapper } from '@/shared/components/ui/UsernameWrapper';
 
 const Home: React.FC = () => {
     const loggedInUsername = useAuthStore((state) => state.user?.username);
@@ -44,7 +44,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
     return (
         <div className="flex gap-3 items-center text-right">
             <h1 className="hidden lg:text-sm xl:text-lg lg:block">
-                <Username
+                <UsernameWrapper
                     username={username}
                     options={{
                         maxWidth: 180,
