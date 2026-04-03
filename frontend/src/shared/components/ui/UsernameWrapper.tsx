@@ -53,7 +53,7 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
 
     const clickable = isClickable || !!onClick;
 
-    // 🧠 Smart positioning
+    // positioning
     useEffect(() => {
         if (!visible || !tooltipRef.current) return;
 
@@ -68,7 +68,7 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         }
     }, [visible]);
 
-    // 🧠 Close on outside click + ESC
+    // close on outside click + ESC
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (!wrapperRef.current?.contains(e.target as Node)) {

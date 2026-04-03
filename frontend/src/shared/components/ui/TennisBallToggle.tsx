@@ -58,6 +58,8 @@ export const TennisBallToggle: React.FC<{ isOnline: boolean }> = ({
                     <div className="relative h-full w-full overflow-hidden rounded-full hover:animate-spin hover:brightness-[1.15] ">
                         <img
                             src="src/assets/ui/icons/tennisballtoggle.png"
+                            width="24"
+                            height="24"
                             alt="toggle-ball"
                         />
                     </div>
