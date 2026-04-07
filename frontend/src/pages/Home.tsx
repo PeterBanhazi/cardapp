@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../core/store/useAuthStore';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Register from '../features/auth/register';
 import ModalOpenTriggerButton from '../features/auth/ModalOpenTriggerButton';
 import ProfileEditModal from '../features/auth/ProfileEditModal';
@@ -30,6 +30,19 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
     const { logout } = useAuthStore();
     const navigate = useNavigate();
 
+    const [maxWidth, setMaxWidth] = useState(130);
+
+    useEffect(() => {
+        const update = () => {
+            setMaxWidth(window.innerWidth >= 1280 ? 180 : 130);
+        };
+
+        update();
+
+        window.addEventListener('resize', update);
+        return () => window.removeEventListener('resize', update);
+    }, []);
+    console.log(window.innerWidth, maxWidth);
     const logoutMutation = useMutation({
         mutationFn: () => logout(),
         onSuccess: () => {
@@ -42,18 +55,18 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
         },
     });
     return (
-        <div className="flex gap-3 items-center text-right">
-            <h1 className="hidden lg:text-sm xl:text-lg lg:block">
+        <div className="flex xl:gap-2 md:gap-1  gap-1.5 items-center text-right">
+            <span className="hidden pt-1 lg:text-sm xl:text-lg lg:block">
                 <UsernameWrapper
                     username={username}
                     options={{
-                        maxWidth: 180,
+                        maxWidth,
                         isClickable: false,
                         tooltipIsActive: true,
                         tooltipTheme: 'light',
                     }}
                 />
-            </h1>
+            </span>
             <ProfileEditModal />
             <ModalOpenTriggerButton
                 linkTo="/logout"

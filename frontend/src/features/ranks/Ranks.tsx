@@ -81,7 +81,7 @@ const Ranks: React.FC = () => {
                                                 username={user.username}
                                                 options={{
                                                     maxWidth: 186,
-                                                    tooltipIsActive: false,
+                                                    tooltipIsActive: true,
                                                     tooltipTheme: 'light',
                                                     isClickable: false,
                                                 }}
