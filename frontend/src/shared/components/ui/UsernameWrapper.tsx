@@ -40,7 +40,6 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         tooltipTheme = 'dark',
         tooltipSize = 'md',
         tooltipIsActive = false,
-        hideOnClick = false,
         isClickable = false,
     } = options;
 
