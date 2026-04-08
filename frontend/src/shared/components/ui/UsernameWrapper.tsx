@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import * as Tooltip from '@radix-ui/react-tooltip';
 
 type TooltipTheme = 'light' | 'dark';
 type TooltipSize = 'sm' | 'md' | 'lg';
@@ -43,114 +44,67 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         isClickable = false,
     } = options;
 
-    const [visible, setVisible] = useState(false);
-    const [position, setPosition] = useState<'center' | 'left' | 'right'>(
-        'center'
-    );
-
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const tooltipRef = useRef<HTMLDivElement>(null);
-
     const clickable = isClickable || !!onClick;
-
-    // positioning
-    useEffect(() => {
-        if (!visible || !tooltipRef.current) return;
-
-        const rect = tooltipRef.current.getBoundingClientRect();
-
-        if (rect.right > window.innerWidth) {
-            setPosition('right');
-        } else if (rect.left < 0) {
-            setPosition('left');
-        } else {
-            setPosition('center');
-        }
-    }, [visible]);
-
-    // close on outside click + ESC
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (!wrapperRef.current?.contains(e.target as Node)) {
-                setVisible(false);
-            }
-        };
-
-        const handleEsc = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setVisible(false);
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleEsc);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEsc);
-        };
-    }, []);
 
     const handleClick = () => {
         if (onClick) onClick();
-        if (hideOnClick) setVisible(false);
     };
 
-    const tooltipPositionClass = {
-        center: 'left-1/2 -translate-x-1/2',
-        left: 'left-0',
-        right: 'right-0',
-    }[position];
+    const span = (
+        <span
+            role={clickable ? 'button' : undefined}
+            tabIndex={clickable ? 0 : -1}
+            aria-label={username}
+            onClick={handleClick}
+            onKeyDown={(e) => {
+                if (clickable && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    handleClick();
+                }
+            }}
+            className={`
+                block truncate min-w-0
+                ${clickable ? 'cursor-pointer' : 'cursor-default'}
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-black
+                ${className}
+            `}
+            style={{ maxWidth }}
+        >
+            {username}
+        </span>
+    );
+
+    if (!tooltipIsActive) {
+        return <div className="relative inline-block">{span}</div>;
+    }
 
     return (
-        <div
-            ref={wrapperRef}
-            className="relative inline-block"
-            onMouseEnter={() => tooltipIsActive && setVisible(true)}
-            onMouseLeave={() => setVisible(false)}
-        >
-            {/* Username */}
-            <span
-                role={clickable ? 'button' : undefined}
-                tabIndex={clickable ? 0 : -1}
-                aria-label={username}
-                aria-describedby={
-                    tooltipIsActive ? 'username-tooltip' : undefined
-                }
-                onClick={handleClick}
-                onKeyDown={(e) => {
-                    if (clickable && (e.key === 'Enter' || e.key === ' ')) {
-                        e.preventDefault();
-                        handleClick();
-                    }
-                }}
-                // ring black for accessibility tab button
-                className={`
-          block truncate min-w-0
-          ${clickable ? 'cursor-pointer' : 'cursor-default'}
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-black 
-          ${className}
-        `}
-                style={{ maxWidth }}
-            >
-                {username}
-            </span>
-
-            {/* Tooltip */}
-            {tooltipIsActive && visible && (
-                <div
-                    ref={tooltipRef}
-                    id="username-tooltip"
-                    role="tooltip"
-                    className={`
-            absolute z-50 mt-1
-            whitespace-nowrap rounded shadow-lg
-            ${tooltipPositionClass}
-            ${themeClasses[tooltipTheme]}
-            ${sizeClasses[tooltipSize]}
-          `}
-                >
-                    {username}
-                </div>
-            )}
-        </div>
+        <Tooltip.Provider delayDuration={300}>
+            <Tooltip.Root>
+                <Tooltip.Trigger asChild>{span}</Tooltip.Trigger>
+                <Tooltip.Portal>
+                    <Tooltip.Content
+                        side="bottom"
+                        sideOffset={4}
+                        className={`
+                            z-50 whitespace-nowrap rounded shadow-lg
+                            ${themeClasses[tooltipTheme]}
+                            ${sizeClasses[tooltipSize]}
+                            animate-in fade-in-0 zoom-in-95
+                            data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95
+                        `}
+                    >
+                        {username}
+                        <Tooltip.Arrow
+                            className={
+                                tooltipTheme === 'dark'
+                                    ? 'fill-gray-800'
+                                    : 'fill-white'
+                            }
+                        />
+                    </Tooltip.Content>
+                </Tooltip.Portal>
+            </Tooltip.Root>
+        </Tooltip.Provider>
     );
 };

@@ -113,7 +113,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     // ── Render ────────────────────────────────────────────────────────────────
 
     return (
-        <div className="group relative flex flex-col h-full gap-1 p-1 data-[collapsed=true]:p-2 max-h-full overflow-auto bg-background">
+        <div className="group relative min-w-min flex flex-col h-full gap-1 p-1 data-[collapsed=true]:p-2 max-h-full overflow-auto bg-background">
             <div className="flex justify-between p-1 items-center">
                 <div className="flex gap-2 items-center text-2xl">
                     <p className="font-semibold text-slate-800">Friends</p>
@@ -125,7 +125,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                     {isConnected ? 'No friends online' : 'Connecting...'}
                 </div>
             ) : (
-                <ScrollArea className="gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+                <ScrollArea className="gap-2 px-2 max-w-min group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
                     {friendsList.map((friend, idx) =>
                         isCollapsed ? (
                             // ── Collapsed: avatar + tooltip only ──────────────
@@ -141,7 +141,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                 );
                                             }}
                                         >
-                                            <Avatar className="my-3 flex justify-center items-center">
+                                            <Avatar className="my-2 flex justify-center items-center">
                                                 <AvatarImage
                                                     src={'/avatars/user3.png'}
                                                     alt="User Image"
@@ -160,7 +160,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                     </TooltipTrigger>
                                     <TooltipContent
                                         side="right"
-                                        className="flex items-center gap-4 bg-slate-200/40 ring ring-slate-800/30"
+                                        className="flex items-center  bg-slate-200/40 ring ring-slate-800/30"
                                     >
                                         {friend.user}
                                     </TooltipContent>

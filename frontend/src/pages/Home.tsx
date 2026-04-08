@@ -42,7 +42,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
         window.addEventListener('resize', update);
         return () => window.removeEventListener('resize', update);
     }, []);
-    console.log(window.innerWidth, maxWidth);
+
     const logoutMutation = useMutation({
         mutationFn: () => logout(),
         onSuccess: () => {
