@@ -244,9 +244,10 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
                                 <UsernameWrapper
                                     username={friend.username}
                                     options={{
-                                        maxWidth: source === 'sent' ? 120 : 140,
-                                        tooltipIsActive: false,
+                                        maxWidth: source === 'sent' ? 116 : 132,
+                                        tooltipIsActive: true,
                                         tooltipTheme: 'light',
+                                        tooltipIsAuto: true,
                                         isClickable: true,
                                     }}
                                 />

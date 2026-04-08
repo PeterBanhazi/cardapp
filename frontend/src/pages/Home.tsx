@@ -56,13 +56,14 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
     });
     return (
         <div className="flex xl:gap-2 md:gap-1  gap-1.5 items-center text-right">
-            <span className="hidden pt-1 lg:text-sm xl:text-lg lg:block">
+            <span className="hidden pt-1 lg:text-sm xl:text-lg lg:inline-block">
                 <UsernameWrapper
                     username={username}
                     options={{
                         maxWidth,
                         isClickable: false,
                         tooltipIsActive: true,
+                        tooltipIsAuto: true,
                         tooltipTheme: 'light',
                     }}
                 />

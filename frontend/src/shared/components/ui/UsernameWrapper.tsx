@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
 type TooltipTheme = 'light' | 'dark';
@@ -11,8 +11,8 @@ type UsernameProps = {
         tooltipTheme?: TooltipTheme;
         tooltipSize?: TooltipSize;
         tooltipIsActive?: boolean;
-        hideOnClick?: boolean;
         isClickable?: boolean;
+        tooltipIsAuto?: boolean;
     };
     className?: string;
     onClick?: () => void;
@@ -39,11 +39,25 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         maxWidth,
         tooltipTheme = 'dark',
         tooltipSize = 'md',
+        tooltipIsAuto = true,
         tooltipIsActive = false,
         isClickable = false,
     } = options;
 
     const clickable = isClickable || !!onClick;
+
+    const ref = useRef<HTMLSpanElement>(null);
+    const [isTruncated, setIsTruncated] = useState(false);
+
+    useLayoutEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        setIsTruncated(el.scrollWidth > el.clientWidth);
+    }, [username, maxWidth]);
+
+    const shouldShowTooltip =
+        tooltipIsActive && (tooltipIsAuto ? isTruncated : true);
 
     const handleClick = () => {
         if (onClick) onClick();
@@ -51,6 +65,7 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
 
     const span = (
         <span
+            ref={ref}
             role={clickable ? 'button' : undefined}
             tabIndex={clickable ? 0 : -1}
             aria-label={username}
@@ -61,8 +76,10 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
                     handleClick();
                 }
             }}
+            // added [transform:translateZ(0)] to prevent antialiasing "effect when truncated"
+
             className={`
-                block truncate min-w-0
+                block truncate min-w-0 [transform:translateZ(0)]
                 ${clickable ? 'cursor-pointer' : 'cursor-default'}
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-black
                 ${className}
@@ -73,7 +90,8 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         </span>
     );
 
-    if (!tooltipIsActive) {
+    // if tooltip shouldn't show up, then keep original structure
+    if (!shouldShowTooltip) {
         return <div className="relative inline-block">{span}</div>;
     }
 
