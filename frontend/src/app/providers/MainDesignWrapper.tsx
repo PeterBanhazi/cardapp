@@ -2,6 +2,12 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { ThemeProvider } from 'flowbite-react';
 import { customTheme } from '../../shared/formThemes';
+import ScrollArea from '@/shared/components/ui/ScrollArea';
+
+// ThemeProvider for custom colors
+// Splash like effect on load to prevent blinking
+// Main background
+// Main scrollbar + spacers
 
 const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
     const [mounted, setMounted] = useState(false);
@@ -19,31 +25,15 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
                     backgroundImage: `url(./src/assets/bg/todor-dimov-XCTigZX4v9U-unsplash.webp`,
                 }}
             >
-                <div
-                    className="w-screen h-screen overflow-y-auto scrollbar-container max-h-screen
-                    [&::-webkit-scrollbar]:w-5
-                    md:[&::-webkit-scrollbar]:w-6
-                    [&::-webkit-scrollbar]:h-2                   
-                    [&::-webkit-scrollbar-button]:h-2
-                    [&::-webkit-scrollbar-track]:bg-transparent
-                  [&::-webkit-scrollbar-thumb]:bg-slate-300/50
-                  [&::-webkit-scrollbar-thumb]:hover:bg-orange-200/80
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                    [&::-webkit-scrollbar-thumb]:border-8
-                    [&::-webkit-scrollbar-thumb]:border-solid
-                    [&::-webkit-scrollbar-thumb]:border-transparent
-                    [&::-webkit-scrollbar-thumb]:bg-clip-padding                   
-                    overflow-auto
-            "
+                <ScrollArea
+                    paddingRight={20}
+                    className="w-screen h-screen max-h-screen"
                 >
                     <div className="flex justify-center">
-                        {/* left spacer */}
-                        <div className="w-5 md:w-6 shrink-0" />
-
-                        {/* content */}
+                        <div className="w-[20px] shrink-0" />
                         <div className="w-full">{children}</div>
                     </div>
-                </div>
+                </ScrollArea>
             </div>
         </ThemeProvider>
     );

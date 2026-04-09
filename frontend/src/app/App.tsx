@@ -10,7 +10,7 @@ import { ChatProvider } from './providers/ChatProvider';
 import PrivateRoute from './routes/PrivateRoute';
 
 import Navbar from '../pages/Navbar';
-import BottomFooter from '../pages/BottomFooter';
+import Footer from '../pages/Footer';
 import Landing from '../pages/Landing';
 import TopList from '../features/ranks/Ranks';
 
@@ -93,7 +93,7 @@ const App: React.FC = () => {
                                 </ChatProvider>
                             </WebSocketProvider>
                         </MainAuthWrapper>
-                        <BottomFooter />
+                        <Footer />
                     </MainDesignWrapper>
                 </BrowserRouter>
             </QueryClientProvider>

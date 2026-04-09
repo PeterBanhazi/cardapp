@@ -17,10 +17,6 @@ import {
 import { UsernameWrapper } from './UsernameWrapper';
 import { FriendInfoContent } from './FriendInfoContent';
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
-
 export interface FriendListItemProps {
     friendship: FriendListItemData;
     onAccept?: (friendReqId: number) => void;
@@ -43,7 +39,7 @@ const menuItemGreen = `${menuItemBase} text-green-600 hover:bg-gray-100 focus:bg
 const menuItemRed = `${menuItemBase} text-red-600 hover:bg-gray-100 focus:bg-gray-100`;
 
 // ---------------------------------------------------------------------------
-// Virtual anchor element at cursor position (Radix VirtualElement pattern)
+// Virtual anchor element at cursor position (Radix VirtualElement pattern) for Infobutton popover
 // ---------------------------------------------------------------------------
 
 function makeVirtualElement(x: number, y: number): Element {
@@ -107,6 +103,7 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
               ? colors.green
               : colors.red;
 
+    /////////// Infobutton helpers //////
     const closePopover = useCallback(() => setPopoverOpen(false), []);
 
     const closeAll = useCallback(() => {
@@ -182,7 +179,7 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
         updateAnchor(e.clientX, e.clientY);
         setPopoverOpen(true);
     };
-
+    /////////// End of Infobutton helpers //////
     return (
         <>
             {/*

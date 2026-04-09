@@ -29,7 +29,7 @@ const BottomFooter = () => {
     return (
         <div className="container mx-auto px-4">
             <footer
-                className={`${isAtHome ? 'bg-white/95' : 'bg-stone-200/30 '} text-black container  rounded-b-lg mb-6 border border-slate-200/40 px-2 mx-auto`}
+                className={`${isAtHome ? 'bg-white/95' : 'bg-stone-200/30 '} text-black container  rounded-b-lg mb-4 border border-slate-200/40 px-2 mx-auto`}
             >
                 <div className="container mx-auto px-4 py-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { cn } from '../../../lib/utils';
-import { jsx } from 'react/jsx-runtime';
+import ScrollArea from './ScrollArea';
 
 const ScrollContainer: React.FC<{
     headertext: JSX.Element;
@@ -16,7 +16,7 @@ const ScrollContainer: React.FC<{
     //
     // const [scrollHeight, setScrollHeight] = useState<number>(0);
 
-    // // useEffect(() => {
+    // // useLayoutEffect(() => {
     // //     if (parentRef.current && headerRef.current) {
     // //         const parentHeight = parentRef.current.clientHeight;
     // //         const headerHeight = headerRef.current.clientHeight;
@@ -38,26 +38,15 @@ const ScrollContainer: React.FC<{
             >
                 {headertext}
             </div>
-
-            <div
-                className="w-full scrollbar-container overflow-y-auto flex-1 flex-grow min-h-0
-                        [&::-webkit-scrollbar]:w-2
-                        [&::-webkit-scrollbar]:h-2
-                    
-                        [&::-webkit-scrollbar-button]:h-0.5
-                        [&::-webkit-scrollbar-track]:bg-transparent
-                      [&::-webkit-scrollbar-thumb]:bg-slate-300/30
-                        [&::-webkit-scrollbar-thumb]:rounded-full
-                        [&::-webkit-scrollbar-thumb]:border-2
-                        [&::-webkit-scrollbar-thumb]:border-solid
-                        [&::-webkit-scrollbar-thumb]:border-transparent
-                        [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                        [&::-webkit-scrollbar-thumb]:hover:bg-orange-100/60
-                        "
-                // style={{ height: `${scrollHeight}px` }}
+            <ScrollArea
+                variant="mini"
+                hoverEffect
+                autoScroll
+                className="w-full flex-1 flex-grow min-h-0"
+                paddingRight={5}
             >
                 {children}
-            </div>
+            </ScrollArea>
         </div>
     );
 };
