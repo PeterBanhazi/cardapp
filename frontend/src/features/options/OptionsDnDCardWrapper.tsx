@@ -31,6 +31,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../core/utils/useAxios';
 import OptionsLeftContainer from './OptionsLeftContainer';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
+import ScrollArea from '@/shared/components/ui/ScrollArea';
+import OptionsRightContainer from './OptionsRightContainer';
 
 interface PlayerCardsContainerProps {
     userName: string;
@@ -251,48 +253,44 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                             />
                         </OptionsLeftContainer>
                     </div>
-                    <div className="w-3.5 2xl:w-8"></div>
-                    <div className="w-full h-full">
-                        <div
-                            className="w-[418px] h-[604px] sm:w-[200px] md:w-[364px] lg:w-[540px] xl:w-[848px] 2xl:w-[1010px]
-                        scrollbar-container max-h-screen overflow-y-auto
-                        [&::-webkit-scrollbar]:w-7
-                        [&::-webkit-scrollbar]:h-2
-                        [&::-webkit-scrollbar-button]:h-0.5
-                        [&::-webkit-scrollbar-track]:bg-transparent
-                      [&::-webkit-scrollbar-thumb]:bg-slate-300/30
-                        [&::-webkit-scrollbar-thumb]:rounded-full
-                        [&::-webkit-scrollbar-thumb]:border-8
-                        [&::-webkit-scrollbar-thumb]:border-solid
-                        [&::-webkit-scrollbar-thumb]:border-transparent
-                        [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                        [&::-webkit-scrollbar-thumb]:hover:bg-orange-100/60
-                        "
+                    {/* <div className="w-[20px] 2xl:w-8"></div> */}
+
+                    <ScrollArea
+                        hoverEffect
+                        paddingRight={24}
+                        variant="thick"
+                        autoScroll
+                        centerOnScrollbar
+                        className="h-[604px] overflow-visible sm:w-[200px] md:w-[360px] lg:w-[518px] xl:w-[848px] 2xl:w-[994px]"
+                    >
+                        <SortableContext
+                            items={items.map((item) => item.id)}
+                            strategy={rectSortingStrategy}
                         >
-                            <SortableContext
-                                items={items.map((item) => item.id)}
-                                strategy={rectSortingStrategy}
+                            <div
+                                className={`pt-[4px] pb-[2px] gap-2.5 }`}
+                                style={{
+                                    display: 'grid',
+                                    gridTemplateColumns:
+                                        'repeat(auto-fit, 148px)',
+                                    justifyContent: 'center',
+                                }}
                             >
-                                <div
-                                    className={`pt-1 pb-2 self-center gap-2.5 pl-7 lg:pl-11 xl:pl-9 2xl:pl-10 flex ${items.length < 11 ? '2xl:pl-11 xl:pl-8' : ''}`}
-                                    style={{
-                                        display: 'grid',
-                                        gridTemplateColumns:
-                                            'repeat(auto-fit, 148px)',
-                                    }}
-                                >
-                                    {items.map((player) => (
-                                        <DraggablePlayerCard
-                                            key={player.id}
-                                            id={player.id}
-                                            currentCardId={currentCardId}
-                                            isSortable={true}
-                                            item={player}
-                                        />
-                                    ))}
-                                </div>
-                            </SortableContext>
-                        </div>
+                                {items.map((player) => (
+                                    <DraggablePlayerCard
+                                        key={player.id}
+                                        id={player.id}
+                                        currentCardId={currentCardId}
+                                        isSortable={true}
+                                        item={player}
+                                    />
+                                ))}
+                            </div>
+                        </SortableContext>
+                    </ScrollArea>
+
+                    <div className="w-[150px] h-[592px] shrink-0 pt-1">
+                        <OptionsRightContainer />
                     </div>
                 </div>
                 <DragOverlay>

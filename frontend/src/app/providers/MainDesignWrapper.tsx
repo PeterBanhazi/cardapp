@@ -27,12 +27,10 @@ const MainDesignWrapper = ({ children }: { children: React.ReactNode }) => {
             >
                 <ScrollArea
                     paddingRight={20}
+                    centerOnScrollbar
                     className="w-screen h-screen max-h-screen"
                 >
-                    <div className="flex justify-center">
-                        <div className="w-[20px] shrink-0" />
-                        <div className="w-full">{children}</div>
-                    </div>
+                    <div className="w-full">{children}</div>
                 </ScrollArea>
             </div>
         </ThemeProvider>

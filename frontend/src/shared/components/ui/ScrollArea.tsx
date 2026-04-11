@@ -1,14 +1,17 @@
 import { Scrollbars } from 'rc-scrollbars';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+// overcomplicated scrollbar
 
 type ScrollAreaProps = {
     children: React.ReactNode;
-    variant?: 'default' | 'mini';
+    variant?: 'default' | 'mini' | 'thick';
     autoHide?: boolean;
     hoverEffect?: boolean;
     className?: string;
     paddingRight?: number;
     autoScroll?: boolean;
+    centerOnScrollbar?: boolean;
 };
 
 export default function ScrollArea({
@@ -19,36 +22,87 @@ export default function ScrollArea({
     className,
     paddingRight = 0,
     autoScroll = false,
+    centerOnScrollbar = false,
 }: ScrollAreaProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [hasScroll, setHasScroll] = useState(false);
+    const scrollRef = useRef<Scrollbars>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+    // resize observer to make scrollbar size accurately updated on
+    // scrollarea container change
 
-    const isMini = variant === 'mini';
+    useEffect(() => {
+        if (!contentRef.current) return;
 
-    const baseColor = isMini
-        ? 'rgba(203,213,225,0.3)' // slate-300/30
-        : 'rgba(203,213,225,0.5)'; // slate-300/50
+        const observer = new ResizeObserver(() => {
+            requestAnimationFrame(() => {
+                scrollRef.current?.update();
+            });
+        });
+        observer.observe(contentRef.current);
 
-    const hoverColor = isMini
-        ? 'rgba(245, 245, 244,0.7)' // orange-100/60
-        : 'rgba(254,215,170,0.8)'; // orange-200/80
+        return () => observer.disconnect();
+    }, []);
 
-    const activeColor = hoverEffect && isHovered ? hoverColor : baseColor;
+    const handleWheel = (e: React.WheelEvent) => {
+        const view = scrollRef.current?.view;
 
-    const trackWidth = isMini ? 8 : 24; // px (w-2 vs w-6)
-    const borderSize = isMini ? 2 : 8;
-    const trackOffset = isMini ? 2 : 8;
+        if (!view) return;
+
+        // check the actual container(view) to prevent global scrolling
+        // requestAnimationFrame for prevent frame jitter
+        if (!view.contains(e.target as Node)) {
+            requestAnimationFrame(() => {
+                view.scrollTop += e.deltaY;
+            });
+        }
+    };
+
+    const variants = {
+        mini: {
+            trackWidth: 8,
+            border: 2,
+            base: 'rgba(203,213,225,0.3)',
+            hover: 'rgba(245, 245, 244,0.7)',
+            offset: 2,
+        },
+        default: {
+            trackWidth: 24,
+            border: 8,
+            base: 'rgba(203,213,225,0.5)',
+            hover: 'rgba(254,215,170,0.8)',
+            offset: 8,
+        },
+        thick: {
+            trackWidth: 30,
+            border: 10,
+            base: 'rgba(203,213,225,0.6)',
+            hover: 'rgba(245, 245, 244,0.6)',
+            offset: 2,
+        },
+    } as const;
+
+    const config = variants[variant];
+
+    const showRightSpacer = !(autoScroll && !hasScroll);
+    const showLeftSpacer = centerOnScrollbar && showRightSpacer;
+    const activeColor = hoverEffect && isHovered ? config.hover : config.base;
+
     return (
         <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onWheel={handleWheel}
             className={className}
         >
             <Scrollbars
+                // setHasScroll changes only when need to update the value with a new one
                 onUpdate={(values) => {
-                    setHasScroll(values.scrollHeight > values.clientHeight);
+                    const next = values.scrollHeight > values.clientHeight;
+                    setHasScroll((prev) => (prev !== next ? next : prev));
                 }}
                 autoHide={autoHide}
+                ref={scrollRef}
                 style={{ width: '100%', height: '100%' }}
                 renderTrackVertical={({ style, ...props }) => (
                     <div
@@ -56,9 +110,9 @@ export default function ScrollArea({
                         style={{
                             ...style,
                             right: 0,
-                            top: trackOffset,
-                            bottom: trackOffset,
-                            width: trackWidth,
+                            top: config.offset,
+                            bottom: config.offset,
+                            width: config.trackWidth,
                         }}
                     />
                 )}
@@ -69,21 +123,34 @@ export default function ScrollArea({
                             ...style,
                             backgroundColor: activeColor,
                             borderRadius: '9999px',
-                            border: `${borderSize}px solid transparent`,
+                            border: `${config.border}px solid transparent`,
                             backgroundClip: 'padding-box',
                             transition: 'background-color 0.2s',
                         }}
                     />
                 )}
             >
-                {/* helper for padding prevents overlapping */}
-                <div
-                    style={{
-                        paddingRight:
-                            autoScroll && !hasScroll ? 0 : paddingRight,
-                    }}
-                >
-                    {children}
+                <div className="flex">
+                    {/* LEFT spacer */}
+                    {showLeftSpacer && (
+                        <div
+                            style={{ width: paddingRight }}
+                            className="shrink-0"
+                        />
+                    )}
+
+                    {/* content */}
+                    <div ref={contentRef} className="flex-1 min-w-0">
+                        {children}
+                    </div>
+
+                    {/* RIGHT spacer */}
+                    {showRightSpacer && (
+                        <div
+                            style={{ width: paddingRight }}
+                            className="shrink-0"
+                        />
+                    )}
                 </div>
             </Scrollbars>
         </div>

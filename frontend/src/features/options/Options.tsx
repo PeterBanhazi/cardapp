@@ -27,7 +27,7 @@ function Options() {
 
     return (
         <div className="p-3">
-            <div className="flex justify-evenly w-full h-[600px] ">
+            <div className="flex flex-row justify-evenly min-w-max w-full h-[604px] ">
                 <OptionsDnDCardWrapper
                     userName={userName}
                     playerCards={filteredPlayers}
@@ -36,10 +36,6 @@ function Options() {
                     isOnline={isOnline}
                     rankPoints={rankPoints}
                 ></OptionsDnDCardWrapper>
-
-                <div className="w-[150px] h-[592px] pt-1">
-                    <OptionsRightContainer />
-                </div>
             </div>
         </div>
     );
