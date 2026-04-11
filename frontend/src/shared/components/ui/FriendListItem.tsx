@@ -246,6 +246,7 @@ const FriendListItem: React.FC<FriendListItemProps> = ({
                                         tooltipTheme: 'light',
                                         tooltipIsAuto: true,
                                         isClickable: true,
+                                        side: 'left',
                                     }}
                                 />
                             </div>

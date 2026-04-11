@@ -13,6 +13,7 @@ type UsernameProps = {
         tooltipIsActive?: boolean;
         isClickable?: boolean;
         tooltipIsAuto?: boolean;
+        side?: 'top' | 'bottom' | 'left' | 'right';
     };
     className?: string;
     onClick?: () => void;
@@ -42,6 +43,7 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
         tooltipIsAuto = true,
         tooltipIsActive = false,
         isClickable = false,
+        side = 'bottom',
     } = options;
 
     const clickable = isClickable || !!onClick;
@@ -101,7 +103,7 @@ export const UsernameWrapper: React.FC<UsernameProps> = ({
                 <Tooltip.Trigger asChild>{span}</Tooltip.Trigger>
                 <Tooltip.Portal>
                     <Tooltip.Content
-                        side="bottom"
+                        side={side}
                         sideOffset={4}
                         className={`
                             z-50 whitespace-nowrap rounded shadow-lg
