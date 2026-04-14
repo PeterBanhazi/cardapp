@@ -37,7 +37,7 @@ USER_TTL   = REQ_TTL
 
 # States
 PENDING   = "pending"
-ACCEPTED  = "accepted"
+ACCEPTED  = "active"
 REJECTED  = "rejected"
 CANCELLED = "cancelled"
 CLOSED    = "closed"
