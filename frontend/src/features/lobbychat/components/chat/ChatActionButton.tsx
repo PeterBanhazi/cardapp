@@ -93,7 +93,7 @@ function resolveConfig(
                 };
             return { label: 'Pending', action: null, variant: 'amber' };
 
-        case 'accepted':
+        case 'active':
             return {
                 label: 'In Chat',
                 sublabel: 'Close?',

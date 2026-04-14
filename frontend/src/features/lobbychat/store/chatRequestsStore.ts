@@ -53,12 +53,16 @@ export const useChatRequestsStore = create<ChatRequestsState>()(
     requests: {},
 
     applyServerUpdate(req) {
+      console.log("appyserverupdate:")
+      console.log(req)
       set((state) => {
         state.requests[req.req_id] = req;
       });
     },
 
     syncFromServer(reqs) {
+            console.log("syincfromserver:")
+      console.log(reqs)
       set((state) => {
         reqs.forEach((r) => {
           state.requests[r.req_id] = r;

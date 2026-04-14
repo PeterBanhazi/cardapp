@@ -21,24 +21,33 @@ const ChatTopBar = () => {
                 {activeChatUser && (
                     <Avatar className="flex justify-center items-center">
                         <AvatarImage
-                            src={'/avatars/user3.png'}
+                            src={`/avatars/${selectedUser?.avatar_image}`}
                             alt="User Image"
                             className="w-10 h-10 object-cover rounded-full"
                         />
                     </Avatar>
                 )}
-                <span className="font-medium text-2xl">
-                    {selectedUser?.user}{' '}
+                <span className="flex justify-center items-center font-medium text-2xl">
+                    <Avatar className="flex justify-center items-center">
+                        <AvatarImage
+                            src={`/avatars/${selectedUser?.avatar_image}`}
+                            alt="avatar"
+                            referrerPolicy="no-referrer"
+                            className="w-8 h-8 border-2 border-white rounded-full"
+                        />
+                    </Avatar>
+                    {selectedUser?.username}{' '}
                 </span>
                 {/* <span className="font-medium">{activeChatUser}</span> */}
             </div>
             {selectedUser && (
                 <span className="w-full flex justify-start gap-2 m-1 pl-1 h-10">
                     <ChatActionButton
-                        friendUsername={selectedUser.user}
+                        friendUsername={selectedUser.username}
                         localUser={loggedInUsername}
                         sendAction={sendAction}
                     />
+                    {selectedUser.rankpoints}
                 </span>
             )}
             <div className="flex gap-2">
@@ -49,8 +58,8 @@ const ChatTopBar = () => {
                         className="text-muted-foreground cursor-pointer hover:text-primary"
                         onClick={() => {
                             (setActiveChatUser(null),
-                                sendClosedChat(selectedUser.user),
-                                closeChat(selectedUser.user));
+                                sendClosedChat(selectedUser.username),
+                                closeChat(selectedUser.username));
                         }}
                     />
                 )}

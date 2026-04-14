@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import {Friend} from "@/shared/types/friend"
+import { FriendDisplayUser } from "@/shared/types/friendTypes";
 
 
 type SelectedUserState = {
-	selectedUser: Friend | null;
-	setSelectedUser: (user: Friend | null) => void;
+	selectedUser: FriendDisplayUser | null;
+	setSelectedUser: (user: FriendDisplayUser | null) => void;
 };
 
 export const useSelectedUser = create<SelectedUserState>((set) => ({
 	selectedUser: null,
-	setSelectedUser: (user: Friend | null) => set({ selectedUser: user }),
+	setSelectedUser: (user: FriendDisplayUser | null) => set({ selectedUser: user }),
 }));

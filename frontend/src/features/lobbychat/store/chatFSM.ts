@@ -13,7 +13,7 @@
 
 export type ChatStatus =
   | "pending"
-  | "accepted"
+  | "active"
   | "rejected"
   | "cancelled"
   | "closed";
@@ -41,8 +41,8 @@ const TRANSITIONS: Record<
   Partial<Record<ChatAction, ChatStatus>>
 > = {
   none:      { send_request: "pending" },
-  pending:   { accept: "accepted", reject: "rejected", cancel: "cancelled" },
-  accepted:  { close: "closed" },
+  pending:   { accept: "active", reject: "rejected", cancel: "cancelled" },
+  active:  { close: "closed" },
   // Terminal → bármelyik fél új requestet küldhet
   rejected:  { send_request: "pending" },
   cancelled: { send_request: "pending" },

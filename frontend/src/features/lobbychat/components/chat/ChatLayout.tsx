@@ -52,8 +52,8 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
                     defaultSize={defaultLayout[0]}
                     collapsedSize={10}
                     collapsible={true}
-                    minSize={isMobile ? 0 : 14}
-                    maxSize={isMobile ? 18 : 38}
+                    minSize={isMobile ? 10 : 12}
+                    maxSize={isMobile ? 18 : 20}
                     onCollapse={() => {
                         setIsCollapsed(true);
                         document.cookie = `react-resizable-panels:collapsed=true;`;
@@ -79,7 +79,7 @@ const ChatLayout = ({ defaultLayout = [320, 480] }: ChatLayoutProps) => {
                         <div className="flex justify-center items-center h-full w-full px-10">
                             <div className="flex flex-col justify-center items-center gap-4">
                                 <img
-                                    src="/avatars/user1.png"
+                                    src={'/user-placeholder.png'}
                                     alt="Logo"
                                     className="w-full md:w-2/3 lg:w-1/2"
                                 />

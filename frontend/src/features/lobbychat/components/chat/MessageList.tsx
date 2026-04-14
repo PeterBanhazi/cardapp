@@ -3,9 +3,10 @@ import { cn } from '@/lib//utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import MessageSkeleton from '../skeletons/MessageSkeleton';
-import { useChatStore } from '../../../../core/store/useChatStore';
-import { useAuthStore } from '../../../../core/store/useAuthStore';
+import { useAuthStore } from '@/core/store/useAuthStore';
+import { useChatStore } from '@/core/store/useChatStore';
 import { useSelectedUser } from '../../store/useSelectedUser';
+import ScrollArea from '@/shared/components/ui/ScrollArea';
 
 const MessageList = () => {
     const { activeChatUser, chatConnections, markMessagesAsRead } =
@@ -40,7 +41,7 @@ const MessageList = () => {
             {/* This component ensure that an animation is applied when items are added to or removed from the list */}
             <AnimatePresence>
                 {activeChat &&
-                    activeChat?.friendUser === selectedUser?.user &&
+                    activeChat?.friendUser === selectedUser?.username &&
                     !isMessagesLoading &&
                     activeChat.messages.map((message, index) => (
                         <motion.div
@@ -75,7 +76,7 @@ const MessageList = () => {
                                 {message.sender === activeChatUser && (
                                     <Avatar className="flex justify-center items-center">
                                         <AvatarImage
-                                            src="/avatars/user4.png"
+                                            src={`/avatars/${selectedUser?.avatar_image}`}
                                             alt="User Image"
                                             className="border-2 border-white rounded-full"
                                         />

@@ -19,6 +19,10 @@ import { useChatStore } from '../../../core/store/useChatStore';
 import { useAuthStore } from '../../../core/store/useAuthStore';
 import { useFriendList } from '../../../core/store/useFriendList';
 import { Friend } from '@/shared/types/friend';
+import { UsernameWrapper } from '@/shared/components/ui/UsernameWrapper';
+import { useFriendListWithStatus } from './useFriendListWithStatus';
+import { FriendDisplayUser } from '@/shared/types/friendTypes';
+import { FriendWithStatus } from './useFriendListWithStatus';
 interface SidebarProps {
     isCollapsed: boolean;
 }
@@ -30,66 +34,27 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
     const { friends, isConnected, setFriendStatus, sendAction } =
         useFriendsStore();
-    const {
-        activeChatUser,
-        getUnreadCount,
-        setActiveChatUser,
-        openChat,
-        closeChat,
-    } = useChatStore();
+    const { activeChatUser, setActiveChatUser, openChat, getUnreadCount } =
+        useChatStore();
 
     const loggedInUsername =
         useAuthStore((state) => state.user?.username) ?? '';
 
     // ── Populate friends from REST on mount ───────────────────────────────────
-    const { data: friendships } = useFriendList();
 
-    useEffect(() => {
-        if (!friendships) return;
-        friendships.forEach(({ friend }) => {
-            // Only seed entries not yet tracked — WebSocketStatusManager will
-            // overwrite status via presence_sync once the socket is open.
-            if (!friends[friend.username]) {
-                setFriendStatus(friend.username, 'offline');
-            }
-        });
-    }, [friendships]);
-
-    // ── Sorted friends list ───────────────────────────────────────────────────
-
-    const statusPriority: Record<Friend['status'], number> = {
-        active: 0,
-        pending: 1,
-        rejected: 2,
-        cancelled: 3,
-        online: 4,
-        closed: 5,
-        offline: 6,
-    };
-
-    const friendsList = useMemo(() => {
-        const userStatusMap = new Map<string, Friend['status']>();
-
-        Object.values(friends).forEach((friend) => {
-            userStatusMap.set(friend.user, friend.status);
-        });
-
-        return Array.from(userStatusMap.entries())
-            .filter(([username]) => username !== loggedInUsername)
-            .map(([user, status]) => ({ user, status }))
-            .sort(
-                (a, b) => statusPriority[a.status] - statusPriority[b.status]
-            );
-    }, [friends, loggedInUsername]);
+    const friendList = useFriendListWithStatus();
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    const handleSideBarFriendClick = (friend: Friend) => {
-        setSelectedUser(friend);
-        openChat(friend.user);
+    const handleSideBarFriendClick = (friendClicked: FriendWithStatus) => {
+        if (friendClicked.status === 'active') {
+            openChat(friendClicked.friend.username);
+        }
+        setSelectedUser(friendClicked.friend);
+        setActiveChatUser(friendClicked.friend.username);
     };
 
-    const getAvatarRingConfig = (ringStatus: Friend['status']) => {
+    const getAvatarRingConfig = (ringStatus: FriendWithStatus['status']) => {
         switch (ringStatus) {
             case 'online':
                 return { styles: 'ring-2 ring-blue-500 ring-inset' };
@@ -120,16 +85,16 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                 </div>
             </div>
 
-            {friendsList.length === 0 ? (
+            {friendList.length === 0 ? (
                 <div className="p-4 text-center text-gray-800">
                     {isConnected ? 'No friends online' : 'Connecting...'}
                 </div>
             ) : (
                 <ScrollArea className="gap-2 px-2 max-w-min group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-                    {friendsList.map((friend, idx) =>
+                    {friendList.map((friendListItem) =>
                         isCollapsed ? (
                             // ── Collapsed: avatar + tooltip only ──────────────
-                            <TooltipProvider key={idx}>
+                            <TooltipProvider key={friendListItem.friend_req_id}>
                                 <Tooltip delayDuration={0}>
                                     <TooltipTrigger asChild>
                                         <div
@@ -137,7 +102,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                 soundEnabled &&
                                                     playClickSound();
                                                 handleSideBarFriendClick(
-                                                    friend
+                                                    friendListItem
                                                 );
                                             }}
                                         >
@@ -148,12 +113,15 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                                     className={cn(
                                                         'flex justify-center items-center p-0.5 border-white rounded-full w-10 h-10',
                                                         getAvatarRingConfig(
-                                                            friend.status
+                                                            friendListItem.status
                                                         ).styles
                                                     )}
                                                 />
                                                 <AvatarFallback>
-                                                    {friend.user}
+                                                    {
+                                                        friendListItem.friend
+                                                            .username
+                                                    }
                                                 </AvatarFallback>
                                             </Avatar>
                                         </div>
@@ -162,32 +130,34 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                         side="right"
                                         className="flex items-center  bg-slate-200/40 ring ring-slate-800/30"
                                     >
-                                        {friend.user}
+                                        {friendListItem.friend.username}
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
                         ) : (
                             // -----------------Expanded
                             <Button
-                                key={idx}
+                                key={friendListItem.created_at}
                                 variant={'grey'}
                                 size="lg"
                                 className={cn(
                                     'w-[220px] px-1 gap-1 justify-start my-1 text-slate-800 bg-slate-200/20',
-                                    activeChatUser === friend.user &&
+                                    activeChatUser ===
+                                        friendListItem.friend.username &&
                                         'bg-slate-50/50 hover:bg-muted hover:text-white shrink'
                                 )}
                                 onClick={() => {
                                     soundEnabled && playClickSound();
-                                    handleSideBarFriendClick(friend);
+                                    handleSideBarFriendClick(friendListItem);
                                 }}
                             >
                                 {/* Avatar */}
                                 <Avatar
                                     className={cn(
                                         'flex justify-center p-0.5 items-center',
-                                        getAvatarRingConfig(friend.status)
-                                            .styles
+                                        getAvatarRingConfig(
+                                            friendListItem.status
+                                        ).styles
                                     )}
                                 >
                                     <AvatarImage
@@ -195,17 +165,23 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                         alt={'User image'}
                                     />
                                     <AvatarFallback>
-                                        {friend.user}
+                                        {friendListItem.friend.username}
                                     </AvatarFallback>
                                 </Avatar>
 
                                 {/* Name + unread badge */}
                                 <div className="flex flex-col text-lg flex-1 min-w-0">
                                     <span className="text-left truncate">
-                                        {friend.user}
-                                        {getUnreadCount(friend.user) > 0 && (
+                                        {friendListItem.friend.username} {':'}
+                                        {friendListItem.status}
+                                        {getUnreadCount(
+                                            friendListItem.friend.username
+                                        ) > 0 && (
                                             <span className="ml-1 bg-red-500 text-white text-xs px-1 rounded-full">
-                                                {getUnreadCount(friend.user)}
+                                                {getUnreadCount(
+                                                    friendListItem.friend
+                                                        .username
+                                                )}
                                             </span>
                                         )}
                                     </span>
@@ -243,7 +219,17 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 className="w-8 h-8 border-2 border-white rounded-full"
                             />
                         </Avatar>
-                        <p className="font-bold text-lg">{loggedInUsername}</p>
+                        <span className="font-bold text-sm">
+                            <UsernameWrapper
+                                options={{
+                                    maxWidth: 120,
+                                    tooltipIsActive: true,
+                                    tooltipTheme: 'light',
+                                    isClickable: false,
+                                }}
+                                username={loggedInUsername}
+                            />
+                        </span>
                     </div>
                 )}
                 <div className="flex">
