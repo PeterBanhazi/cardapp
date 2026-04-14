@@ -27,6 +27,7 @@ import {
 import { useFriendsStore } from '../../store/friendsStore';
 
 import { canAct, type ChatAction, type ChatRequest } from '../../store/chatFSM';
+import { useChatStore } from '@/core/store/useChatStore';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -196,6 +197,12 @@ export function ChatActionButton({
                     ? { req_id: effectiveReq.req_id }
                     : {}),
             });
+            if (action === 'accept') {
+                useChatStore.getState().openChat(friendUsername);
+            }
+            if (action === 'close') {
+                useChatStore.getState().closeChat(friendUsername);
+            }
         },
         [effectiveReq, localUser, friendUsername, sendAction]
     );

@@ -285,6 +285,14 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
                 sendMessage(JSON.stringify(chatMessage));
             },
             onClose: () => {
+                                const chatMessage = {
+                    type: "message",
+                    message: `${useAuthStore.getState().user?.username} has closed the chat...`,
+                    sender: useAuthStore.getState().user?.username!,
+                    timestamp: new Date().toISOString(),
+                };
+                
+                sendMessage(JSON.stringify(chatMessage));
                 console.log(`Chat WebSocket closed for ${friendUser}`);
                 setChatConnection(friendUser, { isConnected: false, sendMessage: null });
             },

@@ -13,6 +13,8 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { type ChatRequest } from "./chatFSM";
+import { useChatStore } from "@/core/store/useChatStore";
+import { useAuthStore } from "@/core/store/useAuthStore";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -53,16 +55,38 @@ export const useChatRequestsStore = create<ChatRequestsState>()(
     requests: {},
 
     applyServerUpdate(req) {
-      console.log("appyserverupdate:")
-      console.log(req)
-      set((state) => {
-        state.requests[req.req_id] = req;
-      });
+        set((state) => {
+            // Ha új pending jön ugyanarra a párra, töröld a régi terminal rekordot
+            if (req.status === 'pending') {
+                const key = pairKey(req.user_from, req.user_to);
+                Object.keys(state.requests).forEach((id) => {
+                    const old = state.requests[id];
+                    if (
+                        id !== req.req_id &&
+                        pairKey(old.user_from, old.user_to) === key &&
+                        TERMINAL_STATUSES.has(old.status as any)
+                    ) {
+                        delete state.requests[id];
+                    }
+                });
+            }
+            state.requests[req.req_id] = req;
+        });
+      
+          // Chat megnyitása active állapotban — mindkét félnél fut,
+    // openChat idempotent: ha már nyitva van, csak activeChatUser-t vált
+      if (req.status === 'active') {
+        const localUser = useAuthStore.getState().user?.username;
+        if (!localUser) return;
+
+        const friendUser =
+            req.user_from === localUser ? req.user_to : req.user_from;
+
+        useChatStore.getState().openChat(friendUser);
+    }
     },
 
     syncFromServer(reqs) {
-            console.log("syincfromserver:")
-      console.log(reqs)
       set((state) => {
         reqs.forEach((r) => {
           state.requests[r.req_id] = r;
@@ -71,12 +95,15 @@ export const useChatRequestsStore = create<ChatRequestsState>()(
     },
 
     getRequestForPair(a, b) {
-      const key = pairKey(a, b);
-      return (
-        Object.values(get().requests).find(
-          (r) => pairKey(r.user_from, r.user_to) === key,
-        ) ?? null
-      );
-    },
+    const key = pairKey(a, b);
+    const matches = Object.values(get().requests).filter(
+        (r) => pairKey(r.user_from, r.user_to) === key,
+    );
+    if (matches.length === 0) return null;
+    return matches.reduce((latest, r) =>
+        r.updated_at > latest.updated_at ? r : latest
+    );
+},
+  
   })),
 );
