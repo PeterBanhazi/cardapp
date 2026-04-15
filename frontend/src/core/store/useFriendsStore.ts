@@ -6,8 +6,15 @@ import { HEARTBEAT_INTERVAL } from '../../core/utils/constants';
 
 import { useAuthStore } from './useAuthStore';
 import { useChatRequestsStore } from '@/features/lobbychat/store/chatRequestsStore';
-import type { ChatAction, ChatRequest } from '@/features/lobbychat/store/chatFSM';
-import { Friend } from '@/shared/types/friend';
+import type {
+    ChatAction,
+    ChatRequest,
+} from '@/features/lobbychat/store/chatFSM';
+import {
+    ChatRequestStatus,
+    Friend,
+    PresenceState,
+} from '@/shared/types/friend';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -25,7 +32,13 @@ interface FriendsState {
     isConnected: boolean;
     sendMessage: ((message: string) => void) | null;
 
-    setFriendStatus: (user: string, status: Friend['status']) => void;
+    setFriendStatus: (
+        user: string,
+        updates: {
+            status?: ChatRequestStatus;
+            presence?: PresenceState;
+        }
+    ) => void;
     setConnected: (connected: boolean) => void;
     setSendMessage: (sendFn: ((message: string) => void) | null) => void;
 
@@ -48,16 +61,29 @@ export const useFriendsStore = create<FriendsState>()(
         isConnected: false,
         sendMessage: null,
 
-        setFriendStatus: (user: string, status: Friend['status']) => {
+        setFriendStatus: (
+            user: string,
+            updates: {
+                status?: ChatRequestStatus;
+                presence?: PresenceState;
+            }
+        ) => {
             set(
-                (state) => ({
-                    friends: {
-                        ...state.friends,
-                        [user]: { user, status },
-                    },
-                }),
-                undefined,
-                'setFriendStatus',
+                (state) => {
+                    const existing = state.friends[user] ?? { user };
+
+                    return {
+                        friends: {
+                            ...state.friends,
+                            [user]: {
+                                ...existing,
+                                ...updates,
+                            },
+                        },
+                    };
+                },
+                undefined, // = devtools avoid replacing the whole state
+                'setFriendStatus' // = debug action name is devtools
             );
         },
 
@@ -73,7 +99,9 @@ export const useFriendsStore = create<FriendsState>()(
         sendAction: (action: ChatAction, payload: Record<string, unknown>) => {
             const { sendMessage, isConnected } = get();
             if (!sendMessage || !isConnected) {
-                console.warn('[FriendsStore] sendAction: WebSocket not connected');
+                console.warn(
+                    '[FriendsStore] sendAction: WebSocket not connected'
+                );
                 return;
             }
             const message = JSON.stringify({
@@ -88,58 +116,61 @@ export const useFriendsStore = create<FriendsState>()(
         sendChatRequest: (user: string) => {
             const username = useAuthStore.getState().user?.username ?? '';
             get().sendAction('send_request', {
-                action:    'chat_request',
+                action: 'chat_request',
                 user_from: username,
-                user_to:   user,
+                user_to: user,
             });
         },
         sendAcceptChatRequest: (user: string) => {
             const username = useAuthStore.getState().user?.username ?? '';
             get().sendAction('accept', {
-                action:    'accept_chat',
+                action: 'accept_chat',
                 user_from: username,
-                user_to:   user,
+                user_to: user,
             });
         },
         sendRejectChatRequest: (user: string) => {
             const username = useAuthStore.getState().user?.username ?? '';
             get().sendAction('reject', {
-                action:    'reject_chat',
+                action: 'reject_chat',
                 user_from: username,
-                user_to:   user,
+                user_to: user,
             });
         },
         sendCancelledChat: (user: string) => {
             const username = useAuthStore.getState().user?.username ?? '';
             get().sendAction('cancel', {
-                action:    'cancel_chat',
+                action: 'cancel_chat',
                 user_from: username,
-                user_to:   user,
+                user_to: user,
             });
         },
         sendClosedChat: (user: string) => {
             const username = useAuthStore.getState().user?.username ?? '';
             get().sendAction('close', {
-                action:    'close_chat',
+                action: 'close_chat',
                 user_from: username,
-                user_to:   user,
+                user_to: user,
             });
         },
 
         resetFriends: () =>
             set({ friends: {}, isConnected: false, sendMessage: null }),
-    })),
+    }))
 );
 
 // ── WebSocketStatusManager ────────────────────────────────────────────────────
 // Owns the single WS connection for the whole app.
 // Routes presence AND chat-request events to their respective stores.
 
-export const useWebSocketStatusManager = (url: string |null, options: any = {}) => {
-    const setFriendStatus = useFriendsStore(s => s.setFriendStatus);
-    const setConnected = useFriendsStore(s => s.setConnected);
-    const setSendMessage = useFriendsStore(s => s.setSendMessage);
-    const resetFriends = useFriendsStore(s => s.resetFriends);
+export const useWebSocketStatusManager = (
+    url: string | null,
+    options: any = {}
+) => {
+    const setFriendStatus = useFriendsStore((s) => s.setFriendStatus);
+    const setConnected = useFriendsStore((s) => s.setConnected);
+    const setSendMessage = useFriendsStore((s) => s.setSendMessage);
+    const resetFriends = useFriendsStore((s) => s.resetFriends);
 
     const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -156,7 +187,7 @@ export const useWebSocketStatusManager = (url: string |null, options: any = {}) 
             resetFriends();
         },
         onError: () => {
-            console.error('WebSocket error:', "systemWs error");
+            console.error('WebSocket error:', 'systemWs error');
             setConnected(false);
         },
         ...options,
@@ -190,7 +221,9 @@ export const useWebSocketStatusManager = (url: string |null, options: any = {}) 
             // payload: { username, status }
             case 'presence_sync':
             case 'presence_update': {
-                setFriendStatus(payload.username, payload.status);
+                setFriendStatus(payload.username, {
+                    presence: payload.presence,
+                });
                 break;
             }
 
@@ -206,8 +239,14 @@ export const useWebSocketStatusManager = (url: string |null, options: any = {}) 
                 applyServerUpdate(payload as ChatRequest);
 
                 // Also keep legacy friend-status flags in sync
-                if (payload.user_from) setFriendStatus(payload.user_from, payload.status);
-                if (payload.user_to)   setFriendStatus(payload.user_to,   payload.status);
+                if (payload.user_from)
+                    setFriendStatus(payload.user_from, {
+                        status: payload.status,
+                    });
+                if (payload.user_to)
+                    setFriendStatus(payload.user_to, {
+                        status: payload.status,
+                    });
                 break;
             }
 
@@ -232,7 +271,9 @@ export const useWebSocketStatusManager = (url: string |null, options: any = {}) 
     function startHeartbeat(sendFn: (msg: string) => void) {
         stopHeartbeat();
         heartbeatRef.current = setInterval(() => {
-            sendFn(JSON.stringify({ type: 'system_message', action: 'heartbeat' }));
+            sendFn(
+                JSON.stringify({ type: 'system_message', action: 'heartbeat' })
+            );
         }, HEARTBEAT_INTERVAL);
     }
 

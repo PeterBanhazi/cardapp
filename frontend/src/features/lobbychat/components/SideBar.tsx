@@ -43,6 +43,7 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
     // ── Populate friends from REST on mount ───────────────────────────────────
 
     const friendList = useFriendListWithStatus();
+    console.log(friendList);
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
