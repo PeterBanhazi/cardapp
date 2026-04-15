@@ -73,7 +73,7 @@ export const useChatRequestsStore = create<ChatRequestsState>()(
             state.requests[req.req_id] = req;
         });
       
-          // Chat megnyitása active állapotban — mindkét félnél fut,
+    // Chat megnyitása active állapotban — mindkét félnél fut,
     // openChat idempotent: ha már nyitva van, csak activeChatUser-t vált
       if (req.status === 'active') {
         const localUser = useAuthStore.getState().user?.username;
@@ -98,7 +98,8 @@ export const useChatRequestsStore = create<ChatRequestsState>()(
     const key = pairKey(a, b);
     const matches = Object.values(get().requests).filter(
         (r) => pairKey(r.user_from, r.user_to) === key,
-    );
+      );
+      // ensure that it's the last stage update:       
     if (matches.length === 0) return null;
     return matches.reduce((latest, r) =>
         r.updated_at > latest.updated_at ? r : latest

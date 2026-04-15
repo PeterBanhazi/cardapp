@@ -5,7 +5,10 @@ export const API_BASE_URL = `${API_URL}/api/`;
 export const WS_BASE_URL = WS_URL;
 export const HEARTBEAT_INTERVAL = 60000;
 export const WS_CONNECT_OPTIONS = {
-    shouldReconnect: () => true,
+        shouldReconnect: (closeEvent: CloseEvent) => {
+        // 1000 = for normal/intentional close
+        return closeEvent.code !== 1000;
+    },
     reconnectAttempts: 10,
     reconnectInterval: (attempt:number) =>
     Math.min(1000 * 2 ** attempt, 15000),

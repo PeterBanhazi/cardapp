@@ -19,6 +19,7 @@ interface ChatConnection {
     sendMessage: ((message: string) => void) | null;
     messages: ChatMessage[];
     unreadCount: number;
+    intentionallyClosed?: boolean;
 }
 
 interface ChatState {
@@ -146,6 +147,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
     },
     
     closeChat: (friendUser: string) => {
+        set((state) => ({
+        chatConnections: {
+            ...state.chatConnections,
+            [friendUser]: {
+                ...state.chatConnections[friendUser],
+                intentionallyClosed: true,
+            },
+        },
+        }));
+         setTimeout(() => {
         set((state) => {
             
             const newConnections = { ...state.chatConnections };
@@ -158,7 +169,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 chatConnections: newConnections,
                 activeChatUser: state.activeChatUser === friendUser ? null : state.activeChatUser,
             };
-        });
+        }); }, 100);
     },
     
     setActiveChatUser: (friendUser: string | null) => {
@@ -264,9 +275,14 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
     const { setChatConnection, addMessage } = useChatStore();
     const username = useAuthStore((s) => s.user?.username);
     const accessToken = useAuthStore((s) => s.accessToken);
+    const intentionallyClosed = useChatStore(
+    (s) => s.chatConnections[friendUser]?.intentionallyClosed ?? false
+);
 
   
-    const wsUrl = username&& accessToken && friendUser ? `${WS_BASE_URL}/ws/chat/${friendUser}/?token=${accessToken}` : null;
+    const wsUrl =     username && accessToken && friendUser && !intentionallyClosed
+        ? `${WS_BASE_URL}/ws/chat/${friendUser}/?token=${accessToken}`
+        : null;
     
     const { lastMessage, readyState, sendMessage } = useWebSocket(
         wsUrl,
@@ -300,7 +316,8 @@ export const ChatWebSocketManager: React.FC<{ friendUser: string }> = ({ friendU
                 console.error(`Chat WebSocket error for ${friendUser}:`, error);
                 setChatConnection(friendUser, { isConnected: false });
             },
-            ...WS_CONNECT_OPTIONS
+            ...WS_CONNECT_OPTIONS,
+            shouldReconnect: () => !intentionallyClosed,
         }
     );
 
