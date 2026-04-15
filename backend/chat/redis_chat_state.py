@@ -1,5 +1,4 @@
 """
-redis_chat_state.py
 ────────────────────────────────────────────────────────────────
 Chat-request state machine backed by Redis hashes.
 

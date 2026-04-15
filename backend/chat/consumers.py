@@ -353,7 +353,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
                     "event":   "presence_update",
                     "payload": {
                         "username": self.username,
-                        "status":   status,
+                        "presence":   status,
                     },
                 },
             )
