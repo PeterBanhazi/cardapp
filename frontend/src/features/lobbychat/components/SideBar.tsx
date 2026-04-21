@@ -57,9 +57,9 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
 
     const getAvatarRingConfig = (ringStatus: FriendWithStatus['status']) => {
         switch (ringStatus) {
-            case 'online':
-                return { styles: 'ring-2 ring-blue-500 ring-inset' };
-            case 'offline':
+            // case 'online':
+            //     return { styles: 'ring-2 ring-blue-500 ring-inset' };
+            case 'default':
                 return { styles: '' };
             case 'pending':
                 return { styles: 'ring-2 ring-yellow-500 ring-inset' };

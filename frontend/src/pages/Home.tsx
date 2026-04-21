@@ -29,7 +29,7 @@ const Home: React.FC = () => {
 const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
     const { logout } = useAuthStore();
     const navigate = useNavigate();
-
+    // dynamic width size for username wrapper
     const [maxWidth, setMaxWidth] = useState(130);
 
     useEffect(() => {
