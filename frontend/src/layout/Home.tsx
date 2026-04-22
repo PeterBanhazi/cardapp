@@ -56,7 +56,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
     });
     return (
         <div className="flex xl:gap-2 md:gap-1  gap-1.5 items-center text-right">
-            <span className="hidden pt-1 lg:text-sm xl:text-lg lg:inline-block">
+            <span className="hidden lg:text-sm xl:text-lg lg:inline-block">
                 <UsernameWrapper
                     username={username}
                     options={{
@@ -70,7 +70,6 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
             </span>
             <ProfileEditModal />
             <ModalOpenTriggerButton
-                linkTo="/logout"
                 buttonText="Logout"
                 onClick={() => logoutMutation.mutate()}
             />
@@ -80,7 +79,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
 
 const LoggedOutViewComponent = ({ title = 'Welcome' }) => {
     return (
-        <div className="flex gap-3 items-center text-right">
+        <div className="flex gap- items-center text-right">
             <h1 className="hidden lg:block">{title}</h1>
             <Login />
             <Register />
