@@ -9,16 +9,16 @@ import { ChatProvider } from './providers/ChatProvider';
 
 import PrivateRoute from './routes/PrivateRoute';
 
-import Navbar from '../pages/Navbar';
-import Footer from '../pages/Footer';
-import Landing from '../pages/Landing';
+import Navbar from '../layout/Navbar';
+import Footer from '../layout/Footer';
+import Landing from '../layout/Landing';
 import TopList from '../features/ranks/Ranks';
 
 import Options from '../features/options/Options';
-import ChatLobby from '../pages/ChatLobby';
+import ChatLobby from '../layout/ChatLobby';
 import DashboardManager from '../features/dashboard/DashboardManager';
-import GameWrapper from '../pages/GameWrapper';
-import Rules from '../pages/Rules';
+import GameWrapper from '../layout/GameWrapper';
+import Rules from '../layout/Rules';
 
 const queryClient = new QueryClient();
 

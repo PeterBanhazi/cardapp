@@ -219,7 +219,7 @@ const BottomFooter = () => {
                 </div>
 
                 {/* Copyright Bar */}
-                <div className="border-t border-gray-200 w-86 mx-auto">
+                <div className="border-t border-gray-200 max-w-86 mx-auto">
                     <div className="container mx-auto py-1">
                         <div className="text-center text-gray-900 text-sm">
                             © {currentYear} TechServe Solutions. All Rights
