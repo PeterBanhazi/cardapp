@@ -1,7 +1,6 @@
 import React, { ReactNode, useState } from 'react';
 import { PlayerStats } from '../../shared/types/types';
 
-// import TennisPlayerCreator from './playercards/TennisPlayerCreator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../core/utils/useAxios';
 import { useDroppable } from '@dnd-kit/core';
@@ -10,6 +9,7 @@ import { RiCrosshair2Line } from 'react-icons/ri';
 import TennisBallToggle from '../../shared/components/ui/TennisBallToggle';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
 import ScrollContainer from '../../shared/components/ui/ScrollContainer';
+import OptionsPlayerCreator from './OptionsPlayerCreator';
 
 const OptionsLeftContainer: React.FC<{
     currentPlayer: PlayerStats[];
@@ -141,11 +141,11 @@ const OptionsLeftContainer: React.FC<{
                                         Create new player
                                     </div>
                                 </button>
-                                {/* {isCreateOpen && (
-                                    <TennisPlayerCreator
+                                {isCreateOpen && (
+                                    <OptionsPlayerCreator
                                         onClose={() => setIsCreateOpen(false)}
                                     />
-                                )} */}
+                                )}
                             </div>
                         </ScrollContainer>
                     </div>

@@ -79,7 +79,7 @@ const LoggedInView: React.FC<{ username: string }> = ({ username }) => {
 
 const LoggedOutViewComponent = ({ title = 'Welcome' }) => {
     return (
-        <div className="flex gap- items-center text-right">
+        <div className="flex gap-2 items-center text-right">
             <h1 className="hidden lg:block">{title}</h1>
             <Login />
             <Register />
