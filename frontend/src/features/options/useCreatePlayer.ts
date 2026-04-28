@@ -35,7 +35,7 @@ export function useCreatePlayer(onSuccess?: () => void) {
             });
 
             // Invalidate any player list queries so they refetch
-            queryClient.invalidateQueries({ queryKey: ['players'] });
+            queryClient.invalidateQueries({ queryKey: ['userproperties'] });
 
             onSuccess?.();
         },
