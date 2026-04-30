@@ -25,6 +25,7 @@ export function useCreatePlayer(onSuccess?: () => void) {
     const api = useAxios();
 
     return useMutation({
+        mutationKey: ['createPlayer'],
         mutationFn: (payload: CreatePlayerPayload) =>
             api.post('add-player/', payload),
 

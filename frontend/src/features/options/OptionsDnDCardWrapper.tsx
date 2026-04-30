@@ -20,6 +20,7 @@ import {
     sortableKeyboardCoordinates,
     rectSortingStrategy,
 } from '@dnd-kit/sortable';
+import { useMutationState } from '@tanstack/react-query';
 
 import { FaArrowsRotate } from 'react-icons/fa6';
 
@@ -216,15 +217,30 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const { isPending, submittedAt, variables, mutate, isError } =
         chooseCurrentPlayerMutation;
 
+    // ------ helpers to scroll when new item created  ---------
+    const mutationState = useMutationState({
+        filters: { mutationKey: ['createPlayer'] },
+    });
+    const latest = mutationState[mutationState.length - 1];
+    const isCardAdded = latest?.status === 'success';
+
     const scrollRef = useRef<ScrollAreaRef | null>(null);
 
     const scrollToBottom = () => {
         scrollRef.current?.scrollToBottom();
     };
+    // check for length increase only cases (new ones are added to the end of the list)
+
+    // 1000 mx delay added for scrolling to the bottom when new grid made by card creation
+    // due to the overcomplicated crap will fix if someone will pay for it (hint: scrollbar resize observer)
+    const prevLengthRef = useRef(items.length);
     useEffect(() => {
-        scrollToBottom();
-        console.log('scroll');
-    }, [items]);
+        if (isCardAdded && items.length > prevLengthRef.current) {
+            setTimeout(() => {
+                scrollToBottom();
+            }, 1000);
+        }
+    }, [latest]);
 
     const handleChooseClick = (id: number): void => {
         mutate(id);
