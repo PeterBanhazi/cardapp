@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNotifications } from '@/shared/components/ui/notifications/'; // adjust path as needed
 import useAxios from '@/core/utils/useAxios';
 import { PlayerStats } from '@/shared/types/types';
+import { useRef } from 'react';
 // TODO: fix backend endpoints, and data invalidations
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,6 +36,7 @@ export function useCreatePlayer(onSuccess?: () => void) {
             });
 
             // Invalidate any player list queries so they refetch
+
             queryClient.invalidateQueries({ queryKey: ['userproperties'] });
 
             onSuccess?.();

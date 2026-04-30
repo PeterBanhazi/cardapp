@@ -235,7 +235,7 @@ const OptionsPlayerCreator: React.FC<OptionsPlayerCreatorProps> = ({
               : 'indigo';
 
     return (
-        <Modal show dismissible onClose={onClose} size="md">
+        <Modal show dismissible onClose={onClose} size="sm">
             {/* Force number input spinners to always show */}
             <style>{`
                 .ability-input::-webkit-inner-spin-button,

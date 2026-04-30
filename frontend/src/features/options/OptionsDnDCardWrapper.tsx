@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     DndContext,
     DragOverlay,
@@ -31,8 +31,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useAxios from '../../core/utils/useAxios';
 import OptionsLeftContainer from './OptionsLeftContainer';
 import TennisPlayerCards from './playercards/TennisPlayerCards';
-import ScrollArea from '@/shared/components/ui/ScrollArea';
+import ScrollArea, { ScrollAreaRef } from '@/shared/components/ui/ScrollArea';
 import OptionsRightContainer from './OptionsRightContainer';
+import { useCreatePlayer } from './useCreatePlayer';
 
 interface PlayerCardsContainerProps {
     userName: string;
@@ -215,6 +216,16 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     const { isPending, submittedAt, variables, mutate, isError } =
         chooseCurrentPlayerMutation;
 
+    const scrollRef = useRef<ScrollAreaRef | null>(null);
+
+    const scrollToBottom = () => {
+        scrollRef.current?.scrollToBottom();
+    };
+    useEffect(() => {
+        scrollToBottom();
+        console.log('scroll');
+    }, [items]);
+
     const handleChooseClick = (id: number): void => {
         mutate(id);
     };
@@ -256,6 +267,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                     {/* <div className="w-[20px] 2xl:w-8"></div> */}
 
                     <ScrollArea
+                        ref={scrollRef}
                         hoverEffect
                         paddingRight={24}
                         variant="thick"
