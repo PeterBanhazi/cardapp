@@ -72,7 +72,7 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
         useSensor(PointerSensor, {
             activationConstraint: {
                 // Only start dragging after moving 6px
-                distance: 6,
+                distance: 2,
             },
         }),
         useSensor(TouchSensor, {
@@ -231,16 +231,18 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
     };
     // check for length increase only cases (new ones are added to the end of the list)
 
-    // 1000 mx delay added for scrolling to the bottom when new grid made by card creation
-    // due to the overcomplicated crap will fix if someone will pay for it (hint: scrollbar resize observer)
+    // 500 ms delay added for scrolling to the bottom when new grid made by card creation
+    // due to the overcomplicated (hint: scrollbar resize observer)
     const prevLengthRef = useRef(items.length);
     useEffect(() => {
         if (isCardAdded && items.length > prevLengthRef.current) {
             setTimeout(() => {
                 scrollToBottom();
-            }, 1000);
+            }, 500);
         }
     }, [latest]);
+
+    // end of -- helpers to scroll when new item created  ---------
 
     const handleChooseClick = (id: number): void => {
         mutate(id);
@@ -289,14 +291,14 @@ const OptionsDnDCardWrapper: React.FC<PlayerCardsContainerProps> = ({
                         variant="thick"
                         autoScroll
                         centerOnScrollbar
-                        className="h-[604px] overflow-visible sm:w-[200px] md:w-[360px] lg:w-[518px] xl:w-[848px] 2xl:w-[994px]"
+                        className="h-[604px] sm:w-[200px] md:w-[360px] lg:w-[518px] xl:w-[848px] 2xl:w-[994px]"
                     >
                         <SortableContext
                             items={items.map((item) => item.id)}
                             strategy={rectSortingStrategy}
                         >
                             <div
-                                className={`pt-[4px] pb-[2px] gap-2.5 }`}
+                                className={`pt-[4px] pb-[10px] gap-2.5 }`}
                                 style={{
                                     display: 'grid',
                                     gridTemplateColumns:
