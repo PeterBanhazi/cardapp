@@ -257,9 +257,9 @@ const OptionsPlayerCreator: React.FC<OptionsPlayerCreatorProps> = ({
                 </div>
             </ModalHeader>
 
-            <ModalBody className="space-y-5">
+            <ModalBody className="space-y-0 py-2">
                 {/* Player Name */}
-                <div>
+                <div className="">
                     <Label htmlFor="player-name">Player Name</Label>
                     <TextInput
                         id="player-name"
@@ -285,18 +285,18 @@ const OptionsPlayerCreator: React.FC<OptionsPlayerCreatorProps> = ({
                 </div>
 
                 {/* Ability Sliders */}
-                <div>
-                    <div className="flex items-center justify-between mb-3">
+                <div className="pt-4">
+                    <div className="flex items-center justify-between mb-1">
                         <Label>Abilities</Label>
                         <Badge color={pointsBadgeColor}>
                             {remainingPoints} pts remaining
                         </Badge>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-1">
                         {ABILITY_KEYS.map((ability) => (
                             <div key={ability}>
-                                <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center justify-between">
                                     <span className="text-sm capitalize text-gray-700 dark:text-gray-300">
                                         {ability}
                                     </span>
@@ -311,7 +311,7 @@ const OptionsPlayerCreator: React.FC<OptionsPlayerCreatorProps> = ({
                                                 parseInt(e.target.value) || 1
                                             )
                                         }
-                                        className="ability-input w-14 text-center text-sm rounded-md border border-gray-300
+                                        className="ability-input text-sm px-1 w-12 rounded-md border border-gray-300
                                                    dark:border-gray-600 dark:bg-gray-700 dark:text-white
                                                    py-0.5 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
@@ -326,7 +326,7 @@ const OptionsPlayerCreator: React.FC<OptionsPlayerCreatorProps> = ({
                                             parseInt(e.target.value)
                                         )
                                     }
-                                    sizing="sm"
+                                    sizing="md"
                                 />
                             </div>
                         ))}
