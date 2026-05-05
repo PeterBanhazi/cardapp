@@ -254,7 +254,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
                 "event": "presence_sync",
                 "payload": {
                     "username": friend["username"],
-                    "status":   "online" if is_online else "offline",
+                    "presence":   "online" if is_online else "offline",
                 },
             })
 
@@ -343,7 +343,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
     #  Presence helpers
     # ──────────────────────────────────────────────
 
-    async def broadcast_presence(self, status: str):
+    async def broadcast_presence(self, presence: str):
         friends = await self.get_friends()
         for friend in friends:
             await self.channel_layer.group_send(
@@ -353,7 +353,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
                     "event":   "presence_update",
                     "payload": {
                         "username": self.username,
-                        "presence":   status,
+                        "presence":   presence,
                     },
                 },
             )
