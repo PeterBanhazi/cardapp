@@ -6,6 +6,8 @@ import { HEARTBEAT_INTERVAL } from '../../core/utils/constants';
 
 import { useAuthStore } from './useAuthStore';
 import { useChatRequestsStore } from '@/features/lobbychat/store/chatRequestsStore';
+import { useQueryClient } from '@tanstack/react-query';
+
 import type {
     ChatAction,
     ChatRequest,
@@ -15,6 +17,7 @@ import {
     Friend,
     PresenceState,
 } from '@/shared/types/friend';
+import { useNotifications } from '@/shared/components/ui/notifications';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -174,6 +177,13 @@ export const useWebSocketStatusManager = (
 
     const heartbeatRef = useRef<number | null>(null);
 
+    const queryClient = useQueryClient();
+
+    const invalidateFriends = () => {
+        queryClient.invalidateQueries({ queryKey: ['friends'] });
+        queryClient.invalidateQueries({ queryKey: ['friendRequests'] });
+    };
+
     const { lastMessage, readyState, sendMessage } = useWebSocket(url, {
         onOpen: () => {
             console.log('WebSocket connection opened');
@@ -227,6 +237,33 @@ export const useWebSocketStatusManager = (
                 break;
             }
 
+            // ── Friend Request ──────────────────────────────────────────────────────
+
+            case 'friend_request.accepted': {
+                invalidateFriends();
+                useNotifications.getState().addNotification({
+                    type: 'success',
+                    title: 'Congratulations!',
+                    message: `Your have a new friend!`,
+                });
+                break;
+            }
+            case 'friend_request.received': {
+                invalidateFriends();
+                useNotifications.getState().addNotification({
+                    type: 'success',
+                    title: 'Congratulations!',
+                    message: `Your has new friend request!`,
+                });
+                break;
+            }
+
+            case 'friend_request.rejected':
+            case 'friend_request.cancelled': {
+                invalidateFriends();
+                break;
+            }
+
             // ── Chat-request FSM transitions ──────────────────────────────────
             // payload IS the full req dict from _broadcast_to_pair:
             //   { req_id, user_from, user_to, status, created_at, updated_at, … }
@@ -250,14 +287,14 @@ export const useWebSocketStatusManager = (
                 break;
             }
 
-            // ── Reconnect bulk sync ───────────────────────────────────────────
+            // ── Reconnect bulk sync ────────────deprecated───────────────────────────────
             // payload: { requests: ChatRequest[] }
-            case 'state_sync': {
-                if (Array.isArray(payload.requests)) {
-                    syncFromServer(payload.requests);
-                }
-                break;
-            }
+            // case 'state_sync': {
+            //     if (Array.isArray(payload.requests)) {
+            //         syncFromServer(payload.requests);
+            //     }
+            //     break;
+            // }
 
             default:
                 break;

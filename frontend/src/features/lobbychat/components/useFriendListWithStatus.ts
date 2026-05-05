@@ -30,7 +30,6 @@ const statusPriority: Record<ChatRequestStatus, number> = {
 export function useFriendListWithStatus(): FriendWithStatus[] {
     const { data: friendships } = useFriendList();
     const { friends } = useFriendsStore();
-    console.log(friends);
 
     return useMemo(() => {
         if (!friendships) return [];
