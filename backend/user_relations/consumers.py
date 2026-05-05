@@ -167,6 +167,10 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
     def _group_name(user_id: int) -> str:
         return f"user_{user_id}_friends"
 
+    def _group_name_for_system_messages(user_id: int) -> str:
+        return f"system_{user_id}"
+
+
     async def _send_error(self, message: str):
         await self.send(
             text_data=json.dumps({"type": "error", "message": message})
@@ -200,7 +204,19 @@ def notify_friendship_event(user_ids: list[int], event_type: str, payload: dict)
     if channel_layer is None:
         logger.warning("No channel layer configured; skipping WS notification.")
         return
+    
 
+    group_send = async_to_sync(channel_layer.group_send)
+    for uid in user_ids:
+        group_send(
+            FriendshipConsumer._group_name_for_system_messages(uid),
+            {
+                "type": "system_message",
+                "event": event_type,
+                "payload": payload,
+            },
+        )
+        
     group_send = async_to_sync(channel_layer.group_send)
     for uid in user_ids:
         group_send(

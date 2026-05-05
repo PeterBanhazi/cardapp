@@ -3,6 +3,8 @@
 #TODO: user persistence debounce needed for better frontend UX 
 #TODO: check if it's valid friendship on each request
 
+#TODO: _broadcast_to_pair without user_id query 
+
 import json
 import uuid
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -188,7 +190,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
         self.user_id      = self.user.id
         self.username     = self.user.username
         self.socket_id    = str(uuid.uuid4())
-        self.system_group = f"system_{self.username}"
+        self.system_group = f"system_{self.user_id}"
 
         await self.channel_layer.group_add(self.system_group, self.channel_name)
         await self.accept()
@@ -347,7 +349,7 @@ class SystemConsumer(AsyncWebsocketConsumer):
         friends = await self.get_friends()
         for friend in friends:
             await self.channel_layer.group_send(
-                f"system_{friend["username"]}",
+                f"system_{friend["user_id"]}",
                 {
                     "type":    "system_message",
                     "event":   "presence_update",
@@ -364,8 +366,9 @@ class SystemConsumer(AsyncWebsocketConsumer):
 
     async def _broadcast_to_pair(self, req: dict, event: str):
         for username in (req["user_from"], req["user_to"]):
+            id = await get_user_id(username)
             await self.channel_layer.group_send(
-                f"system_{username}",
+                f"system_{id}",
                 {
                     "type":    "system_message",
                     "event":   event,
