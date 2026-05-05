@@ -9,6 +9,7 @@ import {
     Friend,
     PresenceState,
 } from '@/shared/types/friend';
+import { RiContactsBookUploadLine } from 'react-icons/ri';
 
 export interface FriendWithStatus {
     friend_req_id: number;
@@ -29,6 +30,7 @@ const statusPriority: Record<ChatRequestStatus, number> = {
 export function useFriendListWithStatus(): FriendWithStatus[] {
     const { data: friendships } = useFriendList();
     const { friends } = useFriendsStore();
+    console.log(friends);
 
     return useMemo(() => {
         if (!friendships) return [];

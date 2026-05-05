@@ -172,7 +172,7 @@ export const useWebSocketStatusManager = (
     const setSendMessage = useFriendsStore((s) => s.setSendMessage);
     const resetFriends = useFriendsStore((s) => s.resetFriends);
 
-    const heartbeatRef = useRef<NodeJS.Timeout | null>(null);
+    const heartbeatRef = useRef<number | null>(null);
 
     const { lastMessage, readyState, sendMessage } = useWebSocket(url, {
         onOpen: () => {
@@ -218,7 +218,7 @@ export const useWebSocketStatusManager = (
 
         switch (event) {
             // ── Presence ──────────────────────────────────────────────────────
-            // payload: { username, status }
+            // payload: { username, presence }
             case 'presence_sync':
             case 'presence_update': {
                 setFriendStatus(payload.username, {

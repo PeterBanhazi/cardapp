@@ -174,6 +174,11 @@ const Sidebar = ({ isCollapsed }: SidebarProps) => {
                                 <div className="flex flex-col text-lg flex-1 min-w-0">
                                     <span className="text-left truncate">
                                         {friendListItem.friend.username} {':'}
+                                        {friendListItem.presence.slice(
+                                            0,
+                                            2
+                                        )}{' '}
+                                        {':'}
                                         {friendListItem.status}
                                         {getUnreadCount(
                                             friendListItem.friend.username
