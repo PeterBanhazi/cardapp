@@ -54,7 +54,7 @@ interface FriendsState {
     sendAcceptChatRequest: (user: string) => void;
     sendRejectChatRequest: (user: string) => void;
     sendCancelledChat: (user: string) => void;
-
+    sendRequestStateSync: () => void;
     resetFriends: () => void;
 }
 
@@ -156,6 +156,12 @@ export const useFriendsStore = create<FriendsState>()(
                 user_to: user,
             });
         },
+        // to refresh friends state from server:
+        sendRequestStateSync: () => {
+            get().sendAction('send_request', {
+                action: 'sync_state',
+            });
+        },
 
         resetFriends: () =>
             set({ friends: {}, isConnected: false, sendMessage: null }),
@@ -174,7 +180,7 @@ export const useWebSocketStatusManager = (
     const setConnected = useFriendsStore((s) => s.setConnected);
     const setSendMessage = useFriendsStore((s) => s.setSendMessage);
     const resetFriends = useFriendsStore((s) => s.resetFriends);
-
+    const sendRequestStateSync = useFriendsStore((s) => s.sendRequestStateSync);
     const heartbeatRef = useRef<number | null>(null);
 
     const queryClient = useQueryClient();
@@ -246,6 +252,7 @@ export const useWebSocketStatusManager = (
                     title: 'Congratulations!',
                     message: `Your have a new friend!`,
                 });
+                sendRequestStateSync();
                 break;
             }
             case 'friend_request.received': {
@@ -255,6 +262,7 @@ export const useWebSocketStatusManager = (
                     title: 'Congratulations!',
                     message: `Your has new friend request!`,
                 });
+                sendRequestStateSync();
                 break;
             }
 
