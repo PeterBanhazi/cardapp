@@ -271,6 +271,10 @@ class SystemConsumer(AsyncWebsocketConsumer):
     # ──────────────────────────────────────────────
     #  Chat-request action handlers
     # ──────────────────────────────────────────────
+    
+    async def handle_sync_state(self,data):
+        print(data)
+        await self.sync_state_to_client()
 
     async def handle_chat_request(self, data):
         """(no state | terminal state) ──► pending"""

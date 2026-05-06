@@ -18,7 +18,6 @@ def on_friend_request_saved(sender, instance: FriendRequest, created: bool, **kw
 
     # Lazy serialization without a request context (IDs will still be present)
     data = FriendRequestSerializer(instance).data
-    print(data)
     status = instance.status
 
     if created or status == FriendRequest.Status.PENDING:
